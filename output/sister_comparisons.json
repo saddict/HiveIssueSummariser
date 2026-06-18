@@ -1,0 +1,418 @@
+{
+  "metadata": {
+    "window_days": 7,
+    "start_at": "2026-06-11T10:00:00-04:00",
+    "end_at": "2026-06-18T10:00:00-04:00",
+    "sensor_reading_count": 1346,
+    "valid_sensor_reading_count": 1346,
+    "excluded_sensor_reading_count": 0,
+    "data_quality_issue_count": 10,
+    "weather_reading_count": 84,
+    "colony_count": 8,
+    "min_colony_days_observed": 6.96,
+    "max_colony_days_observed": 6.96,
+    "sister_site_count": 4
+  },
+  "sites": [
+    {
+      "hive_id": "6LR",
+      "left_colony_id": "6LR:L",
+      "right_colony_id": "6LR:R",
+      "weaker_side": "L",
+      "status": "left colony notably weaker",
+      "left_sister_score": 26.5,
+      "right_sister_score": 11.3,
+      "metric_comparisons": [
+        {
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.27115525001883717,
+          "right_value": 0.17522462285844403,
+          "worse_side": "L",
+          "raw_gap": 0.4463798728772812,
+          "normalized_gap": 1.9907157937670188,
+          "impact": 11.148008445095305
+        },
+        {
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "unit": "%",
+          "left_value": -1.803136546112296,
+          "right_value": 1.973854631017101,
+          "worse_side": "L",
+          "raw_gap": 3.776991177129397,
+          "normalized_gap": 1.2047562448926943,
+          "impact": 10.963281828523519
+        },
+        {
+          "metric": "internal_humidity_std_pct",
+          "label": "humidity instability",
+          "unit": "%",
+          "left_value": 1.6507659872529488,
+          "right_value": 5.122745030986251,
+          "worse_side": "R",
+          "raw_gap": 3.4719790437333025,
+          "normalized_gap": 2.1202942717759723,
+          "impact": 4.452617970729542
+        },
+        {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.015552864830043322,
+          "right_value": 0.7446511646149443,
+          "worse_side": "L",
+          "raw_gap": 0.7602040294449877,
+          "normalized_gap": 1.2579900220422828,
+          "impact": 4.40296507714799
+        },
+        {
+          "metric": "internal_temp_std_f",
+          "label": "temperature instability",
+          "unit": "F",
+          "left_value": 0.8235592707565004,
+          "right_value": 3.701653450190351,
+          "worse_side": "R",
+          "raw_gap": 2.878094179433851,
+          "normalized_gap": 0.7079322113178631,
+          "impact": 3.716644109418781
+        },
+        {
+          "metric": "avg_brood_temp_deviation_f",
+          "label": "possible brood-temperature variation",
+          "unit": "F",
+          "left_value": 1.7253571428571424,
+          "right_value": 7.016190476190476,
+          "worse_side": "R",
+          "raw_gap": 5.2908333333333335,
+          "normalized_gap": 0.6977381458541173,
+          "impact": 3.174708563636234
+        },
+        {
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "unit": "%",
+          "left_value": 0.0,
+          "right_value": 0.0,
+          "worse_side": null,
+          "raw_gap": 0.0,
+          "normalized_gap": 0.0,
+          "impact": 0.0
+        },
+        {
+          "metric": "high_humidity_reading_pct",
+          "label": "high-humidity exposure",
+          "unit": "%",
+          "left_value": 0.0,
+          "right_value": 0.0,
+          "worse_side": null,
+          "raw_gap": 0.0,
+          "normalized_gap": 0.0,
+          "impact": 0.0
+        }
+      ],
+      "summary": "The left colony is weaker than its sister colony at 6LR. The main sister-level drivers are weight percent trend and 7-day weight percent change. Sister scores are L 26.5 vs R 11.3."
+    },
+    {
+      "hive_id": "DR_WLKS",
+      "left_colony_id": "DR_WLKS:L",
+      "right_colony_id": "DR_WLKS:R",
+      "weaker_side": "R",
+      "status": "right colony mildly weaker",
+      "left_sister_score": 2.1,
+      "right_sister_score": 14.5,
+      "metric_comparisons": [
+        {
+          "metric": "internal_temp_std_f",
+          "label": "temperature instability",
+          "unit": "F",
+          "left_value": 0.360376079072055,
+          "right_value": 4.667555570103049,
+          "worse_side": "R",
+          "raw_gap": 4.307179491030994,
+          "normalized_gap": 1.0594479928479357,
+          "impact": 5.562101962451662
+        },
+        {
+          "metric": "avg_brood_temp_deviation_f",
+          "label": "possible brood-temperature variation",
+          "unit": "F",
+          "left_value": 0.6747619047619062,
+          "right_value": 9.295,
+          "worse_side": "R",
+          "raw_gap": 8.620238095238093,
+          "normalized_gap": 1.136809376983926,
+          "impact": 5.172482665276863
+        },
+        {
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "unit": "%",
+          "left_value": 0.0,
+          "right_value": 0.6037939957965501,
+          "worse_side": "R",
+          "raw_gap": 0.6037939957965501,
+          "normalized_gap": 0.9840258750424932,
+          "impact": 2.0664543375892355
+        },
+        {
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.26084282565644945,
+          "right_value": -0.20501530872462123,
+          "worse_side": "L",
+          "raw_gap": 0.05582751693182822,
+          "normalized_gap": 0.24897341129343395,
+          "impact": 1.39425110324323
+        },
+        {
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "unit": "%",
+          "left_value": -1.1329307802364506,
+          "right_value": -1.5145393000738885,
+          "worse_side": "R",
+          "raw_gap": 0.38160851983743793,
+          "normalized_gap": 0.12172261618250012,
+          "impact": 1.107675807260751
+        },
+        {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.13080294487154523,
+          "right_value": -0.015891395916446276,
+          "worse_side": "L",
+          "raw_gap": 0.11491154895509895,
+          "normalized_gap": 0.190156295420424,
+          "impact": 0.6655470339714841
+        },
+        {
+          "metric": "internal_humidity_std_pct",
+          "label": "humidity instability",
+          "unit": "%",
+          "left_value": 3.5034717151643906,
+          "right_value": 3.9493519661307666,
+          "worse_side": "R",
+          "raw_gap": 0.44588025096637596,
+          "normalized_gap": 0.27229350468817515,
+          "impact": 0.5718163598451678
+        },
+        {
+          "metric": "high_humidity_reading_pct",
+          "label": "high-humidity exposure",
+          "unit": "%",
+          "left_value": 0.0,
+          "right_value": 0.0,
+          "worse_side": null,
+          "raw_gap": 0.0,
+          "normalized_gap": 0.0,
+          "impact": 0.0
+        }
+      ],
+      "summary": "The right colony is weaker than its sister colony at DR_WLKS. The main sister-level drivers are temperature instability and possible brood-temperature variation. Sister scores are L 2.1 vs R 14.5."
+    },
+    {
+      "hive_id": "PRT_1",
+      "left_colony_id": "PRT_1:L",
+      "right_colony_id": "PRT_1:R",
+      "weaker_side": "L",
+      "status": "left colony notably weaker",
+      "left_sister_score": 46.6,
+      "right_sister_score": 4.7,
+      "metric_comparisons": [
+        {
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "unit": "%",
+          "left_value": -6.0510322051291645,
+          "right_value": 2.1969933856936645,
+          "worse_side": "L",
+          "raw_gap": 8.248025590822829,
+          "normalized_gap": 2.6308931825810635,
+          "impact": 23.941127961487677
+        },
+        {
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.30990427122887376,
+          "right_value": 0.2755001399124379,
+          "worse_side": "L",
+          "raw_gap": 0.5854044111413117,
+          "normalized_gap": 2.6107221176620463,
+          "impact": 14.62004385890746
+        },
+        {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.30078222202167243,
+          "right_value": 0.5467572297614609,
+          "worse_side": "L",
+          "raw_gap": 0.8475394517831334,
+          "normalized_gap": 1.4025131837419758,
+          "impact": 4.908796143096915
+        },
+        {
+          "metric": "internal_temp_std_f",
+          "label": "temperature instability",
+          "unit": "F",
+          "left_value": 1.9887394776388188,
+          "right_value": 4.991443434444503,
+          "worse_side": "R",
+          "raw_gap": 3.002703956805684,
+          "normalized_gap": 0.7385827980418949,
+          "impact": 3.877559689719948
+        },
+        {
+          "metric": "internal_humidity_std_pct",
+          "label": "humidity instability",
+          "unit": "%",
+          "left_value": 4.8767993764186786,
+          "right_value": 3.3944089079425197,
+          "worse_side": "L",
+          "raw_gap": 1.4823904684761589,
+          "normalized_gap": 0.9052773588937408,
+          "impact": 1.9010824536768558
+        },
+        {
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "unit": "%",
+          "left_value": 0.5180316198361531,
+          "right_value": 0.14763863629072463,
+          "worse_side": "L",
+          "raw_gap": 0.3703929835454285,
+          "normalized_gap": 0.6036434318331665,
+          "impact": 1.2676512068496495
+        },
+        {
+          "metric": "avg_brood_temp_deviation_f",
+          "label": "possible brood-temperature variation",
+          "unit": "F",
+          "left_value": 4.8342011834319525,
+          "right_value": 6.2853254437869825,
+          "worse_side": "R",
+          "raw_gap": 1.45112426035503,
+          "normalized_gap": 0.1913696174183108,
+          "impact": 0.8707317592533141
+        },
+        {
+          "metric": "high_humidity_reading_pct",
+          "label": "high-humidity exposure",
+          "unit": "%",
+          "left_value": 0.0,
+          "right_value": 0.0,
+          "worse_side": null,
+          "raw_gap": 0.0,
+          "normalized_gap": 0.0,
+          "impact": 0.0
+        }
+      ],
+      "summary": "The left colony is weaker than its sister colony at PRT_1. The main sister-level drivers are 7-day weight percent change and weight percent trend. Sister scores are L 46.6 vs R 4.7."
+    },
+    {
+      "hive_id": "WTG_HSCHL",
+      "left_colony_id": "WTG_HSCHL:L",
+      "right_colony_id": "WTG_HSCHL:R",
+      "weaker_side": "R",
+      "status": "right colony notably weaker",
+      "left_sister_score": 6.7,
+      "right_sister_score": 32.9,
+      "metric_comparisons": [
+        {
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "unit": "%",
+          "left_value": -1.489506496608274,
+          "right_value": -7.256585168219002,
+          "worse_side": "R",
+          "raw_gap": 5.767078671610728,
+          "normalized_gap": 1.8395393895759837,
+          "impact": 16.739808445141453
+        },
+        {
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "unit": "%/day",
+          "left_value": 0.009855342250224488,
+          "right_value": -0.3563409892249572,
+          "worse_side": "R",
+          "raw_gap": 0.3661963314751817,
+          "normalized_gap": 1.633122067059689,
+          "impact": 9.145483575534259
+        },
+        {
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "unit": "%",
+          "left_value": 0.15118286559949462,
+          "right_value": 1.9342544109792026,
+          "worse_side": "R",
+          "raw_gap": 1.783071545379708,
+          "normalized_gap": 2.9059390287425955,
+          "impact": 6.10247196035945
+        },
+        {
+          "metric": "high_humidity_reading_pct",
+          "label": "high-humidity exposure",
+          "unit": "%",
+          "left_value": 11.904761904761903,
+          "right_value": 6.547619047619048,
+          "worse_side": "L",
+          "raw_gap": 5.357142857142855,
+          "normalized_gap": 1.2714023694459358,
+          "impact": 3.5599266344486202
+        },
+        {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "unit": "%/day",
+          "left_value": 1.1267782072842003,
+          "right_value": 1.4680037873623857,
+          "worse_side": "L",
+          "raw_gap": 0.3412255800781854,
+          "normalized_gap": 0.5646620622589196,
+          "impact": 1.9763172179062187
+        },
+        {
+          "metric": "internal_temp_std_f",
+          "label": "temperature instability",
+          "unit": "F",
+          "left_value": 11.073062460082935,
+          "right_value": 11.750027219898996,
+          "worse_side": "R",
+          "raw_gap": 0.6769647598160606,
+          "normalized_gap": 0.16651475925472392,
+          "impact": 0.8742024860873006
+        },
+        {
+          "metric": "internal_humidity_std_pct",
+          "label": "humidity instability",
+          "unit": "%",
+          "left_value": 7.057134799132665,
+          "right_value": 6.435394499700857,
+          "worse_side": "L",
+          "raw_gap": 0.6217402994318082,
+          "normalized_gap": 0.37968904155597866,
+          "impact": 0.7973469872675552
+        },
+        {
+          "metric": "avg_brood_temp_deviation_f",
+          "label": "possible brood-temperature variation",
+          "unit": "F",
+          "left_value": 21.716190476190476,
+          "right_value": 21.139880952380953,
+          "worse_side": "L",
+          "raw_gap": 0.5763095238095239,
+          "normalized_gap": 0.0760018532520258,
+          "impact": 0.34580843229671737
+        }
+      ],
+      "summary": "The right colony is weaker than its sister colony at WTG_HSCHL. The main sister-level drivers are 7-day weight percent change and weight percent trend. Sister scores are L 6.7 vs R 32.9."
+    }
+  ]
+}

@@ -4,8 +4,9 @@ import unittest
 from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
-from beemon_scoring.models import ColonyFeatures, SensorReading
+from beemon_scoring.models import ColonyFeatures, ColonyScore, MetricComparison, SensorReading
 from beemon_scoring.scoring import _daily_weight_pct_changes, _eligible_metric_peers
+from beemon_scoring.sister_comparison import build_sister_comparisons
 
 
 TZ = ZoneInfo("America/New_York")
@@ -63,6 +64,32 @@ def feature(colony_id: str, favorable_windows: int, poor_windows: int) -> Colony
     )
 
 
+def colony_score(colony_id: str, side: str, weight_pct_change: float) -> ColonyScore:
+    base = feature(colony_id, favorable_windows=1, poor_windows=1)
+    base.weight_pct_change = weight_pct_change
+    return ColonyScore(
+        colony_id=colony_id,
+        hive_id=colony_id.split(":")[0],
+        colony_side=side,
+        score=0.0,
+        status="normal",
+        comparisons=[
+            MetricComparison(
+                metric="weight_pct_change",
+                label="7-day weight percent change",
+                value=weight_pct_change,
+                peer_mean=0.0,
+                peer_std=2.0,
+                badness_z=0.0,
+                weight=0.26,
+                unit="%",
+            )
+        ],
+        feature=base,
+        flags=[],
+    )
+
+
 class ScoringLogicTests(unittest.TestCase):
     def test_daily_weight_pct_changes_do_not_span_weather_gaps(self) -> None:
         readings = [
@@ -96,6 +123,17 @@ class ScoringLogicTests(unittest.TestCase):
         eligible = _eligible_metric_peers(features, metric)
 
         self.assertEqual([item.colony_id for item in eligible], ["A:L", "C:L"])
+
+    def test_sister_comparison_marks_lower_weight_percent_change_as_weaker(self) -> None:
+        comparisons = build_sister_comparisons([
+            colony_score("SITE:L", "L", -5.0),
+            colony_score("SITE:R", "R", 1.0),
+        ])
+
+        self.assertEqual(len(comparisons), 1)
+        self.assertEqual(comparisons[0].weaker_side, "L")
+        self.assertIn("left colony", comparisons[0].summary)
+        self.assertEqual(comparisons[0].metric_comparisons[0].metric, "weight_pct_change")
 
 
 if __name__ == "__main__":

@@ -102,3 +102,29 @@ class ColonyScore:
     feature: ColonyFeatures
     flags: list[str] = field(default_factory=list)
 
+
+
+@dataclass
+class SisterMetricComparison:
+    metric: str
+    label: str
+    unit: str
+    left_value: float
+    right_value: float
+    worse_side: str | None
+    raw_gap: float
+    normalized_gap: float
+    impact: float
+
+
+@dataclass
+class SisterSiteComparison:
+    hive_id: str
+    left_colony_id: str | None
+    right_colony_id: str | None
+    weaker_side: str | None
+    status: str
+    left_sister_score: float
+    right_sister_score: float
+    metric_comparisons: list[SisterMetricComparison]
+    summary: str

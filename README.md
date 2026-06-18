@@ -34,7 +34,8 @@ It does this by:
 3. Reading cached Open-Meteo weather data for each site.
 4. Building 7-day features for each colony.
 5. Comparing each colony against all other colonies in the peer group.
-6. Producing a ranked natural-language report and a structured JSON file.
+6. Producing a ranked regional peer report and structured JSON file.
+7. Producing a separate sister-colony report comparing L vs R at each site.
 
 ## Local Data Cache
 
@@ -74,7 +75,9 @@ That command runs the full live pipeline:
 1. `fetch_dynamodb.py` pulls the latest sensor readings from DynamoDB.
 2. `fetch_openmeteo.py` pulls the latest weather rows from Open-Meteo.
 3. `run_scoring.py` regenerates `output/scoring.json`.
-4. `run_scoring.py` prints the human-readable report.
+4. `run_sister_comparisons.py` regenerates `output/sister_comparisons.json`.
+5. `run_scoring.py` prints the regional peer report.
+6. `run_sister_comparisons.py` prints the same-site sister-colony report.
 
 By default, the fetch scripts write into `local_data/`, so future offline runs use the latest cached data.
 
@@ -88,16 +91,28 @@ python3 refresh_and_score.py --skip-fetch
 
 That command does not call DynamoDB or Open-Meteo. It only reads the cached CSVs, regenerates JSON, and prints the report.
 
-You can also run just the text report:
+You can also run just the regional peer text report:
 
 ```bash
 python3 run_scoring.py
 ```
 
-Or regenerate only JSON:
+Or regenerate only regional JSON:
 
 ```bash
 python3 run_scoring.py --format json --output output/scoring.json
+```
+
+Run only the sister-colony text report:
+
+```bash
+python3 run_sister_comparisons.py
+```
+
+Regenerate only sister-colony JSON:
+
+```bash
+python3 run_sister_comparisons.py --format json --output output/sister_comparisons.json
 ```
 
 Use a different scoring window:
@@ -247,6 +262,20 @@ For each matching weather day, the scorer compares the first and last colony wei
 
 The report still includes weather averages such as average outside temperature and rainy-reading percentage.
 
+## Sister-Colony Comparison
+
+The sister-colony report compares only the left and right colonies on the same physical site. For example, `DR_WLKS:L` is compared directly with `DR_WLKS:R`.
+
+This output answers a different question from regional peer scoring:
+
+```text
+Is one side of this same site weaker than its sister colony?
+```
+
+For each metric, it checks which side is worse. The raw L-vs-R difference is scaled by the regional metric spread so tiny differences do not dominate the report. The result is a separate sister score for L and R at each site.
+
+This report is useful because both colonies at the same site share the same device location and site-level weather, so differences between them can highlight colony-specific issues that regional scoring may hide.
+
 ## Peer Comparison
 
 The system is relative. It does not say a colony is absolutely good or bad.
@@ -290,16 +319,17 @@ underperforming = stronger or multiple concerning signals
 
 ## Outputs
 
-Text report:
+Regional text report:
 
 ```bash
 python3 run_scoring.py
 ```
 
-JSON report:
+JSON reports:
 
 ```text
 output/scoring.json
+output/sister_comparisons.json
 ```
 
 The text report gives:

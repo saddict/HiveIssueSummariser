@@ -55,7 +55,9 @@ fetch_openmeteo.py             Pulls weather rows from Open-Meteo into local_dat
 beemon_scoring/data_loader.py  Loads config, sensor CSVs, and weather CSVs.
 beemon_scoring/models.py       Dataclasses used by the scorer.
 beemon_scoring/scoring.py      Data quality checks, feature extraction, peer scoring.
-beemon_scoring/reporting.py    Text and JSON report rendering.
+beemon_scoring/reporting.py    Regional text and JSON report rendering.
+beemon_scoring/sister_comparison.py Sister-colony comparison logic.
+run_sister_comparisons.py       Prints/writes L-vs-R same-site comparison output.
 README.md                      User-facing explanation and commands.
 PROJECT_HANDOFF.md             This handoff.
 ```
@@ -95,16 +97,28 @@ Fetch fresh DynamoDB and Open-Meteo data, then score:
 python3 refresh_and_score.py
 ```
 
-Run only the text report from cached data:
+Run only the regional peer text report from cached data:
 
 ```bash
 python3 run_scoring.py
 ```
 
-Regenerate only JSON from cached data:
+Run only the sister-colony text report from cached data:
+
+```bash
+python3 run_sister_comparisons.py
+```
+
+Regenerate only regional JSON from cached data:
 
 ```bash
 python3 run_scoring.py --format json --output output/scoring.json
+```
+
+Regenerate only sister-colony JSON from cached data:
+
+```bash
+python3 run_sister_comparisons.py --format json --output output/sister_comparisons.json
 ```
 
 Run tests:
@@ -305,7 +319,51 @@ Main drivers: poor-weather weight loss, 7-day weight percent change, temperature
 
 There are also `PRT_1` external temperature anomalies, including values around `190 F`. These are reported as data-quality notes but do not remove colony readings.
 
-## 12. How To Scale To Many Sites And Regions
+## 12. Sister-Colony Same-Site Output
+
+Regional peer scoring answers this question:
+
+```text
+How is this colony doing compared with all eligible peer colonies?
+```
+
+The sister-colony report answers a narrower same-site question:
+
+```text
+How is the left colony doing compared with the right colony at the same site?
+```
+
+Example:
+
+```text
+DR_WLKS:L vs DR_WLKS:R
+```
+
+This is useful because sister colonies share the same site-level weather and physical location. If one side is worse than the other, the difference is more likely to be colony-specific than regional weather-specific.
+
+Implementation details:
+
+1. `run_sister_comparisons.py` calls `build_scores()` first, so it uses the same data-quality checks and feature extraction as regional scoring.
+2. `beemon_scoring/sister_comparison.py` groups the `ColonyScore` objects by site ID.
+3. For each site, it expects one `L` score and one `R` score.
+4. For every scoring metric, it checks which side is worse.
+5. It scales the raw L-vs-R difference by the regional metric standard deviation, so tiny differences do not dominate.
+6. It produces one sister score for L and one for R.
+7. The side with the larger sister score is labeled mildly or notably weaker.
+
+The separate output file is:
+
+```text
+output/sister_comparisons.json
+```
+
+Important rule:
+
+```text
+Do not mix sister-colony scoring with regional peer scoring. They answer different questions and should stay separate in the UI/API.
+```
+
+## 13. How To Scale To Many Sites And Regions
 
 This is the recommended implementation plan for moving from one peer group to region-aware scoring.
 
@@ -572,7 +630,7 @@ Do not compare regions without weather context.
 
 If the system breaks any of those rules, the output can become misleading.
 
-## 13. Recommended Next Work
+## 14. Recommended Next Work
 
 1. Add `region_id` and `timezone` to `hive_config.py`.
 2. Rename internal `hive_id` concepts to `site_id` while keeping CSV compatibility.
