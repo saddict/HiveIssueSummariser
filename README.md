@@ -176,6 +176,8 @@ The scorer measures:
 
 - total percent weight change over the window
 - linear percent weight trend per day
+- favorable-weather percent weight trend
+- poor-weather percent weight loss
 - absolute pound change for display context only
 
 A colony losing a larger percentage of its starting weight than peers during the same regional window is treated as more concerning.
@@ -220,11 +222,24 @@ The scorer measures:
 
 High-humidity exposure and unstable humidity are treated as concerning only when they are worse than peers.
 
-### Weather Context
+### Data Quality Checks
 
-Weather is used as site-level context. The report includes weather averages such as average outside temperature and rainy-reading percentage.
+Before feature extraction, the scorer checks for impossible colony sensor values and sudden jumps. Colony readings are excluded from scoring when weight, internal temperature, or internal humidity is outside plausible bounds. Sudden short-interval jumps in weight, internal temperature, or internal humidity are also excluded as likely sensor artifacts.
 
-The current MVP does not yet fully weather-adjust every scoring metric. It mainly uses weather to make the natural-language report more informative and to ensure each site has matching regional context. A recommended next step is to add stronger weather-adjusted features, such as comparing weight percent change during favorable vs rainy periods.
+External device readings such as `tE` and `hE` are flagged when implausible, but they do not remove colony readings because the current scoring uses Open-Meteo for weather context. The report shows valid reading counts, excluded reading counts, and data-quality notes.
+
+### Weather-Adjusted Weight Features
+
+Weather is used as site-level context and now contributes directly to weight scoring. Each site-day is classified as `favorable`, `poor`, or `neutral` using Open-Meteo temperature, cloud cover, humidity, and weather code.
+
+Favorable days are mild, not rainy, not overly cloudy, and not extremely humid. Poor days include rainy conditions, extreme temperatures, or very heavy cloud cover.
+
+The scorer then adds two peer-relative metrics:
+
+- favorable-weather weight percent trend: colonies should generally hold or gain better during favorable windows
+- poor-weather weight loss: colonies losing more percentage weight than peers during poor windows get a small penalty
+
+The report still includes weather averages such as average outside temperature and rainy-reading percentage.
 
 ## Peer Comparison
 
@@ -249,10 +264,12 @@ The scoring engine combines weighted metric badness into an underperformance sco
 Current weighted drivers:
 
 ```text
-34%  7-day weight percent change
-22%  weight percent trend
-16%  temperature instability
-14%  possible brood-temperature variation
+26%  7-day weight percent change
+16%  weight percent trend
+10%  favorable-weather weight percent trend
+6%   poor-weather weight loss
+15%  temperature instability
+13%  possible brood-temperature variation
 8%   high-humidity exposure
 6%   humidity instability
 ```
@@ -298,15 +315,15 @@ This MVP is intentionally explainable and conservative, but it has limits:
 - It does not diagnose disease, queenlessness, mite pressure, or brood status.
 - It cannot know whether the temperature sensor is exactly in the brood nest.
 - It treats all configured colonies as one peer group.
-- It does not yet filter impossible sensor values or sudden sensor jumps.
-- It does not yet deeply adjust every metric by weather conditions.
+- Data-quality thresholds are conservative heuristics and should be tuned with field validation.
+- Weather adjustment is still simple day-level logic, not a full nectar-flow or forage model.
 
 The output should be treated as inspection guidance, not a final biological diagnosis.
 
 ## Recommended Next Work
 
-1. Add data quality checks for impossible sensor values and sudden jumps.
-2. Add weather-adjusted scoring features for favorable vs poor foraging windows.
-3. Add tests around CSV parsing, feature extraction, and score ranking.
+1. Tune data-quality thresholds with known sensor behavior and field validation.
+2. Improve weather adjustment with richer forage and nectar-flow signals.
+3. Add tests around CSV parsing, feature extraction, quality filtering, weather classification, and score ranking.
 4. Rename internal code concepts from `hive_id` to `site_id` while preserving CSV compatibility.
 5. Add inspection notes so the system can learn from queen status, brood observations, feeding, harvests, and treatments.

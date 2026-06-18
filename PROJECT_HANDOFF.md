@@ -124,6 +124,8 @@ Current weighted scoring drivers:
 
 - 7-day weight percent change
 - weight percent trend
+- favorable-weather weight percent trend
+- poor-weather weight loss
 - internal temperature instability
 - possible brood-temperature variation from 94.5 F
 - high-humidity exposure
@@ -153,8 +155,8 @@ A raw sensor anomaly was observed in `PRT_1`: external device temperature `tE` i
 
 ## Recommended next work
 
-1. Add data quality checks for impossible sensor values, especially external temp/humidity and sudden weight jumps.
-2. Add a combined refresh command that runs DynamoDB fetch, Open-Meteo fetch, scoring, and JSON output in one step.
-3. Add tests for parsing DynamoDB AttributeValue JSON and Open-Meteo CSV generation using `local_data/` only.
+1. Tune data-quality thresholds with known sensor behavior and field validation.
+2. Improve weather adjustment with richer forage and nectar-flow signals.
+3. Add tests for parsing, quality filtering, weather classification, and scoring using `local_data/` only.
 4. Consider renaming code concepts from `hive_id` to `site_id` internally while preserving CSV compatibility.
-5. Add weather-adjusted scoring features more directly, such as weight percent change during favorable vs rainy windows.
+5. Add inspection notes so the system can learn from queen status, brood observations, feeding, harvests, and treatments.

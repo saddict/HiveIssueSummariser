@@ -49,6 +49,8 @@ class ColonyFeatures:
     hive_id: str
     colony_side: str
     sample_count: int
+    excluded_reading_count: int
+    data_quality_flags: list[str]
     start_at: datetime
     end_at: datetime
     days_observed: float
@@ -57,6 +59,10 @@ class ColonyFeatures:
     weight_pct_change: float
     weight_slope_lb_per_day: float
     weight_slope_pct_per_day: float
+    favorable_weather_sample_count: int
+    poor_weather_sample_count: int
+    favorable_weather_weight_slope_pct_per_day: float
+    poor_weather_weight_loss_pct: float
     avg_internal_temp_f: float
     internal_temp_std_f: float
     avg_brood_temp_deviation_f: float

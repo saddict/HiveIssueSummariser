@@ -24,6 +24,8 @@ def build_text_report(scores: list[ColonyScore], metadata: dict[str, object]) ->
         f"Window: {metadata['start_at']} to {metadata['end_at']} ({metadata['window_days']} days)",
         f"Colonies compared: {metadata['colony_count']}",
         f"Sensor coverage per colony: {metadata['min_colony_days_observed']} to {metadata['max_colony_days_observed']} days",
+        f"Valid sensor readings: {metadata['valid_sensor_reading_count']} of {metadata['sensor_reading_count']} "
+        f"({metadata['excluded_sensor_reading_count']} excluded, {metadata['data_quality_issue_count']} quality notes)",
         "",
     ]
 
@@ -51,7 +53,7 @@ def build_text_report(scores: list[ColonyScore], metadata: dict[str, object]) ->
                 f"(badness z {comparison.badness_z:.1f})"
             )
         if score.flags:
-            for flag in score.flags[:3]:
+            for flag in score.flags[:4]:
                 lines.append(f"   - Flag: {flag}")
 
     return "\n".join(lines)
