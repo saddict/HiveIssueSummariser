@@ -59,7 +59,7 @@ local_data/dynamodb/WTG_HSCHL_SENS.csv
 local_data/openmeteo/WTG_HSCHL_data.csv
 ```
 
-The older `Data/` folder is kept as legacy/sample data. `run_scoring.py` prefers `local_data/` and only falls back to `Data/` if the cache folders are missing.
+`local_data/` is the source of truth for cached scoring data. If those folders are missing, the scorer fails with a clear error instead of silently using stale files.
 
 ## How Data Is Refreshed
 
@@ -104,6 +104,12 @@ Use a different scoring window:
 
 ```bash
 python3 run_scoring.py --window-days 14
+```
+
+Run the unit tests:
+
+```bash
+python3 -m unittest discover -s tests
 ```
 
 ## DynamoDB Fetching
@@ -176,8 +182,8 @@ The scorer measures:
 
 - total percent weight change over the window
 - linear percent weight trend per day
-- favorable-weather percent weight trend
-- poor-weather percent weight loss
+- average favorable-day percent weight change
+- average poor-day percent weight loss
 - absolute pound change for display context only
 
 A colony losing a larger percentage of its starting weight than peers during the same regional window is treated as more concerning.
@@ -234,10 +240,10 @@ Weather is used as site-level context and now contributes directly to weight sco
 
 Favorable days are mild, not rainy, not overly cloudy, and not extremely humid. Poor days include rainy conditions, extreme temperatures, or very heavy cloud cover.
 
-The scorer then adds two peer-relative metrics:
+For each matching weather day, the scorer compares the first and last colony weights from that day. It then averages those daily changes and adds two peer-relative metrics:
 
-- favorable-weather weight percent trend: colonies should generally hold or gain better during favorable windows
-- poor-weather weight loss: colonies losing more percentage weight than peers during poor windows get a small penalty
+- favorable-weather weight percent trend: average daily percent weight change on favorable days
+- poor-weather weight loss: average daily percent weight loss on poor days
 
 The report still includes weather averages such as average outside temperature and rainy-reading percentage.
 

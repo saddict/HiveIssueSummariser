@@ -35,7 +35,7 @@ class WeatherReading:
     hive_id: str
     observed_date: date
     clock_time: str
-    temperature_f: float
+    temperature_f: float | None
     pressure_hpa: float | None
     cloudiness_pct: float | None
     humidity_pct: float | None
@@ -59,8 +59,8 @@ class ColonyFeatures:
     weight_pct_change: float
     weight_slope_lb_per_day: float
     weight_slope_pct_per_day: float
-    favorable_weather_sample_count: int
-    poor_weather_sample_count: int
+    favorable_weather_window_count: int
+    poor_weather_window_count: int
     favorable_weather_weight_slope_pct_per_day: float
     poor_weather_weight_loss_pct: float
     avg_internal_temp_f: float

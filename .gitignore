@@ -3,3 +3,6 @@ __pycache__/
 .venv/
 .env
 .DS_Store
+
+# Legacy duplicate data folder; use local_data/ instead.
+Data/

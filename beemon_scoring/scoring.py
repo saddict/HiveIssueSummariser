@@ -48,6 +48,8 @@ METRICS = [
         "direction": "higher_is_better",
         "weight": 0.10,
         "unit": "%/day",
+        "min_sample_attr": "favorable_weather_window_count",
+        "min_sample_count": 1,
     },
     {
         "name": "poor_weather_weight_loss_pct",
@@ -55,6 +57,8 @@ METRICS = [
         "direction": "lower_is_better",
         "weight": 0.06,
         "unit": "%",
+        "min_sample_attr": "poor_weather_window_count",
+        "min_sample_count": 1,
     },
     {
         "name": "internal_temp_std_f",
@@ -98,10 +102,8 @@ def build_scores(
     sensor_dir = sensor_dir or default_local_data / "dynamodb"
     weather_dir = weather_dir or default_local_data / "openmeteo"
 
-    if not sensor_dir.exists():
-        sensor_dir = project_root / "Data"
-    if not weather_dir.exists():
-        weather_dir = project_root / "Data"
+    _require_data_dir(sensor_dir, "sensor")
+    _require_data_dir(weather_dir, "weather")
 
     sensor_readings = load_sensor_readings(sensor_dir, hives, colony_sides)
     weather_readings = load_weather_readings(weather_dir, hives)
@@ -138,6 +140,11 @@ def build_scores(
         "max_colony_days_observed": round(max(score.feature.days_observed for score in scores), 2) if scores else 0,
     }
     return sorted(scores, key=lambda score: score.score, reverse=True), metadata
+
+
+def _require_data_dir(path: Path, label: str) -> None:
+    if not path.exists():
+        raise RuntimeError(f"Missing {label} data directory: {path}")
 
 
 def _weather_by_hive(
@@ -291,16 +298,14 @@ def _build_features(
         first = readings[0]
         last = readings[-1]
         elapsed_days = max((last.observed_at - first.observed_at).total_seconds() / 86400, 1 / 24)
-        weights = [reading.weight_lb for reading in readings]
         temps = [reading.internal_temp_f for reading in readings]
         humidities = [reading.internal_humidity_pct for reading in readings]
         external_temps = [reading.external_temp_f for reading in readings if reading.external_temp_f is not None]
         external_humidities = [reading.external_humidity_pct for reading in readings if reading.external_humidity_pct is not None]
         weather = weather_by_hive.get(first.hive_id, [])
         day_types = weather_day_types.get(first.hive_id, {})
-        favorable_readings = [reading for reading in readings if day_types.get(reading.observed_at.date()) == "favorable"]
-        poor_readings = [reading for reading in readings if day_types.get(reading.observed_at.date()) == "poor"]
-        poor_pct_change = _pct_change_for_readings(poor_readings)
+        favorable_daily_changes = _daily_weight_pct_changes(readings, day_types, "favorable")
+        poor_daily_changes = _daily_weight_pct_changes(readings, day_types, "poor")
 
         features.append(
             ColonyFeatures(
@@ -318,12 +323,14 @@ def _build_features(
                 weight_pct_change=_pct_change(first.weight_lb, last.weight_lb),
                 weight_slope_lb_per_day=_linear_slope_per_day(readings),
                 weight_slope_pct_per_day=_linear_slope_pct_per_day(readings),
-                favorable_weather_sample_count=len(favorable_readings),
-                poor_weather_sample_count=len(poor_readings),
-                favorable_weather_weight_slope_pct_per_day=_linear_slope_pct_per_day(favorable_readings)
-                if len(favorable_readings) >= 2
-                else _linear_slope_pct_per_day(readings),
-                poor_weather_weight_loss_pct=abs(min(0.0, poor_pct_change)) if poor_pct_change is not None else 0.0,
+                favorable_weather_window_count=len(favorable_daily_changes),
+                poor_weather_window_count=len(poor_daily_changes),
+                favorable_weather_weight_slope_pct_per_day=statistics.fmean(favorable_daily_changes)
+                if favorable_daily_changes
+                else 0.0,
+                poor_weather_weight_loss_pct=statistics.fmean(abs(min(0.0, change)) for change in poor_daily_changes)
+                if poor_daily_changes
+                else 0.0,
                 avg_internal_temp_f=statistics.fmean(temps),
                 internal_temp_std_f=_stddev(temps),
                 avg_brood_temp_deviation_f=statistics.fmean(abs(value - BROOD_TARGET_TEMP_F) for value in temps),
@@ -362,7 +369,10 @@ def _score_features(features: list[ColonyFeatures], settings: dict[str, float]) 
         total_weight = 0.0
 
         for metric in METRICS:
-            values = [float(getattr(peer, metric["name"])) for peer in features]
+            eligible_peers = _eligible_metric_peers(features, metric)
+            if feature not in eligible_peers or len(eligible_peers) < 2:
+                continue
+            values = [float(getattr(peer, metric["name"])) for peer in eligible_peers]
             peer_mean = statistics.fmean(values)
             peer_std = _stddev(values)
             value = float(getattr(feature, metric["name"]))
@@ -400,6 +410,14 @@ def _score_features(features: list[ColonyFeatures], settings: dict[str, float]) 
         )
 
     return scores
+
+
+def _eligible_metric_peers(features: list[ColonyFeatures], metric: dict[str, object]) -> list[ColonyFeatures]:
+    min_sample_attr = metric.get("min_sample_attr")
+    if not min_sample_attr:
+        return features
+    min_sample_count = int(metric.get("min_sample_count", 2))
+    return [feature for feature in features if getattr(feature, str(min_sample_attr)) >= min_sample_count]
 
 
 def _badness_z(value: float, peer_mean: float, peer_std: float, direction: str) -> float:
@@ -463,10 +481,23 @@ def _linear_slope_pct_per_day(readings: list[SensorReading]) -> float:
     return (_linear_slope_per_day(readings) / readings[0].weight_lb) * 100
 
 
-def _pct_change_for_readings(readings: list[SensorReading]) -> float | None:
-    if len(readings) < 2:
-        return None
-    return _pct_change(readings[0].weight_lb, readings[-1].weight_lb)
+def _daily_weight_pct_changes(
+    readings: list[SensorReading],
+    day_types: dict[date, str],
+    weather_type: str,
+) -> list[float]:
+    by_day: dict[date, list[SensorReading]] = defaultdict(list)
+    for reading in readings:
+        observed_date = reading.observed_at.date()
+        if day_types.get(observed_date) == weather_type:
+            by_day[observed_date].append(reading)
+
+    changes: list[float] = []
+    for day_readings in by_day.values():
+        ordered = sorted(day_readings, key=lambda reading: reading.timestamp)
+        if len(ordered) >= 2:
+            changes.append(_pct_change(ordered[0].weight_lb, ordered[-1].weight_lb))
+    return changes
 
 
 def _pct_change(start: float, end: float) -> float:

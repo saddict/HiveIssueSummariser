@@ -17,9 +17,19 @@
       "colony_id": "WTG_HSCHL:R",
       "hive_id": "WTG_HSCHL",
       "colony_side": "R",
-      "score": 43.6,
+      "score": 48.1,
       "status": "underperforming",
       "comparisons": [
+        {
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "value": 1.9342544109792026,
+          "peer_mean": 0.41936269106276564,
+          "peer_std": 0.6135956493730172,
+          "badness_z": 2.468876240345543,
+          "weight": 0.06,
+          "unit": "%"
+        },
         {
           "metric": "weight_pct_change",
           "label": "7-day weight percent change",
@@ -81,22 +91,12 @@
           "unit": "%"
         },
         {
-          "metric": "poor_weather_weight_loss_pct",
-          "label": "poor-weather weight loss",
-          "value": 1.2558186584982454,
-          "peer_mean": 1.1168285030348806,
-          "peer_std": 1.1306517687979452,
-          "badness_z": 0.12292923365001451,
-          "weight": 0.06,
-          "unit": "%"
-        },
-        {
           "metric": "favorable_weather_weight_slope_pct_per_day",
           "label": "favorable-weather weight percent trend",
-          "value": -0.07879171563956934,
-          "peer_mean": -0.053458972986728394,
-          "peer_std": 0.22059398135123856,
-          "badness_z": 0.11483877528147579,
+          "value": 1.4680037873623857,
+          "peer_mean": 0.4278951201729105,
+          "peer_std": 0.6043005239507664,
+          "badness_z": -1.7211778344812672,
           "weight": 0.1,
           "unit": "%/day"
         }
@@ -116,10 +116,10 @@
         "weight_pct_change": -7.256585168219002,
         "weight_slope_lb_per_day": -0.09312424057293818,
         "weight_slope_pct_per_day": -0.3563409892249572,
-        "favorable_weather_sample_count": 107,
-        "poor_weather_sample_count": 48,
-        "favorable_weather_weight_slope_pct_per_day": -0.07879171563956934,
-        "poor_weather_weight_loss_pct": 1.2558186584982454,
+        "favorable_weather_window_count": 5,
+        "poor_weather_window_count": 2,
+        "favorable_weather_weight_slope_pct_per_day": 1.4680037873623857,
+        "poor_weather_weight_loss_pct": 1.9342544109792026,
         "avg_internal_temp_f": 73.40321428571428,
         "internal_temp_std_f": 11.750027219898996,
         "avg_brood_temp_deviation_f": 21.139880952380953,
@@ -139,6 +139,7 @@
         "Weight dropped 7.3% during the window.",
         "7-day weight percent change is 1.7 standard deviations worse than peers.",
         "weight percent trend is 1.1 standard deviations worse than peers.",
+        "poor-weather weight loss is 2.5 standard deviations worse than peers.",
         "temperature instability is 1.7 standard deviations worse than peers.",
         "possible brood-temperature variation is 1.6 standard deviations worse than peers.",
         "high-humidity exposure is 1.0 standard deviations worse than peers.",
@@ -203,14 +204,14 @@
           "unit": "%"
         },
         {
-          "metric": "favorable_weather_weight_slope_pct_per_day",
-          "label": "favorable-weather weight percent trend",
-          "value": 0.06789178973791626,
-          "peer_mean": -0.053458972986728394,
-          "peer_std": 0.22059398135123856,
-          "badness_z": -0.5501091280066481,
-          "weight": 0.1,
-          "unit": "%/day"
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "value": 0.15118286559949462,
+          "peer_mean": 0.41936269106276564,
+          "peer_std": 0.6135956493730172,
+          "badness_z": -0.4370627883970524,
+          "weight": 0.06,
+          "unit": "%"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -223,14 +224,14 @@
           "unit": "%/day"
         },
         {
-          "metric": "poor_weather_weight_loss_pct",
-          "label": "poor-weather weight loss",
-          "value": 0.0,
-          "peer_mean": 1.1168285030348806,
-          "peer_std": 1.1306517687979452,
-          "badness_z": -0.9877740731987172,
-          "weight": 0.06,
-          "unit": "%"
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "value": 1.1267782072842003,
+          "peer_mean": 0.4278951201729105,
+          "peer_std": 0.6043005239507664,
+          "badness_z": -1.1565157722223476,
+          "weight": 0.1,
+          "unit": "%/day"
         }
       ],
       "feature": {
@@ -248,10 +249,10 @@
         "weight_pct_change": -1.489506496608274,
         "weight_slope_lb_per_day": 0.0028158366535320947,
         "weight_slope_pct_per_day": 0.009855342250224488,
-        "favorable_weather_sample_count": 107,
-        "poor_weather_sample_count": 48,
-        "favorable_weather_weight_slope_pct_per_day": 0.06789178973791626,
-        "poor_weather_weight_loss_pct": 0.0,
+        "favorable_weather_window_count": 5,
+        "poor_weather_window_count": 2,
+        "favorable_weather_weight_slope_pct_per_day": 1.1267782072842003,
+        "poor_weather_weight_loss_pct": 0.15118286559949462,
         "avg_internal_temp_f": 72.79142857142857,
         "internal_temp_std_f": 11.073062460082935,
         "avg_brood_temp_deviation_f": 21.716190476190476,
@@ -278,19 +279,9 @@
       "colony_id": "PRT_1:L",
       "hive_id": "PRT_1",
       "colony_side": "L",
-      "score": 22.9,
+      "score": 21.9,
       "status": "underperforming",
       "comparisons": [
-        {
-          "metric": "poor_weather_weight_loss_pct",
-          "label": "poor-weather weight loss",
-          "value": 3.3270583798977933,
-          "peer_mean": 1.1168285030348806,
-          "peer_std": 1.1306517687979452,
-          "badness_z": 1.9548281246777897,
-          "weight": 0.06,
-          "unit": "%"
-        },
         {
           "metric": "weight_pct_change",
           "label": "7-day weight percent change",
@@ -300,6 +291,16 @@
           "badness_z": 1.3289739270398353,
           "weight": 0.26,
           "unit": "%"
+        },
+        {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "value": -0.30078222202167243,
+          "peer_mean": 0.4278951201729105,
+          "peer_std": 0.6043005239507664,
+          "badness_z": 1.2058194777503615,
+          "weight": 0.1,
+          "unit": "%/day"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -312,22 +313,22 @@
           "unit": "%/day"
         },
         {
-          "metric": "favorable_weather_weight_slope_pct_per_day",
-          "label": "favorable-weather weight percent trend",
-          "value": -0.14016091374973383,
-          "peer_mean": -0.053458972986728394,
-          "peer_std": 0.22059398135123856,
-          "badness_z": 0.39303855994581804,
-          "weight": 0.1,
-          "unit": "%/day"
-        },
-        {
           "metric": "internal_humidity_std_pct",
           "label": "humidity instability",
           "value": 4.8767993764186786,
           "peer_mean": 4.498759035341135,
           "peer_std": 1.6374986670247191,
           "badness_z": 0.23086451835984104,
+          "weight": 0.06,
+          "unit": "%"
+        },
+        {
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "value": 0.5180316198361531,
+          "peer_mean": 0.41936269106276564,
+          "peer_std": 0.6135956493730172,
+          "badness_z": 0.16080447909663162,
           "weight": 0.06,
           "unit": "%"
         },
@@ -383,10 +384,10 @@
         "weight_pct_change": -6.0510322051291645,
         "weight_slope_lb_per_day": -0.08436367783910931,
         "weight_slope_pct_per_day": -0.30990427122887376,
-        "favorable_weather_sample_count": 96,
-        "poor_weather_sample_count": 60,
-        "favorable_weather_weight_slope_pct_per_day": -0.14016091374973383,
-        "poor_weather_weight_loss_pct": 3.3270583798977933,
+        "favorable_weather_window_count": 4,
+        "poor_weather_window_count": 3,
+        "favorable_weather_weight_slope_pct_per_day": -0.30078222202167243,
+        "poor_weather_weight_loss_pct": 0.5180316198361531,
         "avg_internal_temp_f": 89.69798816568048,
         "internal_temp_std_f": 1.9887394776388188,
         "avg_brood_temp_deviation_f": 4.8342011834319525,
@@ -405,7 +406,7 @@
       "flags": [
         "Weight dropped 6.1% during the window.",
         "7-day weight percent change is 1.3 standard deviations worse than peers.",
-        "poor-weather weight loss is 2.0 standard deviations worse than peers.",
+        "favorable-weather weight percent trend is 1.2 standard deviations worse than peers.",
         "Data quality: External sensor anomaly at 2026-06-11T12:00:00-04:00: external temperature 190.0 F is outside -40-130 F.",
         "Data quality: External sensor anomaly at 2026-06-11T15:00:00-04:00: external temperature 161.2 F is outside -40-130 F."
       ]
@@ -414,16 +415,16 @@
       "colony_id": "DR_WLKS:L",
       "hive_id": "DR_WLKS",
       "colony_side": "L",
-      "score": 9.3,
-      "status": "watch",
+      "score": 6.8,
+      "status": "normal",
       "comparisons": [
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
           "label": "favorable-weather weight percent trend",
-          "value": -0.3832828821633019,
-          "peer_mean": -0.053458972986728394,
-          "peer_std": 0.22059398135123856,
-          "badness_z": 1.4951627744159288,
+          "value": -0.13080294487154523,
+          "peer_mean": 0.4278951201729105,
+          "peer_std": 0.6043005239507664,
+          "badness_z": 0.9245367874113808,
           "weight": 0.1,
           "unit": "%/day"
         },
@@ -436,16 +437,6 @@
           "badness_z": 0.6377713642839824,
           "weight": 0.16,
           "unit": "%/day"
-        },
-        {
-          "metric": "poor_weather_weight_loss_pct",
-          "label": "poor-weather weight loss",
-          "value": 1.372122513539259,
-          "peer_mean": 1.1168285030348806,
-          "peer_std": 1.1306517687979452,
-          "badness_z": 0.22579366835095013,
-          "weight": 0.06,
-          "unit": "%"
         },
         {
           "metric": "weight_pct_change",
@@ -474,6 +465,16 @@
           "peer_mean": 4.498759035341135,
           "peer_std": 1.6374986670247191,
           "badness_z": -0.6078095452652481,
+          "weight": 0.06,
+          "unit": "%"
+        },
+        {
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "value": 0.0,
+          "peer_mean": 0.41936269106276564,
+          "peer_std": 0.6135956493730172,
+          "badness_z": -0.6834512133377701,
           "weight": 0.06,
           "unit": "%"
         },
@@ -513,10 +514,10 @@
         "weight_pct_change": -1.1329307802364506,
         "weight_slope_lb_per_day": -0.1093516249115645,
         "weight_slope_pct_per_day": -0.26084282565644945,
-        "favorable_weather_sample_count": 96,
-        "poor_weather_sample_count": 35,
-        "favorable_weather_weight_slope_pct_per_day": -0.3832828821633019,
-        "poor_weather_weight_loss_pct": 1.372122513539259,
+        "favorable_weather_window_count": 4,
+        "poor_weather_window_count": 2,
+        "favorable_weather_weight_slope_pct_per_day": -0.13080294487154523,
+        "poor_weather_weight_loss_pct": 0.0,
         "avg_internal_temp_f": 95.16928571428572,
         "internal_temp_std_f": 0.360376079072055,
         "avg_brood_temp_deviation_f": 0.6747619047619062,
@@ -532,24 +533,22 @@
         "cloudy_weather_reading_pct": 33.33333333333333,
         "dominant_weather_overview": "Mild and humid morning with mostly clear skies and Clear conditions."
       },
-      "flags": [
-        "favorable-weather weight percent trend is 1.5 standard deviations worse than peers."
-      ]
+      "flags": []
     },
     {
       "colony_id": "6LR:L",
       "hive_id": "6LR",
       "colony_side": "L",
-      "score": 7.8,
-      "status": "watch",
+      "score": 6.4,
+      "status": "normal",
       "comparisons": [
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
           "label": "favorable-weather weight percent trend",
-          "value": -0.3020756640926237,
-          "peer_mean": -0.053458972986728394,
-          "peer_std": 0.22059398135123856,
-          "badness_z": 1.1270329751655277,
+          "value": -0.015552864830043322,
+          "peer_mean": 0.4278951201729105,
+          "peer_std": 0.6043005239507664,
+          "badness_z": 0.7338202887924062,
           "weight": 0.1,
           "unit": "%/day"
         },
@@ -574,16 +573,6 @@
           "unit": "%"
         },
         {
-          "metric": "poor_weather_weight_loss_pct",
-          "label": "poor-weather weight loss",
-          "value": 0.703295468190488,
-          "peer_mean": 1.1168285030348806,
-          "peer_std": 1.1306517687979452,
-          "badness_z": -0.3657474796895609,
-          "weight": 0.06,
-          "unit": "%"
-        },
-        {
           "metric": "high_humidity_reading_pct",
           "label": "high-humidity exposure",
           "value": 0.0,
@@ -591,6 +580,16 @@
           "peer_std": 4.213569980585645,
           "badness_z": -0.5474093535114448,
           "weight": 0.08,
+          "unit": "%"
+        },
+        {
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "value": 0.0,
+          "peer_mean": 0.41936269106276564,
+          "peer_std": 0.6135956493730172,
+          "badness_z": -0.6834512133377701,
+          "weight": 0.06,
           "unit": "%"
         },
         {
@@ -639,10 +638,10 @@
         "weight_pct_change": -1.803136546112296,
         "weight_slope_lb_per_day": -0.13573262548498688,
         "weight_slope_pct_per_day": -0.27115525001883717,
-        "favorable_weather_sample_count": 107,
-        "poor_weather_sample_count": 48,
-        "favorable_weather_weight_slope_pct_per_day": -0.3020756640926237,
-        "poor_weather_weight_loss_pct": 0.703295468190488,
+        "favorable_weather_window_count": 5,
+        "poor_weather_window_count": 2,
+        "favorable_weather_weight_slope_pct_per_day": -0.015552864830043322,
+        "poor_weather_weight_loss_pct": 0.0,
         "avg_internal_temp_f": 92.77464285714285,
         "internal_temp_std_f": 0.8235592707565004,
         "avg_brood_temp_deviation_f": 1.7253571428571424,
@@ -658,26 +657,24 @@
         "cloudy_weather_reading_pct": 38.095238095238095,
         "dominant_weather_overview": "Mild and humid morning with mostly clear skies and Clear conditions."
       },
-      "flags": [
-        "favorable-weather weight percent trend is 1.1 standard deviations worse than peers."
-      ]
+      "flags": []
     },
     {
       "colony_id": "DR_WLKS:R",
       "hive_id": "DR_WLKS",
       "colony_side": "R",
-      "score": 5.3,
-      "status": "watch",
+      "score": 5.5,
+      "status": "normal",
       "comparisons": [
         {
-          "metric": "poor_weather_weight_loss_pct",
-          "label": "poor-weather weight loss",
-          "value": 2.2763330041532583,
-          "peer_mean": 1.1168285030348806,
-          "peer_std": 1.1306517687979452,
-          "badness_z": 1.0255186726069578,
-          "weight": 0.06,
-          "unit": "%"
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "value": -0.015891395916446276,
+          "peer_mean": 0.4278951201729105,
+          "peer_std": 0.6043005239507664,
+          "badness_z": 0.7343804919909568,
+          "weight": 0.1,
+          "unit": "%/day"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -690,14 +687,14 @@
           "unit": "%/day"
         },
         {
-          "metric": "favorable_weather_weight_slope_pct_per_day",
-          "label": "favorable-weather weight percent trend",
-          "value": -0.10541885527912125,
-          "peer_mean": -0.053458972986728394,
-          "peer_std": 0.22059398135123856,
-          "badness_z": 0.23554533072078812,
-          "weight": 0.1,
-          "unit": "%/day"
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "value": 0.6037939957965501,
+          "peer_mean": 0.41936269106276564,
+          "peer_std": 0.6135956493730172,
+          "badness_z": 0.300574661704723,
+          "weight": 0.06,
+          "unit": "%"
         },
         {
           "metric": "avg_brood_temp_deviation_f",
@@ -765,10 +762,10 @@
         "weight_pct_change": -1.5145393000738885,
         "weight_slope_lb_per_day": -0.062124321093211504,
         "weight_slope_pct_per_day": -0.20501530872462123,
-        "favorable_weather_sample_count": 96,
-        "poor_weather_sample_count": 35,
-        "favorable_weather_weight_slope_pct_per_day": -0.10541885527912125,
-        "poor_weather_weight_loss_pct": 2.2763330041532583,
+        "favorable_weather_window_count": 4,
+        "poor_weather_window_count": 2,
+        "favorable_weather_weight_slope_pct_per_day": -0.015891395916446276,
+        "poor_weather_weight_loss_pct": 0.6037939957965501,
         "avg_internal_temp_f": 85.205,
         "internal_temp_std_f": 4.667555570103049,
         "avg_brood_temp_deviation_f": 9.295,
@@ -784,9 +781,7 @@
         "cloudy_weather_reading_pct": 33.33333333333333,
         "dominant_weather_overview": "Mild and humid morning with mostly clear skies and Clear conditions."
       },
-      "flags": [
-        "poor-weather weight loss is 1.0 standard deviations worse than peers."
-      ]
+      "flags": []
     },
     {
       "colony_id": "6LR:R",
@@ -826,6 +821,16 @@
           "unit": "F"
         },
         {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "value": 0.7446511646149443,
+          "peer_mean": 0.4278951201729105,
+          "peer_std": 0.6043005239507664,
+          "badness_z": -0.5241697332498765,
+          "weight": 0.1,
+          "unit": "%/day"
+        },
+        {
           "metric": "high_humidity_reading_pct",
           "label": "high-humidity exposure",
           "value": 0.0,
@@ -839,9 +844,9 @@
           "metric": "poor_weather_weight_loss_pct",
           "label": "poor-weather weight loss",
           "value": 0.0,
-          "peer_mean": 1.1168285030348806,
-          "peer_std": 1.1306517687979452,
-          "badness_z": -0.9877740731987172,
+          "peer_mean": 0.41936269106276564,
+          "peer_std": 0.6135956493730172,
+          "badness_z": -0.6834512133377701,
           "weight": 0.06,
           "unit": "%"
         },
@@ -864,16 +869,6 @@
           "badness_z": -1.306954215099251,
           "weight": 0.16,
           "unit": "%/day"
-        },
-        {
-          "metric": "favorable_weather_weight_slope_pct_per_day",
-          "label": "favorable-weather weight percent trend",
-          "value": 0.26807953147734137,
-          "peer_mean": -0.053458972986728394,
-          "peer_std": 0.22059398135123856,
-          "badness_z": -1.457603251432791,
-          "weight": 0.1,
-          "unit": "%/day"
         }
       ],
       "feature": {
@@ -891,9 +886,9 @@
         "weight_pct_change": 1.973854631017101,
         "weight_slope_lb_per_day": 0.06516829763869021,
         "weight_slope_pct_per_day": 0.17522462285844403,
-        "favorable_weather_sample_count": 107,
-        "poor_weather_sample_count": 48,
-        "favorable_weather_weight_slope_pct_per_day": 0.26807953147734137,
+        "favorable_weather_window_count": 5,
+        "poor_weather_window_count": 2,
+        "favorable_weather_weight_slope_pct_per_day": 0.7446511646149443,
         "poor_weather_weight_loss_pct": 0.0,
         "avg_internal_temp_f": 87.49785714285714,
         "internal_temp_std_f": 3.701653450190351,
@@ -930,6 +925,16 @@
           "unit": "F"
         },
         {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "value": 0.5467572297614609,
+          "peer_mean": 0.4278951201729105,
+          "peer_std": 0.6043005239507664,
+          "badness_z": -0.19669370599161415,
+          "weight": 0.1,
+          "unit": "%/day"
+        },
+        {
           "metric": "avg_brood_temp_deviation_f",
           "label": "possible brood-temperature variation",
           "value": 6.2853254437869825,
@@ -938,6 +943,16 @@
           "badness_z": -0.36932597777347276,
           "weight": 0.13,
           "unit": "F"
+        },
+        {
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "value": 0.14763863629072463,
+          "peer_mean": 0.41936269106276564,
+          "peer_std": 0.6135956493730172,
+          "badness_z": -0.44283895273653484,
+          "weight": 0.06,
+          "unit": "%"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -960,16 +975,6 @@
           "unit": "%"
         },
         {
-          "metric": "poor_weather_weight_loss_pct",
-          "label": "poor-weather weight loss",
-          "value": 0.0,
-          "peer_mean": 1.1168285030348806,
-          "peer_std": 1.1306517687979452,
-          "badness_z": -0.9877740731987172,
-          "weight": 0.06,
-          "unit": "%"
-        },
-        {
           "metric": "weight_pct_change",
           "label": "7-day weight percent change",
           "value": 2.1969933856936645,
@@ -978,16 +983,6 @@
           "badness_z": -1.3019192555412282,
           "weight": 0.26,
           "unit": "%"
-        },
-        {
-          "metric": "favorable_weather_weight_slope_pct_per_day",
-          "label": "favorable-weather weight percent trend",
-          "value": 0.24608692581526526,
-          "peer_mean": -0.053458972986728394,
-          "peer_std": 0.22059398135123856,
-          "badness_z": -1.3579060360900994,
-          "weight": 0.1,
-          "unit": "%/day"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -1021,10 +1016,10 @@
         "weight_pct_change": 2.1969933856936645,
         "weight_slope_lb_per_day": 0.10249388451640461,
         "weight_slope_pct_per_day": 0.2755001399124379,
-        "favorable_weather_sample_count": 96,
-        "poor_weather_sample_count": 60,
-        "favorable_weather_weight_slope_pct_per_day": 0.24608692581526526,
-        "poor_weather_weight_loss_pct": 0.0,
+        "favorable_weather_window_count": 4,
+        "poor_weather_window_count": 3,
+        "favorable_weather_weight_slope_pct_per_day": 0.5467572297614609,
+        "poor_weather_weight_loss_pct": 0.14763863629072463,
         "avg_internal_temp_f": 88.36662721893491,
         "internal_temp_std_f": 4.991443434444503,
         "avg_brood_temp_deviation_f": 6.2853254437869825,
