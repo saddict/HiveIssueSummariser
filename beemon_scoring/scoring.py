@@ -16,18 +16,18 @@ RAINY_WEATHER_CODES = {51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 8
 
 METRICS = [
     {
-        "name": "weight_delta_lb",
-        "label": "7-day weight change",
+        "name": "weight_pct_change",
+        "label": "7-day weight percent change",
         "direction": "higher_is_better",
         "weight": 0.34,
-        "unit": "lb",
+        "unit": "%",
     },
     {
-        "name": "weight_slope_lb_per_day",
-        "label": "weight trend",
+        "name": "weight_slope_pct_per_day",
+        "label": "weight percent trend",
         "direction": "higher_is_better",
         "weight": 0.22,
-        "unit": "lb/day",
+        "unit": "%/day",
     },
     {
         "name": "internal_temp_std_f",
@@ -150,6 +150,7 @@ def _build_features(
                 weight_delta_lb=last.weight_lb - first.weight_lb,
                 weight_pct_change=_pct_change(first.weight_lb, last.weight_lb),
                 weight_slope_lb_per_day=_linear_slope_per_day(readings),
+                weight_slope_pct_per_day=_linear_slope_pct_per_day(readings),
                 avg_internal_temp_f=statistics.fmean(temps),
                 internal_temp_std_f=_stddev(temps),
                 avg_brood_temp_deviation_f=statistics.fmean(abs(value - BROOD_TARGET_TEMP_F) for value in temps),
@@ -275,6 +276,12 @@ def _linear_slope_per_day(readings: list[SensorReading]) -> float:
     if denominator == 0:
         return 0.0
     return numerator / denominator
+
+
+def _linear_slope_pct_per_day(readings: list[SensorReading]) -> float:
+    if not readings or readings[0].weight_lb == 0:
+        return 0.0
+    return (_linear_slope_per_day(readings) / readings[0].weight_lb) * 100
 
 
 def _pct_change(start: float, end: float) -> float:

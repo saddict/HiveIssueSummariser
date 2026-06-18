@@ -14,9 +14,19 @@
       "colony_id": "WTG_HSCHL:R",
       "hive_id": "WTG_HSCHL",
       "colony_side": "R",
-      "score": 45.4,
+      "score": 51.1,
       "status": "underperforming",
       "comparisons": [
+        {
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "value": -7.256585168219002,
+          "peer_mean": -1.8846103099585387,
+          "peer_std": 3.1350666934835503,
+          "badness_z": 1.7135121461455602,
+          "weight": 0.34,
+          "unit": "%"
+        },
         {
           "metric": "internal_temp_std_f",
           "label": "temperature instability",
@@ -38,16 +48,6 @@
           "unit": "F"
         },
         {
-          "metric": "weight_delta_lb",
-          "label": "7-day weight change",
-          "value": -1.8963970000000003,
-          "peer_mean": -0.5317826250000004,
-          "peer_std": 0.9142174748474696,
-          "badness_z": 1.4926583800289703,
-          "weight": 0.34,
-          "unit": "lb"
-        },
-        {
           "metric": "internal_humidity_std_pct",
           "label": "humidity instability",
           "value": 6.435394499700857,
@@ -58,6 +58,16 @@
           "unit": "%"
         },
         {
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "value": -0.3563409892249572,
+          "peer_mean": -0.11783481747907905,
+          "peer_std": 0.22423083911571295,
+          "badness_z": 1.0636635562104753,
+          "weight": 0.22,
+          "unit": "%/day"
+        },
+        {
           "metric": "high_humidity_reading_pct",
           "label": "high-humidity exposure",
           "value": 6.547619047619048,
@@ -66,16 +76,6 @@
           "badness_z": 1.0065268758113664,
           "weight": 0.08,
           "unit": "%"
-        },
-        {
-          "metric": "weight_slope_lb_per_day",
-          "label": "weight trend",
-          "value": -0.09312424057293818,
-          "peer_mean": -0.03927730888664793,
-          "peer_std": 0.08096919588136303,
-          "badness_z": 0.6650298437591917,
-          "weight": 0.22,
-          "unit": "lb/day"
         }
       ],
       "feature": {
@@ -90,6 +90,7 @@
         "weight_delta_lb": -1.8963970000000003,
         "weight_pct_change": -7.256585168219002,
         "weight_slope_lb_per_day": -0.09312424057293818,
+        "weight_slope_pct_per_day": -0.3563409892249572,
         "avg_internal_temp_f": 73.40321428571428,
         "internal_temp_std_f": 11.750027219898996,
         "avg_brood_temp_deviation_f": 21.139880952380953,
@@ -107,7 +108,8 @@
       },
       "flags": [
         "Weight dropped 7.3% during the window.",
-        "7-day weight change is 1.5 standard deviations worse than peers.",
+        "7-day weight percent change is 1.7 standard deviations worse than peers.",
+        "weight percent trend is 1.1 standard deviations worse than peers.",
         "temperature instability is 1.7 standard deviations worse than peers.",
         "possible brood-temperature variation is 1.6 standard deviations worse than peers.",
         "high-humidity exposure is 1.0 standard deviations worse than peers.",
@@ -162,24 +164,24 @@
           "unit": "F"
         },
         {
-          "metric": "weight_delta_lb",
-          "label": "7-day weight change",
-          "value": -0.425576999999997,
-          "peer_mean": -0.5317826250000004,
-          "peer_std": 0.9142174748474696,
-          "badness_z": -0.11617107299083626,
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "value": -1.489506496608274,
+          "peer_mean": -1.8846103099585387,
+          "peer_std": 3.1350666934835503,
+          "badness_z": -0.12602724343042362,
           "weight": 0.34,
-          "unit": "lb"
+          "unit": "%"
         },
         {
-          "metric": "weight_slope_lb_per_day",
-          "label": "weight trend",
-          "value": 0.0028158366535320947,
-          "peer_mean": -0.03927730888664793,
-          "peer_std": 0.08096919588136303,
-          "badness_z": -0.519866167398468,
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "value": 0.009855342250224488,
+          "peer_mean": -0.11783481747907905,
+          "peer_std": 0.22423083911571295,
+          "badness_z": -0.5694585108492137,
           "weight": 0.22,
-          "unit": "lb/day"
+          "unit": "%/day"
         }
       ],
       "feature": {
@@ -194,6 +196,7 @@
         "weight_delta_lb": -0.425576999999997,
         "weight_pct_change": -1.489506496608274,
         "weight_slope_lb_per_day": 0.0028158366535320947,
+        "weight_slope_pct_per_day": 0.009855342250224488,
         "avg_internal_temp_f": 72.79142857142857,
         "internal_temp_std_f": 11.073062460082935,
         "avg_brood_temp_deviation_f": 21.716190476190476,
@@ -220,28 +223,28 @@
       "colony_id": "PRT_1:L",
       "hive_id": "PRT_1",
       "colony_side": "L",
-      "score": 19.3,
+      "score": 22.9,
       "status": "watch",
       "comparisons": [
         {
-          "metric": "weight_delta_lb",
-          "label": "7-day weight change",
-          "value": -1.6472419999999985,
-          "peer_mean": -0.5317826250000004,
-          "peer_std": 0.9142174748474696,
-          "badness_z": 1.2201247577181833,
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "value": -6.0510322051291645,
+          "peer_mean": -1.8846103099585387,
+          "peer_std": 3.1350666934835503,
+          "badness_z": 1.3289739270398353,
           "weight": 0.34,
-          "unit": "lb"
+          "unit": "%"
         },
         {
-          "metric": "weight_slope_lb_per_day",
-          "label": "weight trend",
-          "value": -0.08436367783910931,
-          "peer_mean": -0.03927730888664793,
-          "peer_std": 0.08096919588136303,
-          "badness_z": 0.5568336014911451,
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "value": -0.30990427122887376,
+          "peer_mean": -0.11783481747907905,
+          "peer_std": 0.22423083911571295,
+          "badness_z": 0.8565701957288687,
           "weight": 0.22,
-          "unit": "lb/day"
+          "unit": "%/day"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -296,6 +299,7 @@
         "weight_delta_lb": -1.6472419999999985,
         "weight_pct_change": -6.0510322051291645,
         "weight_slope_lb_per_day": -0.08436367783910931,
+        "weight_slope_pct_per_day": -0.30990427122887376,
         "avg_internal_temp_f": 89.69798816568048,
         "internal_temp_std_f": 1.9887394776388188,
         "avg_brood_temp_deviation_f": 4.8342011834319525,
@@ -313,35 +317,35 @@
       },
       "flags": [
         "Weight dropped 6.1% during the window.",
-        "7-day weight change is 1.2 standard deviations worse than peers."
+        "7-day weight percent change is 1.3 standard deviations worse than peers."
       ]
     },
     {
       "colony_id": "6LR:L",
       "hive_id": "6LR",
       "colony_side": "L",
-      "score": 14.0,
-      "status": "watch",
+      "score": 5.3,
+      "status": "normal",
       "comparisons": [
         {
-          "metric": "weight_slope_lb_per_day",
-          "label": "weight trend",
-          "value": -0.13573262548498688,
-          "peer_mean": -0.03927730888664793,
-          "peer_std": 0.08096919588136303,
-          "badness_z": 1.1912594110440018,
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "value": -0.27115525001883717,
+          "peer_mean": -0.11783481747907905,
+          "peer_std": 0.22423083911571295,
+          "badness_z": 0.6837615786677678,
           "weight": 0.22,
-          "unit": "lb/day"
+          "unit": "%/day"
         },
         {
-          "metric": "weight_delta_lb",
-          "label": "7-day weight change",
-          "value": -0.9025990000000021,
-          "peer_mean": -0.5317826250000004,
-          "peer_std": 0.9142174748474696,
-          "badness_z": 0.40561068367443937,
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "value": -1.803136546112296,
+          "peer_mean": -1.8846103099585387,
+          "peer_std": 3.1350666934835503,
+          "badness_z": -0.025987888556116397,
           "weight": 0.34,
-          "unit": "lb"
+          "unit": "%"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -396,6 +400,7 @@
         "weight_delta_lb": -0.9025990000000021,
         "weight_pct_change": -1.803136546112296,
         "weight_slope_lb_per_day": -0.13573262548498688,
+        "weight_slope_pct_per_day": -0.27115525001883717,
         "avg_internal_temp_f": 92.77464285714285,
         "internal_temp_std_f": 0.8235592707565004,
         "avg_brood_temp_deviation_f": 1.7253571428571424,
@@ -411,36 +416,34 @@
         "cloudy_weather_reading_pct": 38.095238095238095,
         "dominant_weather_overview": "Mild and humid morning with mostly clear skies and Clear conditions."
       },
-      "flags": [
-        "weight trend is 1.2 standard deviations worse than peers."
-      ]
+      "flags": []
     },
     {
       "colony_id": "DR_WLKS:L",
       "hive_id": "DR_WLKS",
       "colony_side": "L",
-      "score": 6.7,
+      "score": 4.9,
       "status": "normal",
       "comparisons": [
         {
-          "metric": "weight_slope_lb_per_day",
-          "label": "weight trend",
-          "value": -0.1093516249115645,
-          "peer_mean": -0.03927730888664793,
-          "peer_std": 0.08096919588136303,
-          "badness_z": 0.8654441391216264,
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "value": -0.26084282565644945,
+          "peer_mean": -0.11783481747907905,
+          "peer_std": 0.22423083911571295,
+          "badness_z": 0.6377713642839824,
           "weight": 0.22,
-          "unit": "lb/day"
+          "unit": "%/day"
         },
         {
-          "metric": "weight_delta_lb",
-          "label": "7-day weight change",
-          "value": -0.4749520000000018,
-          "peer_mean": -0.5317826250000004,
-          "peer_std": 0.9142174748474696,
-          "badness_z": -0.062163135756599215,
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "value": -1.1329307802364506,
+          "peer_mean": -1.8846103099585387,
+          "peer_std": 3.1350666934835503,
+          "badness_z": -0.2397650841956585,
           "weight": 0.34,
-          "unit": "lb"
+          "unit": "%"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -495,6 +498,7 @@
         "weight_delta_lb": -0.4749520000000018,
         "weight_pct_change": -1.1329307802364506,
         "weight_slope_lb_per_day": -0.1093516249115645,
+        "weight_slope_pct_per_day": -0.26084282565644945,
         "avg_internal_temp_f": 95.16928571428572,
         "internal_temp_std_f": 0.360376079072055,
         "avg_brood_temp_deviation_f": 0.6747619047619062,
@@ -516,18 +520,18 @@
       "colony_id": "DR_WLKS:R",
       "hive_id": "DR_WLKS",
       "colony_side": "R",
-      "score": 2.3,
+      "score": 3.1,
       "status": "normal",
       "comparisons": [
         {
-          "metric": "weight_slope_lb_per_day",
-          "label": "weight trend",
-          "value": -0.062124321093211504,
-          "peer_mean": -0.03927730888664793,
-          "peer_std": 0.08096919588136303,
-          "badness_z": 0.2821691874035561,
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "value": -0.20501530872462123,
+          "peer_mean": -0.11783481747907905,
+          "peer_std": 0.22423083911571295,
+          "badness_z": 0.38879795299054837,
           "weight": 0.22,
-          "unit": "lb/day"
+          "unit": "%/day"
         },
         {
           "metric": "avg_brood_temp_deviation_f",
@@ -550,14 +554,14 @@
           "unit": "F"
         },
         {
-          "metric": "weight_delta_lb",
-          "label": "7-day weight change",
-          "value": -0.4589400000000019,
-          "peer_mean": -0.5317826250000004,
-          "peer_std": 0.9142174748474696,
-          "badness_z": -0.07967756797927292,
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "value": -1.5145393000738885,
+          "peer_mean": -1.8846103099585387,
+          "peer_std": 3.1350666934835503,
+          "badness_z": -0.1180424680131584,
           "weight": 0.34,
-          "unit": "lb"
+          "unit": "%"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -592,6 +596,7 @@
         "weight_delta_lb": -0.4589400000000019,
         "weight_pct_change": -1.5145393000738885,
         "weight_slope_lb_per_day": -0.062124321093211504,
+        "weight_slope_pct_per_day": -0.20501530872462123,
         "avg_internal_temp_f": 85.205,
         "internal_temp_std_f": 4.667555570103049,
         "avg_brood_temp_deviation_f": 9.295,
@@ -657,24 +662,24 @@
           "unit": "%"
         },
         {
-          "metric": "weight_slope_lb_per_day",
-          "label": "weight trend",
-          "value": 0.06516829763869021,
-          "peer_mean": -0.03927730888664793,
-          "peer_std": 0.08096919588136303,
-          "badness_z": -1.2899424946540534,
-          "weight": 0.22,
-          "unit": "lb/day"
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "value": 1.973854631017101,
+          "peer_mean": -1.8846103099585387,
+          "peer_std": 3.1350666934835503,
+          "badness_z": -1.2307441334488105,
+          "weight": 0.34,
+          "unit": "%"
         },
         {
-          "metric": "weight_delta_lb",
-          "label": "7-day weight change",
-          "value": 0.734102,
-          "peer_mean": -0.5317826250000004,
-          "peer_std": 0.9142174748474696,
-          "badness_z": -1.3846646556512212,
-          "weight": 0.34,
-          "unit": "lb"
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "value": 0.17522462285844403,
+          "peer_mean": -0.11783481747907905,
+          "peer_std": 0.22423083911571295,
+          "badness_z": -1.306954215099251,
+          "weight": 0.22,
+          "unit": "%/day"
         }
       ],
       "feature": {
@@ -689,6 +694,7 @@
         "weight_delta_lb": 0.734102,
         "weight_pct_change": 1.973854631017101,
         "weight_slope_lb_per_day": 0.06516829763869021,
+        "weight_slope_pct_per_day": 0.17522462285844403,
         "avg_internal_temp_f": 87.49785714285714,
         "internal_temp_std_f": 3.701653450190351,
         "avg_brood_temp_deviation_f": 7.016190476190476,
@@ -754,24 +760,24 @@
           "unit": "%"
         },
         {
-          "metric": "weight_delta_lb",
-          "label": "7-day weight change",
-          "value": 0.8173439999999985,
-          "peer_mean": -0.5317826250000004,
-          "peer_std": 0.9142174748474696,
-          "badness_z": -1.4757173890436635,
+          "metric": "weight_pct_change",
+          "label": "7-day weight percent change",
+          "value": 2.1969933856936645,
+          "peer_mean": -1.8846103099585387,
+          "peer_std": 3.1350666934835503,
+          "badness_z": -1.3019192555412282,
           "weight": 0.34,
-          "unit": "lb"
+          "unit": "%"
         },
         {
-          "metric": "weight_slope_lb_per_day",
-          "label": "weight trend",
-          "value": 0.10249388451640461,
-          "peer_mean": -0.03927730888664793,
-          "peer_std": 0.08096919588136303,
-          "badness_z": -1.7509275207669999,
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "value": 0.2755001399124379,
+          "peer_mean": -0.11783481747907905,
+          "peer_std": 0.22423083911571295,
+          "badness_z": -1.7541519219331771,
           "weight": 0.22,
-          "unit": "lb/day"
+          "unit": "%/day"
         }
       ],
       "feature": {
@@ -786,6 +792,7 @@
         "weight_delta_lb": 0.8173439999999985,
         "weight_pct_change": 2.1969933856936645,
         "weight_slope_lb_per_day": 0.10249388451640461,
+        "weight_slope_pct_per_day": 0.2755001399124379,
         "avg_internal_temp_f": 88.36662721893491,
         "internal_temp_std_f": 4.991443434444503,
         "avg_brood_temp_deviation_f": 6.2853254437869825,

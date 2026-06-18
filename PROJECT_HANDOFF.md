@@ -122,8 +122,8 @@ DR_WLKS:L, DR_WLKS:R, 6LR:L, 6LR:R, PRT_1:L, PRT_1:R, WTG_HSCHL:L, WTG_HSCHL:R
 
 Current weighted scoring drivers:
 
-- 7-day weight change
-- weight trend
+- 7-day weight percent change
+- weight percent trend
 - internal temperature instability
 - possible brood-temperature variation from 94.5 F
 - high-humidity exposure
@@ -139,7 +139,7 @@ Top concern from that run:
 
 ```text
 WTG_HSCHL:R - underperforming
-Main drivers: temperature instability, possible brood-temperature variation, and 7-day weight loss.
+Main drivers: 7-day weight percent change, temperature instability, and possible brood-temperature variation.
 ```
 
 Second concern:
@@ -157,4 +157,4 @@ A raw sensor anomaly was observed in `PRT_1`: external device temperature `tE` i
 2. Add a combined refresh command that runs DynamoDB fetch, Open-Meteo fetch, scoring, and JSON output in one step.
 3. Add tests for parsing DynamoDB AttributeValue JSON and Open-Meteo CSV generation using `local_data/` only.
 4. Consider renaming code concepts from `hive_id` to `site_id` internally while preserving CSV compatibility.
-5. Add weather-adjusted scoring features more directly, such as weight change during favorable vs rainy windows.
+5. Add weather-adjusted scoring features more directly, such as weight percent change during favorable vs rainy windows.

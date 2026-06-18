@@ -174,11 +174,11 @@ For each colony, it builds features over the configured rolling window, currentl
 
 The scorer measures:
 
-- total weight change over the window
-- linear weight trend in pounds per day
-- percent weight change
+- total percent weight change over the window
+- linear percent weight trend per day
+- absolute pound change for display context only
 
-A colony losing more weight than peers during the same regional window is treated as more concerning.
+A colony losing a larger percentage of its starting weight than peers during the same regional window is treated as more concerning.
 
 ### Temperature Instability
 
@@ -224,7 +224,7 @@ High-humidity exposure and unstable humidity are treated as concerning only when
 
 Weather is used as site-level context. The report includes weather averages such as average outside temperature and rainy-reading percentage.
 
-The current MVP does not yet fully weather-adjust every scoring metric. It mainly uses weather to make the natural-language report more informative and to ensure each site has matching regional context. A recommended next step is to add stronger weather-adjusted features, such as comparing weight gain during favorable vs rainy periods.
+The current MVP does not yet fully weather-adjust every scoring metric. It mainly uses weather to make the natural-language report more informative and to ensure each site has matching regional context. A recommended next step is to add stronger weather-adjusted features, such as comparing weight percent change during favorable vs rainy periods.
 
 ## Peer Comparison
 
@@ -236,7 +236,7 @@ For each metric, it calculates a peer average and peer standard deviation across
 badness z-score = how much worse this colony is than the peer average
 ```
 
-For metrics where higher is better, such as weight gain, lower values are worse.
+For metrics where higher is better, such as weight percent change, lower values are worse.
 
 For metrics where lower is better, such as instability or high-humidity exposure, higher values are worse.
 
@@ -249,8 +249,8 @@ The scoring engine combines weighted metric badness into an underperformance sco
 Current weighted drivers:
 
 ```text
-34%  7-day weight change
-22%  weight trend
+34%  7-day weight percent change
+22%  weight percent trend
 16%  temperature instability
 14%  possible brood-temperature variation
 8%   high-humidity exposure

@@ -56,6 +56,7 @@ class ColonyFeatures:
     weight_delta_lb: float
     weight_pct_change: float
     weight_slope_lb_per_day: float
+    weight_slope_pct_per_day: float
     avg_internal_temp_f: float
     internal_temp_std_f: float
     avg_brood_temp_deviation_f: float
