@@ -38,7 +38,7 @@ METRICS = [
     },
     {
         "name": "avg_brood_temp_deviation_f",
-        "label": "brood-temperature deviation",
+        "label": "possible brood-temperature variation",
         "direction": "lower_is_better",
         "weight": 0.14,
         "unit": "F",

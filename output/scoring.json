@@ -29,7 +29,7 @@
         },
         {
           "metric": "avg_brood_temp_deviation_f",
-          "label": "brood-temperature deviation",
+          "label": "possible brood-temperature variation",
           "value": 21.139880952380953,
           "peer_mean": 9.085863447449986,
           "peer_std": 7.58283514348596,
@@ -109,7 +109,7 @@
         "Weight dropped 7.3% during the window.",
         "7-day weight change is 1.5 standard deviations worse than peers.",
         "temperature instability is 1.7 standard deviations worse than peers.",
-        "brood-temperature deviation is 1.6 standard deviations worse than peers.",
+        "possible brood-temperature variation is 1.6 standard deviations worse than peers.",
         "high-humidity exposure is 1.0 standard deviations worse than peers.",
         "humidity instability is 1.2 standard deviations worse than peers."
       ]
@@ -133,7 +133,7 @@
         },
         {
           "metric": "avg_brood_temp_deviation_f",
-          "label": "brood-temperature deviation",
+          "label": "possible brood-temperature variation",
           "value": 21.716190476190476,
           "peer_mean": 9.085863447449986,
           "peer_std": 7.58283514348596,
@@ -211,7 +211,7 @@
       },
       "flags": [
         "temperature instability is 1.5 standard deviations worse than peers.",
-        "brood-temperature deviation is 1.7 standard deviations worse than peers.",
+        "possible brood-temperature variation is 1.7 standard deviations worse than peers.",
         "high-humidity exposure is 2.3 standard deviations worse than peers.",
         "humidity instability is 1.6 standard deviations worse than peers."
       ]
@@ -265,7 +265,7 @@
         },
         {
           "metric": "avg_brood_temp_deviation_f",
-          "label": "brood-temperature deviation",
+          "label": "possible brood-temperature variation",
           "value": 4.8342011834319525,
           "peer_mean": 9.085863447449986,
           "peer_std": 7.58283514348596,
@@ -355,7 +355,7 @@
         },
         {
           "metric": "avg_brood_temp_deviation_f",
-          "label": "brood-temperature deviation",
+          "label": "possible brood-temperature variation",
           "value": 1.7253571428571424,
           "peer_mean": 9.085863447449986,
           "peer_std": 7.58283514348596,
@@ -464,7 +464,7 @@
         },
         {
           "metric": "avg_brood_temp_deviation_f",
-          "label": "brood-temperature deviation",
+          "label": "possible brood-temperature variation",
           "value": 0.6747619047619062,
           "peer_mean": 9.085863447449986,
           "peer_std": 7.58283514348596,
@@ -531,7 +531,7 @@
         },
         {
           "metric": "avg_brood_temp_deviation_f",
-          "label": "brood-temperature deviation",
+          "label": "possible brood-temperature variation",
           "value": 9.295,
           "peer_mean": 9.085863447449986,
           "peer_std": 7.58283514348596,
@@ -628,7 +628,7 @@
         },
         {
           "metric": "avg_brood_temp_deviation_f",
-          "label": "brood-temperature deviation",
+          "label": "possible brood-temperature variation",
           "value": 7.016190476190476,
           "peer_mean": 9.085863447449986,
           "peer_std": 7.58283514348596,
@@ -725,7 +725,7 @@
         },
         {
           "metric": "avg_brood_temp_deviation_f",
-          "label": "brood-temperature deviation",
+          "label": "possible brood-temperature variation",
           "value": 6.2853254437869825,
           "peer_mean": 9.085863447449986,
           "peer_std": 7.58283514348596,

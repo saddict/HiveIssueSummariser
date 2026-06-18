@@ -20,6 +20,20 @@ local_data/openmeteo/{site_id}_data.csv
 
 This lets tests and scoring runs work without fetching from DynamoDB or Open-Meteo every time.
 
+## Run Everything
+
+Refresh live data, regenerate JSON, and print the score report:
+
+```bash
+python3 refresh_and_score.py
+```
+
+Run the same pipeline without fetching live data:
+
+```bash
+python3 refresh_and_score.py --skip-fetch
+```
+
 ## Run Offline Scoring
 
 ```bash
@@ -72,7 +86,7 @@ Current weighted drivers:
 - 7-day weight change
 - weight trend
 - internal temperature instability
-- brood-temperature deviation from 94.5 F
+- possible brood-temperature variation from 94.5 F
 - high-humidity exposure
 - humidity instability
 

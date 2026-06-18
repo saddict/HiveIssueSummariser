@@ -84,6 +84,21 @@ Fields match the original provided weather CSV shape:
 hive_id,latitude,longitude,date,clock_time,temperature_F,pressure_hPa,cloudiness_percent,humidity_percent,weather_condition_code,weather_overview
 ```
 
+## One-command pipeline
+
+Refresh live data, regenerate JSON, and print the score report:
+
+```bash
+cd /home/singhav/beemon-scoring
+python3 refresh_and_score.py
+```
+
+Run the same pipeline from cached local data only:
+
+```bash
+python3 refresh_and_score.py --skip-fetch
+```
+
 ## Scoring
 
 Run offline text report:
@@ -110,7 +125,7 @@ Current weighted scoring drivers:
 - 7-day weight change
 - weight trend
 - internal temperature instability
-- brood-temperature deviation from 94.5 F
+- possible brood-temperature variation from 94.5 F
 - high-humidity exposure
 - humidity instability
 
@@ -124,14 +139,14 @@ Top concern from that run:
 
 ```text
 WTG_HSCHL:R - underperforming
-Main drivers: temperature instability, brood-temperature deviation, and 7-day weight loss.
+Main drivers: temperature instability, possible brood-temperature variation, and 7-day weight loss.
 ```
 
 Second concern:
 
 ```text
 WTG_HSCHL:L - underperforming
-Main drivers: high-humidity exposure, brood-temperature deviation, and humidity instability.
+Main drivers: high-humidity exposure, possible brood-temperature variation, and humidity instability.
 ```
 
 A raw sensor anomaly was observed in `PRT_1`: external device temperature `tE` included very high values such as `190.04 F`. The current scoring relies on Open-Meteo for weather context, so that external sensor anomaly does not drive weather normalization, but it may be worth validating later.
