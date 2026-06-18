@@ -177,17 +177,24 @@ Reason: the current scoring uses Open-Meteo for weather context, so bad external
 The scorer compares these peer-relative metrics:
 
 ```text
-26%  7-day weight percent change
-16%  weight percent trend
-10%  favorable-weather weight percent trend
-6%   poor-weather weight loss
-15%  temperature instability
-13%  possible brood-temperature variation
-8%   high-humidity exposure
-6%   humidity instability
+30%  current colony weight
+17%  7-day weight percent change
+9%   weight percent trend
+6%   favorable-weather weight percent trend
+4%   poor-weather weight loss
+13%  temperature instability
+10%  possible brood-temperature variation
+6%   high-humidity exposure
+5%   humidity instability
 ```
 
 The weights add up to 100%.
+
+### Current Colony Weight
+
+This is the latest valid colony weight in pounds. It is treated as a current strength signal: a heavier colony is generally doing better right now than a much lighter sister colony or regional peer.
+
+This metric does not replace weight loss metrics. Instead, it gives the scorer a baseline for how strong the colony is now, while percent change and trend explain whether that strength is improving or declining.
 
 ### Weight Percent Change
 
@@ -319,6 +326,8 @@ Main drivers: poor-weather weight loss, 7-day weight percent change, temperature
 
 There are also `PRT_1` external temperature anomalies, including values around `190 F`. These are reported as data-quality notes but do not remove colony readings.
 
+The same cached sister-colony output now marks `6LR:R` as mildly weaker than `6LR:L`. The reason is current colony weight: `6LR:L` is much heavier at `49.15 lb` versus `37.93 lb` for `6LR:R`, so the right side is treated as weaker even though the left side had the worse recent 7-day percentage movement. The summary also warns that the left colony has a significant negative weight trend, so that decline should still be watched.
+
 ## 12. Sister-Colony Same-Site Output
 
 Regional peer scoring answers this question:
@@ -347,9 +356,11 @@ Implementation details:
 2. `beemon_scoring/sister_comparison.py` groups the `ColonyScore` objects by site ID.
 3. For each site, it expects one `L` score and one `R` score.
 4. For every scoring metric, it checks which side is worse.
-5. It scales the raw L-vs-R difference by the regional metric standard deviation, so tiny differences do not dominate.
-6. It produces one sister score for L and one for R.
-7. The side with the larger sister score is labeled mildly or notably weaker.
+5. Current colony weight is one of those metrics, so a much lighter side is treated as weaker even if its recent percentage drop is smaller.
+6. If the heavier side has a significant negative weight trend, the natural-language summary calls that out separately so that decline is not hidden.
+7. It scales the raw L-vs-R difference by the regional metric standard deviation, so tiny differences do not dominate.
+8. It produces one sister score for L and one for R.
+9. The side with the larger sister score is labeled mildly or notably weaker.
 
 The separate output file is:
 

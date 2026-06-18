@@ -195,13 +195,16 @@ For each colony, it builds features over the configured rolling window, currentl
 
 The scorer measures:
 
+- current colony weight from the latest valid reading
 - total percent weight change over the window
 - linear percent weight trend per day
 - average favorable-day percent weight change
 - average poor-day percent weight loss
 - absolute pound change for display context only
 
-A colony losing a larger percentage of its starting weight than peers during the same regional window is treated as more concerning.
+Current weight is a primary strength signal. A heavier colony is generally doing better right now than a much lighter sister colony or regional peer, while the percent-change and trend metrics explain whether that strength is improving or declining.
+
+A colony losing a larger percentage of its starting weight than peers during the same regional window is still treated as more concerning, especially when current weight is also weak.
 
 ### Temperature Instability
 
@@ -272,7 +275,7 @@ This output answers a different question from regional peer scoring:
 Is one side of this same site weaker than its sister colony?
 ```
 
-For each metric, it checks which side is worse. The raw L-vs-R difference is scaled by the regional metric spread so tiny differences do not dominate the report. The result is a separate sister score for L and R at each site.
+For each metric, it checks which side is worse. The raw L-vs-R difference is scaled by the regional metric spread so tiny differences do not dominate the report. Current colony weight is included as a primary same-site strength signal, so a much lighter sister colony is treated as weaker even if its recent percentage drop is smaller. If the heavier side has a significant negative weight trend, the summary calls that out separately so the decline is still visible. The result is a separate sister score for L and R at each site.
 
 This report is useful because both colonies at the same site share the same device location and site-level weather, so differences between them can highlight colony-specific issues that regional scoring may hide.
 
@@ -286,7 +289,7 @@ For each metric, it calculates a peer average and peer standard deviation across
 badness z-score = how much worse this colony is than the peer average
 ```
 
-For metrics where higher is better, such as weight percent change, lower values are worse.
+For metrics where higher is better, such as current colony weight or weight percent change, lower values are worse.
 
 For metrics where lower is better, such as instability or high-humidity exposure, higher values are worse.
 
@@ -299,14 +302,15 @@ The scoring engine combines weighted metric badness into an underperformance sco
 Current weighted drivers:
 
 ```text
-26%  7-day weight percent change
-16%  weight percent trend
-10%  favorable-weather weight percent trend
-6%   poor-weather weight loss
-15%  temperature instability
-13%  possible brood-temperature variation
-8%   high-humidity exposure
-6%   humidity instability
+30%  current colony weight
+17%  7-day weight percent change
+9%   weight percent trend
+6%   favorable-weather weight percent trend
+4%   poor-weather weight loss
+13%  temperature instability
+10%  possible brood-temperature variation
+6%   high-humidity exposure
+5%   humidity instability
 ```
 
 Statuses are:

@@ -9,6 +9,13 @@ from .scoring import METRICS
 
 
 SAME_SIDE_LABELS = {"L": "left", "R": "right"}
+SIGNIFICANT_WEIGHT_TREND_IMPACT = 4.0
+WEIGHT_TREND_METRICS = {
+    "weight_pct_change",
+    "weight_slope_pct_per_day",
+    "favorable_weather_weight_slope_pct_per_day",
+    "poor_weather_weight_loss_pct",
+}
 
 
 def build_sister_comparisons(scores: list[ColonyScore]) -> list[SisterSiteComparison]:
@@ -159,14 +166,52 @@ def _summary(
     metric_comparisons: list[SisterMetricComparison],
 ) -> str:
     if weaker_side is None:
-        return f"The two colonies at {site_id} look broadly similar on the measured scoring features."
+        trend_warning = _opposing_weight_trend_warning(None, metric_comparisons)
+        return f"The two colonies at {site_id} look broadly similar on the measured scoring features.{trend_warning}"
     drivers = [metric.label for metric in _top_sister_drivers(metric_comparisons, limit=2) if metric.worse_side == weaker_side]
     driver_text = " and ".join(drivers) if drivers else "the measured scoring features"
+    trend_warning = _opposing_weight_trend_warning(weaker_side, metric_comparisons)
     return (
         f"The {SAME_SIDE_LABELS[weaker_side]} colony is weaker than its sister colony at {site_id}. "
         f"The main sister-level drivers are {driver_text}. "
-        f"Sister scores are L {left_score:.1f} vs R {right_score:.1f}."
+        f"Sister scores are L {left_score:.1f} vs R {right_score:.1f}.{trend_warning}"
     )
+
+
+def _opposing_weight_trend_warning(
+    weaker_side: str | None,
+    metric_comparisons: list[SisterMetricComparison],
+) -> str:
+    trend_metrics = [
+        metric
+        for metric in metric_comparisons
+        if metric.metric in WEIGHT_TREND_METRICS
+        and metric.worse_side is not None
+        and (weaker_side is None or metric.worse_side != weaker_side)
+        and metric.impact >= SIGNIFICANT_WEIGHT_TREND_IMPACT
+        and _is_negative_weight_movement(metric)
+    ]
+    if not trend_metrics:
+        return ""
+
+    side = trend_metrics[0].worse_side
+    side_metrics = [metric for metric in trend_metrics if metric.worse_side == side]
+    labels = [metric.label for metric in side_metrics[:2]]
+    if len(labels) == 1:
+        metric_text = labels[0]
+    else:
+        metric_text = f"{labels[0]} and {labels[1]}"
+    return (
+        f" However, the {SAME_SIDE_LABELS[side]} colony has a significant negative weight trend "
+        f"on {metric_text}, so that decline should still be watched."
+    )
+
+
+def _is_negative_weight_movement(metric: SisterMetricComparison) -> bool:
+    worse_value = metric.left_value if metric.worse_side == "L" else metric.right_value
+    if metric.metric == "poor_weather_weight_loss_pct":
+        return worse_value > 0
+    return worse_value < 0
 
 
 def _top_sister_drivers(

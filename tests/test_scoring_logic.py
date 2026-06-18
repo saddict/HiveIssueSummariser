@@ -64,9 +64,10 @@ def feature(colony_id: str, favorable_windows: int, poor_windows: int) -> Colony
     )
 
 
-def colony_score(colony_id: str, side: str, weight_pct_change: float) -> ColonyScore:
+def colony_score(colony_id: str, side: str, weight_pct_change: float, latest_weight_lb: float = 10.0) -> ColonyScore:
     base = feature(colony_id, favorable_windows=1, poor_windows=1)
     base.weight_pct_change = weight_pct_change
+    base.latest_weight_lb = latest_weight_lb
     return ColonyScore(
         colony_id=colony_id,
         hive_id=colony_id.split(":")[0],
@@ -75,13 +76,23 @@ def colony_score(colony_id: str, side: str, weight_pct_change: float) -> ColonyS
         status="normal",
         comparisons=[
             MetricComparison(
+                metric="latest_weight_lb",
+                label="current colony weight",
+                value=latest_weight_lb,
+                peer_mean=30.0,
+                peer_std=10.0,
+                badness_z=0.0,
+                weight=0.30,
+                unit="lb",
+            ),
+            MetricComparison(
                 metric="weight_pct_change",
                 label="7-day weight percent change",
                 value=weight_pct_change,
                 peer_mean=0.0,
                 peer_std=2.0,
                 badness_z=0.0,
-                weight=0.26,
+                weight=0.17,
                 unit="%",
             )
         ],
@@ -134,6 +145,17 @@ class ScoringLogicTests(unittest.TestCase):
         self.assertEqual(comparisons[0].weaker_side, "L")
         self.assertIn("left colony", comparisons[0].summary)
         self.assertEqual(comparisons[0].metric_comparisons[0].metric, "weight_pct_change")
+
+    def test_sister_comparison_uses_current_weight_as_strength_signal(self) -> None:
+        comparisons = build_sister_comparisons([
+            colony_score("SITE:L", "L", -4.0, latest_weight_lb=50.0),
+            colony_score("SITE:R", "R", -1.0, latest_weight_lb=20.0),
+        ])
+
+        self.assertEqual(len(comparisons), 1)
+        self.assertEqual(comparisons[0].weaker_side, "R")
+        self.assertEqual(comparisons[0].metric_comparisons[0].metric, "latest_weight_lb")
+        self.assertIn("left colony has a significant negative weight trend", comparisons[0].summary)
 
 
 if __name__ == "__main__":
