@@ -155,7 +155,7 @@ class ScoringLogicTests(unittest.TestCase):
         self.assertEqual(len(comparisons), 1)
         self.assertEqual(comparisons[0].weaker_side, "R")
         self.assertEqual(comparisons[0].metric_comparisons[0].metric, "latest_weight_lb")
-        self.assertIn("left colony has a significant negative weight trend", comparisons[0].summary)
+        self.assertIn("left colony has significant negative weight movement", comparisons[0].summary)
 
 
 if __name__ == "__main__":

@@ -123,7 +123,7 @@
           "impact": 0.0
         }
       ],
-      "summary": "The right colony is weaker than its sister colony at 6LR. The main sister-level drivers are current colony weight. Sister scores are L 16.1 vs R 23.8. However, the left colony has a significant negative weight trend on 7-day weight percent change and weight percent trend, so that decline should still be watched."
+      "summary": "Current condition: the right colony is weaker overall at 6LR, mainly because of current colony weight. Trend concern: the left colony has significant negative weight movement on 7-day weight percent change -1.80 % vs right +1.97 % and weight percent trend -0.27 %/day vs right +0.18 %/day, so that decline should still be watched. Sister scores: L 16.1 vs R 23.8."
     },
     {
       "hive_id": "DR_WLKS",
@@ -234,7 +234,7 @@
           "impact": 0.0
         }
       ],
-      "summary": "The right colony is weaker than its sister colony at DR_WLKS. The main sister-level drivers are current colony weight and temperature instability. Sister scores are L 1.2 vs R 26.3."
+      "summary": "Current condition: the right colony is weaker overall at DR_WLKS, mainly because of current colony weight and temperature instability. Sister scores: L 1.2 vs R 26.3."
     },
     {
       "hive_id": "PRT_1",
@@ -345,7 +345,7 @@
           "impact": 0.0
         }
       ],
-      "summary": "The left colony is weaker than its sister colony at PRT_1. The main sister-level drivers are current colony weight and 7-day weight percent change. Sister scores are L 45.2 vs R 4.0."
+      "summary": "Current condition: the left colony is weaker overall at PRT_1, mainly because of current colony weight and 7-day weight percent change. Sister scores: L 45.2 vs R 4.0."
     },
     {
       "hive_id": "WTG_HSCHL",
@@ -456,7 +456,7 @@
           "impact": 0.2660064863820903
         }
       ],
-      "summary": "The right colony is weaker than its sister colony at WTG_HSCHL. The main sister-level drivers are 7-day weight percent change and weight percent trend. Sister scores are L 4.8 vs R 25.9."
+      "summary": "Current condition: the right colony is weaker overall at WTG_HSCHL, mainly because of 7-day weight percent change and weight percent trend. Sister scores: L 4.8 vs R 25.9."
     }
   ]
 }

@@ -275,7 +275,7 @@ This output answers a different question from regional peer scoring:
 Is one side of this same site weaker than its sister colony?
 ```
 
-For each metric, it checks which side is worse. The raw L-vs-R difference is scaled by the regional metric spread so tiny differences do not dominate the report. Current colony weight is included as a primary same-site strength signal, so a much lighter sister colony is treated as weaker even if its recent percentage drop is smaller. If the heavier side has a significant negative weight trend, the summary calls that out separately so the decline is still visible. The result is a separate sister score for L and R at each site.
+For each metric, it checks which side is worse. The raw L-vs-R difference is scaled by the regional metric spread so tiny differences do not dominate the report. Current colony weight is included as a primary same-site strength signal, so a much lighter sister colony is treated as weaker even if its recent percentage drop is smaller. The text report separates this into `Current condition` and `Trend concern`: current condition names the side that is weaker overall, while trend concern names any sister colony with meaningfully negative weight movement. The result is a separate sister score for L and R at each site.
 
 This report is useful because both colonies at the same site share the same device location and site-level weather, so differences between them can highlight colony-specific issues that regional scoring may hide.
 

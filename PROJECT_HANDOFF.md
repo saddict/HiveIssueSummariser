@@ -326,7 +326,7 @@ Main drivers: poor-weather weight loss, 7-day weight percent change, temperature
 
 There are also `PRT_1` external temperature anomalies, including values around `190 F`. These are reported as data-quality notes but do not remove colony readings.
 
-The same cached sister-colony output now marks `6LR:R` as mildly weaker than `6LR:L`. The reason is current colony weight: `6LR:L` is much heavier at `49.15 lb` versus `37.93 lb` for `6LR:R`, so the right side is treated as weaker even though the left side had the worse recent 7-day percentage movement. The summary also warns that the left colony has a significant negative weight trend, so that decline should still be watched.
+The same cached sister-colony output now marks `6LR:R` as mildly weaker than `6LR:L`. The reason is current colony weight: `6LR:L` is much heavier at `49.15 lb` versus `37.93 lb` for `6LR:R`, so the right side is treated as weaker even though the left side had the worse recent 7-day percentage movement. The output separates this into `Current condition`, where the right colony is weaker overall, and `Trend concern`, where the left colony's negative weight movement is still called out with its values.
 
 ## 12. Sister-Colony Same-Site Output
 
@@ -357,7 +357,7 @@ Implementation details:
 3. For each site, it expects one `L` score and one `R` score.
 4. For every scoring metric, it checks which side is worse.
 5. Current colony weight is one of those metrics, so a much lighter side is treated as weaker even if its recent percentage drop is smaller.
-6. If the heavier side has a significant negative weight trend, the natural-language summary calls that out separately so that decline is not hidden.
+6. The text report separates `Current condition` from `Trend concern`, so the overall weaker side and the side with meaningfully negative weight movement can both be shown clearly.
 7. It scales the raw L-vs-R difference by the regional metric standard deviation, so tiny differences do not dominate.
 8. It produces one sister score for L and one for R.
 9. The side with the larger sister score is labeled mildly or notably weaker.
