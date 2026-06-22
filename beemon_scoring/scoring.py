@@ -13,8 +13,8 @@ HIGH_HUMIDITY_PCT = 70.0
 LOW_HUMIDITY_PCT = 40.0
 RAINY_WEATHER_CODES = {51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 99}
 
-MIN_WEIGHT_LB = 1.0
-MAX_WEIGHT_LB = 300.0
+MIN_WEIGHT_KG = 0.45
+MAX_WEIGHT_KG = 136.08
 MIN_INTERNAL_TEMP_F = 32.0
 MAX_INTERNAL_TEMP_F = 120.0
 MIN_EXTERNAL_TEMP_F = -40.0
@@ -22,18 +22,18 @@ MAX_EXTERNAL_TEMP_F = 130.0
 MIN_HUMIDITY_PCT = 0.0
 MAX_HUMIDITY_PCT = 100.0
 MAX_WEIGHT_JUMP_PCT = 12.0
-MAX_WEIGHT_JUMP_LB = 8.0
+MAX_WEIGHT_JUMP_KG = 3.63
 MAX_TEMP_JUMP_F = 25.0
 MAX_HUMIDITY_JUMP_PCT = 45.0
 MAX_JUMP_INTERVAL_HOURS = 6.0
 
 METRICS = [
     {
-        "name": "latest_weight_lb",
+        "name": "latest_weight_kg",
         "label": "current colony weight",
         "direction": "higher_is_better",
         "weight": 0.30,
-        "unit": "lb",
+        "unit": "kg",
     },
     {
         "name": "weight_pct_change",
@@ -213,8 +213,8 @@ def _filter_quality_issues(
 
 def _impossible_reading_reasons(reading: SensorReading) -> list[str]:
     reasons: list[str] = []
-    if not MIN_WEIGHT_LB <= reading.weight_lb <= MAX_WEIGHT_LB:
-        reasons.append(f"weight {reading.weight_lb:.2f} lb is outside {MIN_WEIGHT_LB:.0f}-{MAX_WEIGHT_LB:.0f} lb")
+    if not MIN_WEIGHT_KG <= reading.weight_kg <= MAX_WEIGHT_KG:
+        reasons.append(f"weight {reading.weight_kg:.2f} kg is outside {MIN_WEIGHT_KG:.2f}-{MAX_WEIGHT_KG:.2f} kg")
     if not MIN_INTERNAL_TEMP_F <= reading.internal_temp_f <= MAX_INTERNAL_TEMP_F:
         reasons.append(
             f"internal temperature {reading.internal_temp_f:.1f} F is outside {MIN_INTERNAL_TEMP_F:.0f}-{MAX_INTERNAL_TEMP_F:.0f} F"
@@ -241,13 +241,13 @@ def _sudden_jump_reasons(previous: SensorReading, current: SensorReading) -> lis
         return []
 
     reasons: list[str] = []
-    weight_delta = abs(current.weight_lb - previous.weight_lb)
-    weight_delta_pct = (weight_delta / previous.weight_lb) * 100 if previous.weight_lb else 0
+    weight_delta = abs(current.weight_kg - previous.weight_kg)
+    weight_delta_pct = (weight_delta / previous.weight_kg) * 100 if previous.weight_kg else 0
     temp_delta = abs(current.internal_temp_f - previous.internal_temp_f)
     humidity_delta = abs(current.internal_humidity_pct - previous.internal_humidity_pct)
 
-    if weight_delta > MAX_WEIGHT_JUMP_LB and weight_delta_pct > MAX_WEIGHT_JUMP_PCT:
-        reasons.append(f"weight jumped {weight_delta:.2f} lb ({weight_delta_pct:.1f}%) in {elapsed_hours:.1f} hours")
+    if weight_delta > MAX_WEIGHT_JUMP_KG and weight_delta_pct > MAX_WEIGHT_JUMP_PCT:
+        reasons.append(f"weight jumped {weight_delta:.2f} kg ({weight_delta_pct:.1f}%) in {elapsed_hours:.1f} hours")
     if temp_delta > MAX_TEMP_JUMP_F:
         reasons.append(f"internal temperature jumped {temp_delta:.1f} F in {elapsed_hours:.1f} hours")
     if humidity_delta > MAX_HUMIDITY_JUMP_PCT:
@@ -325,10 +325,10 @@ def _build_features(
                 start_at=first.observed_at,
                 end_at=last.observed_at,
                 days_observed=elapsed_days,
-                latest_weight_lb=last.weight_lb,
-                weight_delta_lb=last.weight_lb - first.weight_lb,
-                weight_pct_change=_pct_change(first.weight_lb, last.weight_lb),
-                weight_slope_lb_per_day=_linear_slope_per_day(readings),
+                latest_weight_kg=last.weight_kg,
+                weight_delta_kg=last.weight_kg - first.weight_kg,
+                weight_pct_change=_pct_change(first.weight_kg, last.weight_kg),
+                weight_slope_kg_per_day=_linear_slope_per_day(readings),
                 weight_slope_pct_per_day=_linear_slope_pct_per_day(readings),
                 favorable_weather_window_count=len(favorable_daily_changes),
                 poor_weather_window_count=len(poor_daily_changes),
@@ -472,7 +472,7 @@ def _linear_slope_per_day(readings: list[SensorReading]) -> float:
         return 0.0
     start = readings[0].observed_at
     xs = [(reading.observed_at - start).total_seconds() / 86400 for reading in readings]
-    ys = [reading.weight_lb for reading in readings]
+    ys = [reading.weight_kg for reading in readings]
     x_mean = statistics.fmean(xs)
     y_mean = statistics.fmean(ys)
     numerator = sum((x - x_mean) * (y - y_mean) for x, y in zip(xs, ys))
@@ -483,9 +483,9 @@ def _linear_slope_per_day(readings: list[SensorReading]) -> float:
 
 
 def _linear_slope_pct_per_day(readings: list[SensorReading]) -> float:
-    if not readings or readings[0].weight_lb == 0:
+    if not readings or readings[0].weight_kg == 0:
         return 0.0
-    return (_linear_slope_per_day(readings) / readings[0].weight_lb) * 100
+    return (_linear_slope_per_day(readings) / readings[0].weight_kg) * 100
 
 
 def _daily_weight_pct_changes(
@@ -503,7 +503,7 @@ def _daily_weight_pct_changes(
     for day_readings in by_day.values():
         ordered = sorted(day_readings, key=lambda reading: reading.timestamp)
         if len(ordered) >= 2:
-            changes.append(_pct_change(ordered[0].weight_lb, ordered[-1].weight_lb))
+            changes.append(_pct_change(ordered[0].weight_kg, ordered[-1].weight_kg))
     return changes
 
 

@@ -19,7 +19,7 @@ def reading(hive_id: str, side: str, timestamp: int, weight: float, observed_at:
         device_uid="device",
         timestamp=timestamp,
         observed_at=observed_at,
-        weight_lb=weight,
+        weight_kg=weight,
         internal_temp_f=94.0,
         internal_humidity_pct=55.0,
         external_temp_f=70.0,
@@ -38,10 +38,10 @@ def feature(colony_id: str, favorable_windows: int, poor_windows: int) -> Colony
         start_at=datetime(2026, 6, 11, tzinfo=TZ),
         end_at=datetime(2026, 6, 18, tzinfo=TZ),
         days_observed=7.0,
-        latest_weight_lb=10.0,
-        weight_delta_lb=0.0,
+        latest_weight_kg=10.0,
+        weight_delta_kg=0.0,
         weight_pct_change=0.0,
-        weight_slope_lb_per_day=0.0,
+        weight_slope_kg_per_day=0.0,
         weight_slope_pct_per_day=0.0,
         favorable_weather_window_count=favorable_windows,
         poor_weather_window_count=poor_windows,
@@ -64,10 +64,10 @@ def feature(colony_id: str, favorable_windows: int, poor_windows: int) -> Colony
     )
 
 
-def colony_score(colony_id: str, side: str, weight_pct_change: float, latest_weight_lb: float = 10.0) -> ColonyScore:
+def colony_score(colony_id: str, side: str, weight_pct_change: float, latest_weight_kg: float = 10.0) -> ColonyScore:
     base = feature(colony_id, favorable_windows=1, poor_windows=1)
     base.weight_pct_change = weight_pct_change
-    base.latest_weight_lb = latest_weight_lb
+    base.latest_weight_kg = latest_weight_kg
     return ColonyScore(
         colony_id=colony_id,
         hive_id=colony_id.split(":")[0],
@@ -76,14 +76,14 @@ def colony_score(colony_id: str, side: str, weight_pct_change: float, latest_wei
         status="normal",
         comparisons=[
             MetricComparison(
-                metric="latest_weight_lb",
+                metric="latest_weight_kg",
                 label="current colony weight",
-                value=latest_weight_lb,
+                value=latest_weight_kg,
                 peer_mean=30.0,
                 peer_std=10.0,
                 badness_z=0.0,
                 weight=0.30,
-                unit="lb",
+                unit="kg",
             ),
             MetricComparison(
                 metric="weight_pct_change",
@@ -148,13 +148,13 @@ class ScoringLogicTests(unittest.TestCase):
 
     def test_sister_comparison_uses_current_weight_as_strength_signal(self) -> None:
         comparisons = build_sister_comparisons([
-            colony_score("SITE:L", "L", -4.0, latest_weight_lb=50.0),
-            colony_score("SITE:R", "R", -1.0, latest_weight_lb=20.0),
+            colony_score("SITE:L", "L", -4.0, latest_weight_kg=50.0),
+            colony_score("SITE:R", "R", -1.0, latest_weight_kg=20.0),
         ])
 
         self.assertEqual(len(comparisons), 1)
         self.assertEqual(comparisons[0].weaker_side, "R")
-        self.assertEqual(comparisons[0].metric_comparisons[0].metric, "latest_weight_lb")
+        self.assertEqual(comparisons[0].metric_comparisons[0].metric, "latest_weight_kg")
         self.assertIn("left colony has significant negative weight movement", comparisons[0].summary)
 
 

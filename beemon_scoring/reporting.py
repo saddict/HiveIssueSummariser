@@ -44,7 +44,7 @@ def build_text_report(scores: list[ColonyScore], metadata: dict[str, object]) ->
         lines.append(
             f"{index}. {score.colony_id} - {score.status} "
             f"(underperformance score {score.score:.1f}/100, "
-            f"weight {feature.weight_delta_lb:+.2f} lb ({feature.weight_pct_change:+.1f}%) over {feature.days_observed:.1f} days)"
+            f"weight {feature.weight_delta_kg:+.2f} kg ({feature.weight_pct_change:+.1f}%) over {feature.days_observed:.1f} days)"
         )
         for comparison in _top_drivers(score.comparisons, limit=3):
             lines.append(
@@ -73,7 +73,7 @@ def _natural_language_summary(score: ColonyScore) -> str:
     return (
         f"{score.colony_id} is the most concerning colony in this regional peer group. "
         f"It is classified as {score.status} with an underperformance score of {score.score:.1f}/100. "
-        f"The main drivers are {driver_text}. Its weight changed {feature.weight_delta_lb:+.2f} lb ({feature.weight_pct_change:+.1f}%) "
+        f"The main drivers are {driver_text}. Its weight changed {feature.weight_delta_kg:+.2f} kg ({feature.weight_pct_change:+.1f}%) "
         f"over {feature.days_observed:.1f} days, compared with the peer-relative expectations below."
         f"{weather}"
     )

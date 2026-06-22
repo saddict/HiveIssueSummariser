@@ -61,14 +61,14 @@
           "unit": "F"
         },
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
           "value": 24.237066,
           "peer_mean": 34.293672,
           "peer_std": 8.168869242576433,
           "badness_z": 1.2310891142172553,
           "weight": 0.3,
-          "unit": "lb"
+          "unit": "kg"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -121,10 +121,10 @@
         "start_at": "2026-06-11 11:00:00-04:00",
         "end_at": "2026-06-18 10:00:00-04:00",
         "days_observed": 6.958333333333333,
-        "latest_weight_lb": 24.237066,
-        "weight_delta_lb": -1.8963970000000003,
+        "latest_weight_kg": 24.237066,
+        "weight_delta_kg": -1.8963970000000003,
         "weight_pct_change": -7.256585168219002,
-        "weight_slope_lb_per_day": -0.09312424057293818,
+        "weight_slope_kg_per_day": -0.09312424057293818,
         "weight_slope_pct_per_day": -0.3563409892249572,
         "favorable_weather_window_count": 5,
         "poor_weather_window_count": 2,
@@ -205,14 +205,14 @@
           "unit": "F"
         },
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
           "value": 28.146101,
           "peer_mean": 34.293672,
           "peer_std": 8.168869242576433,
           "badness_z": 0.7525608278754964,
           "weight": 0.3,
-          "unit": "lb"
+          "unit": "kg"
         },
         {
           "metric": "weight_pct_change",
@@ -265,10 +265,10 @@
         "start_at": "2026-06-11 11:00:00-04:00",
         "end_at": "2026-06-18 10:00:00-04:00",
         "days_observed": 6.958333333333333,
-        "latest_weight_lb": 28.146101,
-        "weight_delta_lb": -0.425576999999997,
+        "latest_weight_kg": 28.146101,
+        "weight_delta_kg": -0.425576999999997,
         "weight_pct_change": -1.489506496608274,
-        "weight_slope_lb_per_day": 0.0028158366535320947,
+        "weight_slope_kg_per_day": 0.0028158366535320947,
         "weight_slope_pct_per_day": 0.009855342250224488,
         "favorable_weather_window_count": 5,
         "poor_weather_window_count": 2,
@@ -324,14 +324,14 @@
           "unit": "%/day"
         },
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
           "value": 25.575254,
           "peer_mean": 34.293672,
           "peer_std": 8.168869242576433,
           "badness_z": 1.0672735406951184,
           "weight": 0.3,
-          "unit": "lb"
+          "unit": "kg"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -410,10 +410,10 @@
         "start_at": "2026-06-11 11:00:00-04:00",
         "end_at": "2026-06-18 10:00:00-04:00",
         "days_observed": 6.958333333333333,
-        "latest_weight_lb": 25.575254,
-        "weight_delta_lb": -1.6472419999999985,
+        "latest_weight_kg": 25.575254,
+        "weight_delta_kg": -1.6472419999999985,
         "weight_pct_change": -6.0510322051291645,
-        "weight_slope_lb_per_day": -0.08436367783910931,
+        "weight_slope_kg_per_day": -0.08436367783910931,
         "weight_slope_pct_per_day": -0.30990427122887376,
         "favorable_weather_window_count": 4,
         "poor_weather_window_count": 3,
@@ -461,14 +461,14 @@
           "unit": "%/day"
         },
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
           "value": 29.843344,
           "peer_mean": 34.293672,
           "peer_std": 8.168869242576433,
           "badness_z": 0.5447911905364744,
           "weight": 0.3,
-          "unit": "lb"
+          "unit": "kg"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -551,10 +551,10 @@
         "start_at": "2026-06-11 11:00:00-04:00",
         "end_at": "2026-06-18 10:00:00-04:00",
         "days_observed": 6.958333333333333,
-        "latest_weight_lb": 29.843344,
-        "weight_delta_lb": -0.4589400000000019,
+        "latest_weight_kg": 29.843344,
+        "weight_delta_kg": -0.4589400000000019,
         "weight_pct_change": -1.5145393000738885,
-        "weight_slope_lb_per_day": -0.062124321093211504,
+        "weight_slope_kg_per_day": -0.062124321093211504,
         "weight_slope_pct_per_day": -0.20501530872462123,
         "favorable_weather_window_count": 4,
         "poor_weather_window_count": 2,
@@ -645,14 +645,14 @@
           "unit": "%"
         },
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
           "value": 41.447468,
           "peer_mean": 34.293672,
           "peer_std": 8.168869242576433,
           "badness_z": -0.875738830867088,
           "weight": 0.3,
-          "unit": "lb"
+          "unit": "kg"
         },
         {
           "metric": "avg_brood_temp_deviation_f",
@@ -685,10 +685,10 @@
         "start_at": "2026-06-11 11:00:00-04:00",
         "end_at": "2026-06-18 10:00:00-04:00",
         "days_observed": 6.958333333333333,
-        "latest_weight_lb": 41.447468,
-        "weight_delta_lb": -0.4749520000000018,
+        "latest_weight_kg": 41.447468,
+        "weight_delta_kg": -0.4749520000000018,
         "weight_pct_change": -1.1329307802364506,
-        "weight_slope_lb_per_day": -0.1093516249115645,
+        "weight_slope_kg_per_day": -0.1093516249115645,
         "weight_slope_pct_per_day": -0.26084282565644945,
         "favorable_weather_window_count": 4,
         "poor_weather_window_count": 2,
@@ -799,14 +799,14 @@
           "unit": "%"
         },
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
           "value": 49.154564,
           "peer_mean": 34.293672,
           "peer_std": 8.168869242576433,
           "badness_z": -1.8192104144040537,
           "weight": 0.3,
-          "unit": "lb"
+          "unit": "kg"
         }
       ],
       "feature": {
@@ -819,10 +819,10 @@
         "start_at": "2026-06-11 11:00:00-04:00",
         "end_at": "2026-06-18 10:00:00-04:00",
         "days_observed": 6.958333333333333,
-        "latest_weight_lb": 49.154564,
-        "weight_delta_lb": -0.9025990000000021,
+        "latest_weight_kg": 49.154564,
+        "weight_delta_kg": -0.9025990000000021,
         "weight_pct_change": -1.803136546112296,
-        "weight_slope_lb_per_day": -0.13573262548498688,
+        "weight_slope_kg_per_day": -0.13573262548498688,
         "weight_slope_pct_per_day": -0.27115525001883717,
         "favorable_weather_window_count": 5,
         "poor_weather_window_count": 2,
@@ -883,14 +883,14 @@
           "unit": "F"
         },
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
           "value": 37.925392,
           "peer_mean": 34.293672,
           "peer_std": 8.168869242576433,
           "badness_z": -0.44458050339101396,
           "weight": 0.3,
-          "unit": "lb"
+          "unit": "kg"
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
@@ -953,10 +953,10 @@
         "start_at": "2026-06-11 11:00:00-04:00",
         "end_at": "2026-06-18 10:00:00-04:00",
         "days_observed": 6.958333333333333,
-        "latest_weight_lb": 37.925392,
-        "weight_delta_lb": 0.734102,
+        "latest_weight_kg": 37.925392,
+        "weight_delta_kg": 0.734102,
         "weight_pct_change": 1.973854631017101,
-        "weight_slope_lb_per_day": 0.06516829763869021,
+        "weight_slope_kg_per_day": 0.06516829763869021,
         "weight_slope_pct_per_day": 0.17522462285844403,
         "favorable_weather_window_count": 5,
         "poor_weather_window_count": 2,
@@ -1027,14 +1027,14 @@
           "unit": "%"
         },
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
           "value": 38.020187,
           "peer_mean": 34.293672,
           "peer_std": 8.168869242576433,
           "badness_z": -0.4561849246621885,
           "weight": 0.3,
-          "unit": "lb"
+          "unit": "kg"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -1093,10 +1093,10 @@
         "start_at": "2026-06-11 11:00:00-04:00",
         "end_at": "2026-06-18 10:00:00-04:00",
         "days_observed": 6.958333333333333,
-        "latest_weight_lb": 38.020187,
-        "weight_delta_lb": 0.8173439999999985,
+        "latest_weight_kg": 38.020187,
+        "weight_delta_kg": 0.8173439999999985,
         "weight_pct_change": 2.1969933856936645,
-        "weight_slope_lb_per_day": 0.10249388451640461,
+        "weight_slope_kg_per_day": 0.10249388451640461,
         "weight_slope_pct_per_day": 0.2755001399124379,
         "favorable_weather_window_count": 4,
         "poor_weather_window_count": 3,

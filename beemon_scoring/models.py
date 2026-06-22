@@ -19,7 +19,7 @@ class SensorReading:
     device_uid: str
     timestamp: int
     observed_at: datetime
-    weight_lb: float
+    weight_kg: float
     internal_temp_f: float
     internal_humidity_pct: float
     external_temp_f: float | None
@@ -54,10 +54,10 @@ class ColonyFeatures:
     start_at: datetime
     end_at: datetime
     days_observed: float
-    latest_weight_lb: float
-    weight_delta_lb: float
+    latest_weight_kg: float
+    weight_delta_kg: float
     weight_pct_change: float
-    weight_slope_lb_per_day: float
+    weight_slope_kg_per_day: float
     weight_slope_pct_per_day: float
     favorable_weather_window_count: int
     poor_weather_window_count: int

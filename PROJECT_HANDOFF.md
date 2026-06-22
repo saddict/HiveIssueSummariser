@@ -151,7 +151,7 @@ The scorer checks colony readings before scoring.
 A colony reading is excluded if any of these are impossible:
 
 ```text
-weight < 1 lb or weight > 300 lb
+weight < 0.45 kg or weight > 136.08 kg
 internal temperature < 32 F or > 120 F
 internal humidity < 0% or > 100%
 ```
@@ -159,7 +159,7 @@ internal humidity < 0% or > 100%
 A colony reading is also excluded if it makes a sudden short-interval jump compared with the previous kept reading:
 
 ```text
-weight jump > 8 lb and > 12% within 6 hours
+weight jump > 3.63 kg and > 12% within 6 hours
 internal temperature jump > 25 F within 6 hours
 internal humidity jump > 45 percentage points within 6 hours
 ```
@@ -192,7 +192,7 @@ The weights add up to 100%.
 
 ### Current Colony Weight
 
-This is the latest valid colony weight in pounds. It is treated as a current strength signal: a heavier colony is generally doing better right now than a much lighter sister colony or regional peer.
+This is the latest valid colony weight in kilograms. It is treated as a current strength signal: a heavier colony is generally doing better right now than a much lighter sister colony or regional peer.
 
 This metric does not replace weight loss metrics. Instead, it gives the scorer a baseline for how strong the colony is now, while percent change and trend explain whether that strength is improving or declining.
 
@@ -204,7 +204,7 @@ This is total percent gain/loss over the window:
 ((last_weight - first_weight) / first_weight) * 100
 ```
 
-This is used instead of absolute weight loss because a 5 lb loss is much more severe for a 20 lb colony than for a 50 lb colony.
+This is used instead of absolute weight loss because a 2.27 kg loss is much more severe for a 9.07 kg colony than for a 22.68 kg colony.
 
 ### Weight Percent Trend
 
@@ -326,7 +326,7 @@ Main drivers: poor-weather weight loss, 7-day weight percent change, temperature
 
 There are also `PRT_1` external temperature anomalies, including values around `190 F`. These are reported as data-quality notes but do not remove colony readings.
 
-The same cached sister-colony output now marks `6LR:R` as mildly weaker than `6LR:L`. The reason is current colony weight: `6LR:L` is much heavier at `49.15 lb` versus `37.93 lb` for `6LR:R`, so the right side is treated as weaker even though the left side had the worse recent 7-day percentage movement. The output separates this into `Current condition`, where the right colony is weaker overall, and `Trend concern`, where the left colony's negative weight movement is still called out with its values.
+The same cached sister-colony output now marks `6LR:R` as mildly weaker than `6LR:L`. The reason is current colony weight: `6LR:L` is much heavier at `49.15 kg` versus `37.93 kg` for `6LR:R`, so the right side is treated as weaker even though the left side had the worse recent 7-day percentage movement. The output separates this into `Current condition`, where the right colony is weaker overall, and `Trend concern`, where the left colony's negative weight movement is still called out with its values.
 
 ## 12. Sister-Colony Same-Site Output
 

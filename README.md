@@ -200,7 +200,7 @@ The scorer measures:
 - linear percent weight trend per day
 - average favorable-day percent weight change
 - average poor-day percent weight loss
-- absolute pound change for display context only
+- absolute kilogram change for display context only
 
 Current weight is a primary strength signal. A heavier colony is generally doing better right now than a much lighter sister colony or regional peer, while the percent-change and trend metrics explain whether that strength is improving or declining.
 

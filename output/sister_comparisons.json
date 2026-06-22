@@ -24,9 +24,9 @@
       "right_sister_score": 23.8,
       "metric_comparisons": [
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
-          "unit": "lb",
+          "unit": "kg",
           "left_value": 49.154564,
           "right_value": 37.925392,
           "worse_side": "R",
@@ -135,9 +135,9 @@
       "right_sister_score": 26.3,
       "metric_comparisons": [
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
-          "unit": "lb",
+          "unit": "kg",
           "left_value": 41.447468,
           "right_value": 29.843344,
           "worse_side": "R",
@@ -246,9 +246,9 @@
       "right_sister_score": 4.0,
       "metric_comparisons": [
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
-          "unit": "lb",
+          "unit": "kg",
           "left_value": 25.575254,
           "right_value": 38.020187,
           "worse_side": "L",
@@ -379,9 +379,9 @@
           "impact": 5.1443345112380205
         },
         {
-          "metric": "latest_weight_lb",
+          "metric": "latest_weight_kg",
           "label": "current colony weight",
-          "unit": "lb",
+          "unit": "kg",
           "left_value": 28.146101,
           "right_value": 24.237066,
           "worse_side": "R",

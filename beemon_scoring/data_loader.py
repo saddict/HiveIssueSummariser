@@ -74,7 +74,7 @@ def load_sensor_readings(
                             device_uid=hive.device_uid,
                             timestamp=timestamp,
                             observed_at=observed_at,
-                            weight_lb=weight,
+                            weight_kg=weight,
                             internal_temp_f=temp,
                             internal_humidity_pct=humidity,
                             external_temp_f=sensor_data.get("tE"),
