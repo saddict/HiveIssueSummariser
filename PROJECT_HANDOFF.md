@@ -1,6 +1,6 @@
 # BeeMon Scoring Project Handoff
 
-Last updated: 2026-06-22
+Last updated: 2026-06-23
 
 This file is meant to let a future developer understand and continue the project without needing the full chat history. It explains what exists today, how the scoring works, what logic must not be broken, and how to extend the system to many sites and regions.
 
@@ -48,19 +48,25 @@ WTG_HSCHL:R
 ## 3. Important Files
 
 ```text
-run_scoring.py                 Runs region-aware colony scoring from local cached data.
-refresh_and_score.py           One-command pipeline: optional fetch, JSON output, text report.
-fetch_dynamodb.py              Pulls sensor rows from DynamoDB into local_data/dynamodb/.
-fetch_openmeteo.py             Pulls weather rows from Open-Meteo into local_data/openmeteo/.
-beemon_scoring/data_loader.py  Loads config, sensor CSVs, and weather CSVs.
-beemon_scoring/models.py       Dataclasses used by the scorer.
-beemon_scoring/scoring.py      Data quality checks, feature extraction, peer scoring.
-beemon_scoring/reporting.py    Regional highlight summaries plus text/JSON report rendering.
-beemon_scoring/sister_comparison.py Sister-colony comparison logic.
-run_sister_comparisons.py       Prints/writes L-vs-R same-site comparison output.
-README.md                      User-facing explanation and commands.
-PROJECT_HANDOFF.md             This handoff.
+run_scoring.py                       Runs region-aware colony scoring from local cached data.
+refresh_and_score.py                 One-command pipeline: optional fetch, JSON output, text report.
+fetch_dynamodb.py                    Pulls sensor rows from DynamoDB into local_data/dynamodb/.
+fetch_openmeteo.py                   Pulls weather rows from Open-Meteo into local_data/openmeteo/.
+beemon_scoring/data_loader.py        Loads config, sensor CSVs, weather CSVs, assigns coordinate regions.
+beemon_scoring/models.py             Dataclasses used by the scorer.
+beemon_scoring/metrics.py            Typed Metric catalog (the 9 scoring metrics) and the shared badness-to-score scale.
+beemon_scoring/quality.py            Data-quality bounds/jump thresholds and sensor-reading filtering.
+beemon_scoring/weather.py            Weather-day classification (favorable/poor/neutral) and named weather thresholds.
+beemon_scoring/features.py           Colony feature engineering (weight trend, temperature, humidity, weather-adjusted weight).
+beemon_scoring/scoring.py            Orchestrates build_scores(); peer/z-score scoring and status assignment.
+beemon_scoring/reporting.py          Regional highlight summaries plus text/JSON report rendering.
+beemon_scoring/sister_comparison.py  Sister-colony comparison logic.
+run_sister_comparisons.py            Prints/writes L-vs-R same-site comparison output.
+README.md                            User-facing explanation and commands.
+PROJECT_HANDOFF.md                   This handoff.
 ```
+
+See section 15 for the 2026-06-23 refactor that split the old monolithic `scoring.py` into `metrics.py`/`quality.py`/`weather.py`/`features.py`/`scoring.py`.
 
 ## 4. Local Data Cache
 
@@ -485,3 +491,41 @@ If the system breaks any of those rules, the output can become misleading.
 5. Add inspection notes so the model can learn from queen status, brood observations, feeding, harvests, and treatments.
 6. Tune data-quality thresholds with known sensor behavior and field validation.
 7. Add tests for low-peer-count fallback and future region-vs-region scoring.
+
+## 15. Code Organization Refactor (2026-06-23)
+
+`beemon_scoring/scoring.py` used to be a single 570-line file mixing four unrelated concerns: data-quality filtering, weather-day classification, colony feature engineering, and peer/z-score scoring, with no section boundaries between them. It was split into focused modules. This was a pure clarity refactor: no scoring behavior changed. That was confirmed by diffing `output/scoring.json` and `output/sister_comparisons.json` (both JSON and text formats) byte-for-byte before and after the change, and by the unit test suite still passing with the same 7 tests.
+
+### What moved where
+
+```text
+beemon_scoring/metrics.py    NEW. Frozen `Metric` dataclass plus the `METRICS` catalog (was an untyped `list[dict]`),
+                              and `BADNESS_Z_SCORE_SCALE` (was a bare `35` duplicated in scoring.py and
+                              sister_comparison.py's score/impact formulas).
+beemon_scoring/quality.py    NEW. The MIN/MAX weight, temperature, and humidity bounds plus the jump thresholds,
+                              and `filter_quality_issues()` (was `_filter_quality_issues` in scoring.py).
+beemon_scoring/weather.py    NEW. `RAINY_WEATHER_CODES`, `weather_by_hive()`, `weather_day_types()`
+                              (were `_weather_by_hive` / `_weather_day_types` in scoring.py). The day-classification
+                              thresholds that used to be inline magic numbers (50, 95, 85, 55, 90, 75, 90) are now
+                              named: POOR_WEATHER_LOW_TEMP_F, POOR_WEATHER_HIGH_TEMP_F, POOR_WEATHER_CLOUDINESS_PCT,
+                              FAVORABLE_WEATHER_LOW_TEMP_F, FAVORABLE_WEATHER_HIGH_TEMP_F,
+                              FAVORABLE_WEATHER_CLOUDINESS_PCT, FAVORABLE_WEATHER_HUMIDITY_PCT.
+beemon_scoring/features.py   NEW. `BROOD_TARGET_TEMP_F`, `HIGH_HUMIDITY_PCT`, `LOW_HUMIDITY_PCT`, `build_features()`
+                              (was `_build_features`), `daily_weight_pct_changes()` (was `_daily_weight_pct_changes`),
+                              `stddev()` (was `_stddev`).
+beemon_scoring/scoring.py    SLIMMED. Keeps only `build_scores()` (the public entrypoint; signature unchanged),
+                              `_require_data_dir`, `_score_features`, `_score_region_features`,
+                              `_eligible_metric_peers`, `_badness_z`, `_flags`, `_status`. Imports the moved pieces
+                              from the four modules above.
+```
+
+Naming convention used throughout the split: a function dropped its leading underscore only if something outside its new home file calls it (`build_features`, `weather_by_hive`, `weather_day_types`, `filter_quality_issues`, `stddev`, `daily_weight_pct_changes`). A helper that's only used within its own new module stayed private (`_classify_weather_day`, `_linear_slope_per_day`, `_average_optional`, and so on).
+
+### Other clarity fixes in the same pass
+
+- `METRICS` is now `list[Metric]` instead of `list[dict]`. Every `metric["x"]` / `metric.get("x")` access became `metric.x` attribute access in both `scoring.py` and `sister_comparison.py`, removing several no-op `int(...)`/`str(...)` casts that existed only to coerce values pulled out of an untyped dict.
+- The magic scaling constant `35` — which turns a weighted-average badness z-score into a 0-100 score (a weighted-average badness z-score of 1.0, one std dev worse than peers, scales to 35 points, so ~2.86 std devs worse maxes the score out) — is now the named, commented `BADNESS_Z_SCORE_SCALE = 35.0` in `metrics.py`, imported by both `scoring.py` and `sister_comparison.py` instead of being a bare literal duplicated in each file.
+- `sister_comparison.py`'s "current condition vs. trend concern" narrative logic was hard to trace because of near-synonym names: a per-metric `worse_side`, an overall `weaker_side`, and a local variable called `side` that actually meant "the side whose weight trend is declining." `_opposing_weight_trend_metrics` was renamed to `_weight_trend_concern_metrics` (it matches the "Trend concern:" label it produces in the output), and the local `side` inside `_weight_trend_sentence` was renamed to `trend_side` to stop it reading as a third, unrelated concept. A short comment above `SIGNIFICANT_WEIGHT_TREND_IMPACT` / `WEIGHT_TREND_METRICS` now explains the "weaker overall vs. trend concern" distinction once, instead of needing to be reverse-engineered from four separate functions. No `SisterMetricComparison`/`SisterSiteComparison` fields, JSON shape, or public function signatures changed.
+- `tests/test_scoring_logic.py` updated its imports for the relocated functions (`daily_weight_pct_changes` now comes from `beemon_scoring.features`, `Metric` from `beemon_scoring.metrics`) and replaced a plain-dict test fixture with a real `Metric(...)` construction. No test assertions changed.
+
+Explicitly out of scope for this pass: the 30-field `ColonyFeatures` dataclass was not broken up into nested sub-dataclasses (too many call sites for the marginal benefit), and no CLI behavior, output file paths, or JSON schema changed.

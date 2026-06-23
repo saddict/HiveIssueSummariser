@@ -4,11 +4,14 @@ import json
 from collections import defaultdict
 from dataclasses import asdict
 
+from .metrics import BADNESS_Z_SCORE_SCALE, METRICS
 from .models import ColonyScore, SisterMetricComparison, SisterSiteComparison
-from .scoring import METRICS
 
 
 SAME_SIDE_LABELS = {"L": "left", "R": "right"}
+# "Weaker overall" (weaker_side/status) reflects current standing; a separate
+# "trend concern" can flag the *other* side if it has a significant negative
+# weight movement worth watching even though it currently scores better.
 SIGNIFICANT_WEIGHT_TREND_IMPACT = 4.0
 WEIGHT_TREND_METRICS = {
     "weight_pct_change",
@@ -111,23 +114,23 @@ def _compare_sister_metrics(left: ColonyScore, right: ColonyScore) -> list[Siste
     comparisons: list[SisterMetricComparison] = []
 
     for metric in METRICS:
-        name = str(metric["name"])
+        name = metric.name
         if name not in left_metric_map or name not in right_metric_map:
             continue
 
         left_value = float(getattr(left.feature, name))
         right_value = float(getattr(right.feature, name))
-        raw_gap = _raw_badness_gap(left_value, right_value, str(metric["direction"]))
+        raw_gap = _raw_badness_gap(left_value, right_value, metric.direction)
         worse_side = "L" if raw_gap > 0 else "R" if raw_gap < 0 else None
         peer_std = _mean_positive_std(left_metric_map[name].peer_std, right_metric_map[name].peer_std)
         normalized_gap = abs(raw_gap) / peer_std if peer_std else 0.0
-        impact = min(100.0, normalized_gap * float(metric["weight"]) * 35)
+        impact = min(100.0, normalized_gap * metric.weight * BADNESS_Z_SCORE_SCALE)
 
         comparisons.append(
             SisterMetricComparison(
                 metric=name,
-                label=str(metric["label"]),
-                unit=str(metric.get("unit", "")),
+                label=metric.label,
+                unit=metric.unit,
                 left_value=left_value,
                 right_value=right_value,
                 worse_side=worse_side,
@@ -169,7 +172,7 @@ def _summary(
     right_score: float,
     metric_comparisons: list[SisterMetricComparison],
 ) -> str:
-    trend_metrics = _opposing_weight_trend_metrics(weaker_side, metric_comparisons)
+    trend_metrics = _weight_trend_concern_metrics(weaker_side, metric_comparisons)
     trend_sentence = _weight_trend_sentence(trend_metrics)
     if weaker_side is None:
         summary = f"Current condition: the two colonies at {site_id} look broadly similar on the measured scoring features."
@@ -190,7 +193,7 @@ def _summary(
 
 
 def _report_status_label(comparison: SisterSiteComparison) -> str:
-    trend_metrics = _opposing_weight_trend_metrics(comparison.weaker_side, comparison.metric_comparisons)
+    trend_metrics = _weight_trend_concern_metrics(comparison.weaker_side, comparison.metric_comparisons)
     if not trend_metrics:
         return comparison.status
     trend_side = trend_metrics[0].worse_side
@@ -202,7 +205,7 @@ def _report_status_label(comparison: SisterSiteComparison) -> str:
     )
 
 
-def _opposing_weight_trend_metrics(
+def _weight_trend_concern_metrics(
     weaker_side: str | None,
     metric_comparisons: list[SisterMetricComparison],
 ) -> list[SisterMetricComparison]:
@@ -221,15 +224,15 @@ def _weight_trend_sentence(trend_metrics: list[SisterMetricComparison]) -> str:
     if not trend_metrics:
         return ""
 
-    side = trend_metrics[0].worse_side
-    side_metrics = [metric for metric in trend_metrics if metric.worse_side == side]
+    trend_side = trend_metrics[0].worse_side
+    side_metrics = [metric for metric in trend_metrics if metric.worse_side == trend_side]
     details = [_trend_metric_detail(metric) for metric in side_metrics[:2]]
     if len(details) == 1:
         metric_text = details[0]
     else:
         metric_text = f"{details[0]} and {details[1]}"
     return (
-        f"the {SAME_SIDE_LABELS[side]} colony has significant negative weight movement "
+        f"the {SAME_SIDE_LABELS[trend_side]} colony has significant negative weight movement "
         f"on {metric_text}, so that decline should still be watched."
     )
 

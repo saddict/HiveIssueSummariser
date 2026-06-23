@@ -5,9 +5,11 @@ from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 from beemon_scoring.data_loader import _coordinate_region_ids
+from beemon_scoring.features import daily_weight_pct_changes
+from beemon_scoring.metrics import Metric
 from beemon_scoring.models import ColonyFeatures, ColonyScore, MetricComparison, SensorReading
 from beemon_scoring.reporting import build_region_summaries
-from beemon_scoring.scoring import _daily_weight_pct_changes, _eligible_metric_peers, _score_features
+from beemon_scoring.scoring import _eligible_metric_peers, _score_features
 from beemon_scoring.sister_comparison import build_sister_comparisons
 
 
@@ -142,7 +144,7 @@ class ScoringLogicTests(unittest.TestCase):
             date(2026, 6, 13): "favorable",
         }
 
-        changes = _daily_weight_pct_changes(readings, day_types, "favorable")
+        changes = daily_weight_pct_changes(readings, day_types, "favorable")
 
         self.assertEqual(len(changes), 2)
         self.assertAlmostEqual(changes[0], 1.0)
@@ -154,7 +156,15 @@ class ScoringLogicTests(unittest.TestCase):
             feature("B:L", favorable_windows=0, poor_windows=1),
             feature("C:L", favorable_windows=2, poor_windows=1),
         ]
-        metric = {"min_sample_attr": "favorable_weather_window_count", "min_sample_count": 1}
+        metric = Metric(
+            name="favorable_weather_weight_slope_pct_per_day",
+            label="favorable-weather weight percent trend",
+            direction="higher_is_better",
+            weight=0.06,
+            unit="%/day",
+            min_sample_attr="favorable_weather_window_count",
+            min_sample_count=1,
+        )
 
         eligible = _eligible_metric_peers(features, metric)
 
