@@ -143,10 +143,14 @@ def build_scores(
         "data_quality_issue_count": quality_summary["data_quality_issue_count"],
         "weather_reading_count": sum(len(values) for values in weather_by_hive.values()),
         "colony_count": len(scores),
+        "region_count": len({score.region_id for score in scores}),
+        "region_ids": sorted({score.region_id for score in scores}),
+        "region_assignment_method": "coordinate_radius_connected_components",
+        "region_radius_miles": settings["region_radius_miles"],
         "min_colony_days_observed": round(min(score.feature.days_observed for score in scores), 2) if scores else 0,
         "max_colony_days_observed": round(max(score.feature.days_observed for score in scores), 2) if scores else 0,
     }
-    return sorted(scores, key=lambda score: score.score, reverse=True), metadata
+    return sorted(scores, key=lambda score: (score.region_id, -score.score, score.colony_id)), metadata
 
 
 def _require_data_dir(path: Path, label: str) -> None:
@@ -317,6 +321,7 @@ def _build_features(
         features.append(
             ColonyFeatures(
                 colony_id=colony_id,
+                region_id=first.region_id,
                 hive_id=first.hive_id,
                 colony_side=first.colony_side,
                 sample_count=len(readings),
@@ -366,6 +371,18 @@ def _build_features(
 
 
 def _score_features(features: list[ColonyFeatures], settings: dict[str, float]) -> list[ColonyScore]:
+    by_region: dict[str, list[ColonyFeatures]] = defaultdict(list)
+    for feature in features:
+        by_region[feature.region_id].append(feature)
+
+    scores: list[ColonyScore] = []
+    for region_id in sorted(by_region):
+        region_features = sorted(by_region[region_id], key=lambda feature: feature.colony_id)
+        scores.extend(_score_region_features(region_features, settings))
+    return scores
+
+
+def _score_region_features(features: list[ColonyFeatures], settings: dict[str, float]) -> list[ColonyScore]:
     scores: list[ColonyScore] = []
     threshold = settings["zscore_badness_threshold"]
     drop_threshold = settings["weight_drop_pct_threshold"]
@@ -406,6 +423,7 @@ def _score_features(features: list[ColonyFeatures], settings: dict[str, float]) 
         scores.append(
             ColonyScore(
                 colony_id=feature.colony_id,
+                region_id=feature.region_id,
                 hive_id=feature.hive_id,
                 colony_side=feature.colony_side,
                 score=score,
@@ -416,7 +434,7 @@ def _score_features(features: list[ColonyFeatures], settings: dict[str, float]) 
             )
         )
 
-    return scores
+    return sorted(scores, key=lambda score: (-score.score, score.colony_id))
 
 
 def _eligible_metric_peers(features: list[ColonyFeatures], metric: dict[str, object]) -> list[ColonyFeatures]:

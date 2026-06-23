@@ -7,6 +7,7 @@ from datetime import date, datetime
 @dataclass(frozen=True)
 class HiveConfig:
     hive_id: str
+    region_id: str
     device_uid: str
     latitude: float
     longitude: float
@@ -15,6 +16,7 @@ class HiveConfig:
 @dataclass(frozen=True)
 class SensorReading:
     hive_id: str
+    region_id: str
     colony_side: str
     device_uid: str
     timestamp: int
@@ -46,6 +48,7 @@ class WeatherReading:
 @dataclass
 class ColonyFeatures:
     colony_id: str
+    region_id: str
     hive_id: str
     colony_side: str
     sample_count: int
@@ -94,6 +97,7 @@ class MetricComparison:
 @dataclass
 class ColonyScore:
     colony_id: str
+    region_id: str
     hive_id: str
     colony_side: str
     score: float
@@ -102,6 +106,29 @@ class ColonyScore:
     feature: ColonyFeatures
     flags: list[str] = field(default_factory=list)
 
+
+@dataclass
+class RegionColonyHighlight:
+    colony_id: str
+    hive_id: str
+    colony_side: str
+    score: float
+    status: str
+
+
+@dataclass
+class RegionSummary:
+    region_id: str
+    site_ids: list[str]
+    site_count: int
+    colony_count: int
+    normal_count: int
+    watch_count: int
+    underperforming_count: int
+    performing_well_colonies: list[RegionColonyHighlight]
+    underperforming_colonies: list[RegionColonyHighlight]
+    watch_colonies: list[RegionColonyHighlight]
+    summary: str
 
 
 @dataclass

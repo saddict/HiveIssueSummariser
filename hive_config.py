@@ -26,3 +26,6 @@ HIVES = {
 }
 
 
+
+
+REGION_RADIUS_MILES = 10

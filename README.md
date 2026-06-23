@@ -33,8 +33,8 @@ It does this by:
 2. Splitting each site into left and right colony records.
 3. Reading cached Open-Meteo weather data for each site.
 4. Building 7-day features for each colony.
-5. Comparing each colony against all other colonies in the peer group.
-6. Producing a ranked regional peer report and structured JSON file.
+5. Comparing each colony only against peer colonies in the same configured region.
+6. Producing region highlights plus ranked colony output for each region, along with structured JSON.
 7. Producing a separate sister-colony report comparing L vs R at each site.
 
 ## Local Data Cache
@@ -129,11 +129,7 @@ python3 -m unittest discover -s tests
 
 ## DynamoDB Fetching
 
-`fetch_dynamodb.py` uses the site device UIDs from `hive_config.py` and queries this table:
-
-```text
-beemon-dev-telemetry-readings
-```
+`fetch_dynamodb.py` uses the site device UIDs from `hive_config.py` and queries the configured BeeMon sensor table.
 
 The query expects:
 
@@ -176,7 +172,7 @@ Weather fields include outside temperature, pressure, cloud cover, humidity, WMO
 
 ## How Scoring Works
 
-The scorer compares colonies, not sites. With four configured sites, a complete run scores eight colonies:
+The scorer compares colonies, not sites. Regions are now assigned automatically from site coordinates by connecting sites that are within `REGION_RADIUS_MILES` of each other and treating each connected component as one region. With the current `10` mile radius, the live grouping is `geo_region_01 = 6LR, PRT_1, WTG_HSCHL` and `geo_region_02 = DR_WLKS`, so a complete run still scores eight colonies:
 
 ```text
 DR_WLKS:L
@@ -339,14 +335,14 @@ output/sister_comparisons.json
 The text report gives:
 
 - scoring window
-- number of colonies compared
+- number of regions and colonies compared
 - sensor coverage
-- most concerning colony
-- ranked colony list
+- regional highlights for strong and weak colonies
+- ranked colony lists within each region
 - top metric drivers
 - explicit flags
 
-The JSON output contains the same scoring result in structured form for use by a future dashboard, API, or LLM explanation layer.
+The JSON output contains `metadata`, `regions`, and `colonies` sections for use by a future dashboard, API, or LLM explanation layer.
 
 ## Current Limitations
 
@@ -354,7 +350,7 @@ This MVP is intentionally explainable and conservative, but it has limits:
 
 - It does not diagnose disease, queenlessness, mite pressure, or brood status.
 - It cannot know whether the temperature sensor is exactly in the brood nest.
-- It treats all configured colonies as one peer group.
+- Region assignment uses connected components of the `REGION_RADIUS_MILES` distance graph, so long chains of nearby sites can create a region whose end-to-end span is greater than 10 miles.
 - Data-quality thresholds are conservative heuristics and should be tuned with field validation.
 - Weather adjustment is still simple day-level logic, not a full nectar-flow or forage model.
 

@@ -1,6 +1,6 @@
 # BeeMon Scoring Project Handoff
 
-Last updated: 2026-06-18
+Last updated: 2026-06-22
 
 This file is meant to let a future developer understand and continue the project without needing the full chat history. It explains what exists today, how the scoring works, what logic must not be broken, and how to extend the system to many sites and regions.
 
@@ -25,12 +25,12 @@ Open-Meteo weather is fetched once per site using that site's latitude and longi
 
 ## 2. Current Sites
 
-`hive_config.py` currently includes:
+`hive_config.py` currently includes these coordinate-defined sites with `REGION_RADIUS_MILES = 10`:
 
-- `DR_WLKS` with device UID `351077454554331`
-- `6LR` with device UID `868032061578211`
-- `PRT_1` with device UID `868032061432054`
-- `WTG_HSCHL` with device UID `868032061545061`
+- `DR_WLKS` with device UID `351077454554331` in computed region `geo_region_02`
+- `6LR` with device UID `868032061578211` in computed region `geo_region_01`
+- `PRT_1` with device UID `868032061432054` in computed region `geo_region_01`
+- `WTG_HSCHL` with device UID `868032061545061` in computed region `geo_region_01`
 
 With four sites and two colonies per site, a complete run scores eight colonies:
 
@@ -48,14 +48,14 @@ WTG_HSCHL:R
 ## 3. Important Files
 
 ```text
-run_scoring.py                 Runs scoring from local cached data.
+run_scoring.py                 Runs region-aware colony scoring from local cached data.
 refresh_and_score.py           One-command pipeline: optional fetch, JSON output, text report.
 fetch_dynamodb.py              Pulls sensor rows from DynamoDB into local_data/dynamodb/.
 fetch_openmeteo.py             Pulls weather rows from Open-Meteo into local_data/openmeteo/.
 beemon_scoring/data_loader.py  Loads config, sensor CSVs, and weather CSVs.
 beemon_scoring/models.py       Dataclasses used by the scorer.
 beemon_scoring/scoring.py      Data quality checks, feature extraction, peer scoring.
-beemon_scoring/reporting.py    Regional text and JSON report rendering.
+beemon_scoring/reporting.py    Regional highlight summaries plus text/JSON report rendering.
 beemon_scoring/sister_comparison.py Sister-colony comparison logic.
 run_sister_comparisons.py       Prints/writes L-vs-R same-site comparison output.
 README.md                      User-facing explanation and commands.
@@ -131,7 +131,7 @@ python3 -m unittest discover -s tests
 
 The current scorer does this in order:
 
-1. Load sites from `hive_config.py`.
+1. Load sites from `hive_config.py` and assign coordinate-based regions using a 10-mile radius.
 2. Load cached DynamoDB sensor CSVs from `local_data/dynamodb/`.
 3. Load cached Open-Meteo CSVs from `local_data/openmeteo/`.
 4. Keep only readings inside the rolling time window, usually 7 days.
@@ -141,8 +141,9 @@ The current scorer does this in order:
 8. Build colony-level features.
 9. Classify each site-day's weather as `favorable`, `poor`, or `neutral`.
 10. Calculate weather-aware daily weight features.
-11. Compare each colony to eligible peers.
-12. Produce a ranked text report and `output/scoring.json`.
+11. Compare each colony to eligible peers in the same configured region.
+12. Produce regional highlight output plus ranked per-region colony output in the text report and `output/scoring.json`.
+13. Write `output/scoring.json` with top-level `metadata`, `regions`, and `colonies` sections.
 
 ## 7. Data Quality Checks
 
@@ -317,16 +318,47 @@ Data-quality notes alone do not make a colony underperforming. They are surfaced
 
 ## 11. Current Known Result From Cached Data
 
-With cached data from 2026-06-11 to 2026-06-18, the top concern is:
+With cached data from 2026-06-16 to 2026-06-23, the coordinate-based 10-mile region assignment currently produces:
 
 ```text
-WTG_HSCHL:R - underperforming
-Main drivers: poor-weather weight loss, 7-day weight percent change, temperature instability.
+geo_region_01 = 6LR, PRT_1, WTG_HSCHL
+geo_region_02 = DR_WLKS
 ```
 
-There are also `PRT_1` external temperature anomalies, including values around `190 F`. These are reported as data-quality notes but do not remove colony readings.
+The text and JSON regional highlights currently show:
 
-The same cached sister-colony output now marks `6LR:R` as mildly weaker than `6LR:L`. The reason is current colony weight: `6LR:L` is much heavier at `49.15 kg` versus `37.93 kg` for `6LR:R`, so the right side is treated as weaker even though the left side had the worse recent 7-day percentage movement. The output separates this into `Current condition`, where the right colony is weaker overall, and `Trend concern`, where the left colony's negative weight movement is still called out with its values.
+```text
+geo_region_01
+  Performing well: 6LR:L, 6LR:R
+  Underperforming: WTG_HSCHL:R, WTG_HSCHL:L
+  Watch: PRT_1:R
+
+geo_region_02
+  Performing well: DR_WLKS:L
+  Underperforming: DR_WLKS:R
+```
+
+Top concerns by computed region are:
+
+```text
+geo_region_01: WTG_HSCHL:R - underperforming
+Main drivers: favorable-weather weight percent trend, temperature instability, possible brood-temperature variation.
+
+geo_region_02: DR_WLKS:R - underperforming
+Main drivers: current colony weight, 7-day weight percent change, humidity instability.
+```
+
+There are also `PRT_1:R` excluded readings caused by large short-interval weight jumps, and those are surfaced as data-quality notes instead of silently ignored.
+
+`output/scoring.json` now contains three top-level sections:
+
+```text
+metadata  = window, dataset summary, and region-assignment metadata
+regions   = per-region site membership, highlight summaries, counts, and strongest/weakest colony lists
+colonies  = full colony-level scores and metric comparisons
+```
+
+The same cached sister-colony output now marks `6LR:R` as notably weaker than `6LR:L`. The main reasons are current colony weight and humidity instability: `6LR:L` is heavier at `48.71 kg` versus `37.27 kg` for `6LR:R`, and the right side is also less humidity-stable. In the latest cache window, the right colony is the clearer same-site concern at 6LR.
 
 ## 12. Sister-Colony Same-Site Output
 
@@ -376,278 +408,80 @@ Do not mix sister-colony scoring with regional peer scoring. They answer differe
 
 ## 13. How To Scale To Many Sites And Regions
 
-This is the recommended implementation plan for moving from one peer group to region-aware scoring.
+The code now assigns regions automatically from site coordinates. The current rule is:
 
-### Step 1: Add Region Metadata
+1. Read each site's latitude and longitude from `hive_config.py`.
+2. Connect two sites when their haversine distance is less than or equal to `REGION_RADIUS_MILES` miles.
+3. Treat each connected component of that graph as one generated region such as `geo_region_01`.
 
-Each site needs enough metadata to know which peer group it belongs to.
-
-Start by extending each site config with:
-
-```python
-"region_id": "boone_nc",
-"apiary_id": "yard_01",
-"timezone": "America/New_York",
-"site_type": "production",  # optional
-```
-
-At minimum, each site needs:
+Important implementation detail:
 
 ```text
-site_id
-region_id
-device_uid
-latitude
-longitude
-timezone
+This is connected-component clustering, not strict all-pairs-within-10-miles clustering.
+Overlapping 10-mile neighborhoods merge into the same region.
 ```
 
-If a site does not have a region yet, assign it to `unassigned` and do not include it in production scoring until it is placed.
+That means a future chain of nearby sites could produce one region whose end-to-end span is greater than 10 miles, even though every step in the chain is within the 10-mile threshold.
 
-### Step 2: Decide How Regions Are Defined
+Current implementation details:
 
-Use manual regions first. They are easier to reason about than automatic clustering.
+1. `beemon_scoring/data_loader.py` computes region IDs during `load_hive_config()`.
+2. `HiveConfig`, `SensorReading`, `ColonyFeatures`, and `ColonyScore` all carry `region_id`.
+3. `build_scores()` records `region_assignment_method` and `region_radius_miles` in metadata.
+4. `beemon_scoring/reporting.py` builds top-level `regions` summaries with `site_ids`, counts, and strongest/weakest colony lists.
+5. Colony peer scoring happens only within each computed region.
+6. Sister-colony scoring stays separate and does not change the regional grouping logic.
 
-Example:
+### If The 10-Mile Rule Stays
 
-```text
-boone_nc
-wilkes_nc
-ashe_nc
-```
+Recommended next improvements:
 
-A region should mean:
+1. Add low-peer-count confidence labels, especially for single-site regions like the current `geo_region_02`.
+2. Include optional pairwise site-distance debugging output if region grouping ever needs inspection.
+3. Keep `REGION_RADIUS_MILES` configurable in `hive_config.py`.
 
-```text
-Sites close enough to share broadly similar weather, forage, elevation, and management context.
-```
+### If The 10-Mile Rule Needs Tightening Later
 
-Later, regions can be generated automatically by distance or map polygons, but manual assignment is safer for the MVP.
+Possible alternatives:
 
-### Step 3: Keep Site Weather Separate
+1. Require every site in a region to be within 10 miles of every other site.
+2. Cluster around fixed apiary centroids or named yards.
+3. Use map polygons or manual override region IDs.
 
-Even inside one region, each site should keep its own Open-Meteo weather because elevation and microclimate can differ.
+Any of those would change the current connected-component behavior and should be treated as a deliberate scoring-policy change.
 
-Do not fetch one weather file for the whole region at first.
+### Future Region-Level Scoring
 
-Keep:
+The code now supports colony scoring within computed regions, but it does not yet score one region against another. When that becomes necessary, the next layer should be:
 
-```text
-local_data/openmeteo/{site_id}_data.csv
-```
+1. Aggregate region weather summaries from the site-level Open-Meteo data.
+2. Aggregate region colony performance summaries from the colony scores.
+3. Compare regions only against other regions with similar weather stress.
+4. Keep low-peer-count regions clearly labeled.
 
-Then aggregate site weather into region weather after loading.
-
-### Step 4: Build Colony Features Per Site
-
-Feature extraction should stay mostly the same:
-
-```text
-site -> left colony features
-site -> right colony features
-```
-
-Each colony feature should carry:
-
-```text
-site_id
-region_id
-colony_side
-weather summary for that site
-quality flags
-all scoring features
-```
-
-### Step 5: Score Colonies Within Their Region
-
-Instead of comparing every colony to every other colony globally, group colonies by `region_id`.
-
-Pseudo-logic:
-
-```python
-features_by_region = group_by(features, key="region_id")
-
-for region_id, region_features in features_by_region.items():
-    scores = score_features(region_features)
-```
-
-This means:
-
-```text
-A Boone colony is compared against Boone peer colonies.
-A Wilkes colony is compared against Wilkes peer colonies.
-```
-
-Do not compare colonies across regions at this stage unless the region has too few peers.
-
-### Step 6: Require Enough Regional Peers
-
-A peer score is weak if there are too few peers.
-
-Use a minimum such as:
-
-```text
-minimum 6 colonies per region
-minimum 3 sites per region
-```
-
-If a region has fewer than that, mark confidence as low:
-
-```text
-region_peer_confidence = low
-```
-
-For low-confidence regions, either:
-
-```text
-show score but warn that peer group is small
-or fall back to nearest neighboring region
-or fall back to global scoring with a low-confidence label
-```
-
-Do not silently mix regions without telling the user.
-
-### Step 7: Add Region-Level Weather Summaries
-
-For each region and scoring window, aggregate the site weather:
-
-```text
-average temperature
-average humidity
-percent rainy windows
-percent favorable days
-percent poor days
-cloudiness average
-weather-code distribution
-```
-
-Store these as region weather features.
-
-Example structure:
-
-```json
-{
-  "region_id": "boone_nc",
-  "avg_temp_f": 68.4,
-  "rainy_window_pct": 12.5,
-  "favorable_day_pct": 42.8,
-  "poor_day_pct": 21.4
-}
-```
-
-### Step 8: Score Regions Against Other Regions
-
-After colony scoring, build region features from the colony scores.
-
-Useful region features:
-
-```text
-average colony underperformance score
-percent colonies marked underperforming
-percent colonies marked watch
-average 7-day weight percent change
-average favorable-weather weight percent trend
-average poor-weather weight loss
-average data-quality issue count per site
-```
-
-Then compare regions to other regions using the same peer-scoring idea:
-
-```text
-How much worse is this region than other regions?
-```
-
-But region scoring must account for weather. A region with a bad weather week should not be punished the same way as a region with perfect weather.
-
-### Step 9: Weather-Normalize Region Scores
-
-Start with simple normalization.
-
-For each region, calculate weather stress:
-
-```text
-weather_stress = poor_day_pct + rainy_window_pct + extreme_temp_pct
-```
-
-Then compare region performance against regions with similar weather stress.
-
-Simple MVP approach:
-
-```text
-low weather stress
-medium weather stress
-high weather stress
-```
-
-Only compare regions inside the same stress band.
-
-Example:
-
-```text
-Boone had high rain and cool weather.
-Wilkes had high rain and cool weather.
-Compare Boone against Wilkes.
-Do not directly compare Boone against a sunny warm region without noting the difference.
-```
-
-### Step 10: Region Output Should Explain Both Levels
-
-A final report should have two levels.
-
-Colony-level example:
-
-```text
-WTG_HSCHL:R is underperforming within region boone_nc.
-It lost 7.3% weight while the regional peer average was 1.9% loss.
-It also showed higher temperature instability than regional peers.
-```
-
-Region-level example:
-
-```text
-Region boone_nc is underperforming relative to regions with similar weather stress.
-35% of colonies were watch or underperforming, compared with 18% in similar-weather regions.
-The main regional driver was poor favorable-weather weight trend.
-```
-
-### Step 11: Suggested Code Structure For Regions
-
-Do not rewrite everything at once. Add region support in small pieces.
-
-Recommended changes:
-
-1. Rename `HiveConfig` to `SiteConfig` or add `SiteConfig` while keeping CSV fields compatible.
-2. Add `region_id` to the config loader.
-3. Add `region_id` to `SensorReading`, `WeatherReading`, and `ColonyFeatures`.
-4. Change `build_scores()` to group features by region before scoring.
-5. Add `build_region_scores()` after colony scoring works per region.
-6. Add `RegionFeatures` and `RegionScore` dataclasses.
-7. Add region sections to `reporting.py`.
-8. Add tests for region grouping and low-peer-count behavior.
-
-### Step 12: Rules To Avoid Logical Mistakes
+### Rules To Avoid Logical Mistakes
 
 Keep these rules as invariants:
 
 ```text
-Do not compare colonies from different regions unless explicitly falling back.
+Do not compare colonies from different computed regions unless explicit fallback logic is added.
+Do not hide which sites belong to a computed region.
 Do not hide low peer counts.
 Do not treat missing weather-specific data as zero.
 Do not score impossible sensor readings.
 Do not use absolute weight loss as the main performance signal.
 Do not claim brood certainty from temperature alone.
-Do not compare regions without weather context.
+Do not compare future region-level aggregates without weather context.
 ```
 
 If the system breaks any of those rules, the output can become misleading.
 
 ## 14. Recommended Next Work
 
-1. Add `region_id` and `timezone` to `hive_config.py`.
-2. Rename internal `hive_id` concepts to `site_id` while keeping CSV compatibility.
-3. Add regional grouping and per-region colony scoring.
-4. Add low-peer-count confidence labels.
-5. Add region-level scoring with weather-stress bands.
-6. Add inspection notes so the model can learn from queen status, brood observations, feeding, harvests, and treatments.
-7. Tune data-quality thresholds with known sensor behavior and field validation.
-8. Add tests for region grouping, low-peer-count fallback, and region scoring.
+1. Add low-peer-count confidence labels for computed regions such as the current single-site `geo_region_02`.
+2. Decide whether connected-component interpretation of the 10-mile rule is the long-term desired behavior.
+3. Rename internal `hive_id` concepts to `site_id` while keeping CSV compatibility.
+4. Add region-level scoring with weather-stress bands.
+5. Add inspection notes so the model can learn from queen status, brood observations, feeding, harvests, and treatments.
+6. Tune data-quality thresholds with known sensor behavior and field validation.
+7. Add tests for low-peer-count fallback and future region-vs-region scoring.
