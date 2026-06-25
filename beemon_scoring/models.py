@@ -11,6 +11,10 @@ class HiveConfig:
     device_uid: str
     latitude: float
     longitude: float
+    display_name: str | None = None
+    county: str | None = None
+    state: str | None = None
+    region_label: str | None = None
 
 
 @dataclass(frozen=True)

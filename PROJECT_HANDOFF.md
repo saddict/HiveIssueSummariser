@@ -1,6 +1,6 @@
 # BeeMon Scoring Project Handoff
 
-Last updated: 2026-06-23
+Last updated: 2026-06-25
 
 This file is meant to let a future developer understand and continue the project without needing the full chat history. It explains what exists today, how the scoring works, what logic must not be broken, and how to extend the system to many sites and regions.
 
@@ -25,12 +25,14 @@ Open-Meteo weather is fetched once per site using that site's latitude and longi
 
 ## 2. Current Sites
 
-`hive_config.py` currently includes these coordinate-defined sites with `REGION_RADIUS_MILES = 10`:
+`hive_config.py` currently includes these coordinate-defined sites with `REGION_RADIUS_MILES = 10` and `MIN_REGION_SITE_COUNT = 2`:
 
-- `DR_WLKS` with device UID `351077454554331` in computed region `geo_region_02`
-- `6LR` with device UID `868032061578211` in computed region `geo_region_01`
-- `PRT_1` with device UID `868032061432054` in computed region `geo_region_01`
-- `WTG_HSCHL` with device UID `868032061545061` in computed region `geo_region_01`
+- `DR_WLKS` with device UID `351077454554331`
+- `6LR` with device UID `868032061578211`
+- `PRT_1` with device UID `868032061432054`
+- `WTG_HSCHL` with device UID `868032061545061`
+
+All four currently land in one computed region, `geo_region_01`. `6LR`, `PRT_1`, and `WTG_HSCHL` are within the 10-mile radius of each other; `DR_WLKS` is not (its nearest neighbor, `6LR`, is ~12.6 miles away), but it gets merged in anyway because a region must contain at least `MIN_REGION_SITE_COUNT` sites. See sections 13 and 16 for why that merge step exists.
 
 With four sites and two colonies per site, a complete run scores eight colonies:
 
@@ -297,6 +299,8 @@ For metrics where higher is better, like weight percent gain, lower values are w
 
 For metrics where lower is better, like instability or high humidity exposure, higher values are worse.
 
+Peer mean and standard deviation are computed across all eligible colonies in the same region, **including the colony being scored** — this is not a leave-one-out comparison. That self-inclusion has a hard mathematical consequence: by Samuelson's inequality, a single colony's z-score on any metric is bounded by `sqrt(n-1)` where `n` is the eligible peer count. At `n=2` (a single-site region) that bound collapses to exactly `1.0`, so every metric where the two colonies differ at all reports `badness_z = +-1.0` regardless of how big or small the real gap is — it stops carrying any magnitude information, only sign. `MIN_REGION_SITE_COUNT` (section 13) exists specifically to keep regions from shrinking to `n=2`. See section 16 for the full writeup.
+
 Weather-specific metrics only compare colonies that have enough matching weather windows. If a colony has no favorable days, it is not scored on favorable-weather trend. If it has no poor days, it is not scored on poor-weather loss.
 
 This prevents missing weather-specific data from being treated as zero or normal.
@@ -324,47 +328,50 @@ Data-quality notes alone do not make a colony underperforming. They are surfaced
 
 ## 11. Current Known Result From Cached Data
 
-With cached data from 2026-06-16 to 2026-06-23, the coordinate-based 10-mile region assignment currently produces:
+With cached data from 2026-06-16 to 2026-06-23, the coordinate-based region assignment now produces a single region (see section 16 for why `DR_WLKS` no longer gets its own `geo_region_02`):
 
 ```text
-geo_region_01 = 6LR, PRT_1, WTG_HSCHL
-geo_region_02 = DR_WLKS
+geo_region_01 = 6LR, DR_WLKS, PRT_1, WTG_HSCHL
 ```
 
 The text and JSON regional highlights currently show:
 
 ```text
-geo_region_01
-  Performing well: 6LR:L, 6LR:R
-  Underperforming: WTG_HSCHL:R, WTG_HSCHL:L
-  Watch: PRT_1:R
-
-geo_region_02
-  Performing well: DR_WLKS:L
-  Underperforming: DR_WLKS:R
+geo_region_01 (4 sites, 8 colonies)
+  Performing well: DR_WLKS:L (1.6, normal), 6LR:L (6.8, normal)
+  Underperforming: WTG_HSCHL:R (36.5, underperforming), WTG_HSCHL:L (32.8, underperforming)
+  Watch: PRT_1:R (0.0, watch)
 ```
 
-Top concerns by computed region are:
+Top concern in the (now single) region is:
 
 ```text
 geo_region_01: WTG_HSCHL:R - underperforming
 Main drivers: favorable-weather weight percent trend, temperature instability, possible brood-temperature variation.
-
-geo_region_02: DR_WLKS:R - underperforming
-Main drivers: current colony weight, 7-day weight percent change, humidity instability.
 ```
+
+`WTG_HSCHL:L` is the second-ranked concern, driven by high-humidity exposure, possible brood-temperature variation, and poor-weather weight loss. `DR_WLKS:R` — previously the top concern back when it sat alone in `geo_region_02` — is now `normal` (score 16.3) once compared against the full 8-colony peer pool instead of just its own sister; see section 16, that earlier result was a measurement artifact, not a real finding.
 
 There are also `PRT_1:R` excluded readings caused by large short-interval weight jumps, and those are surfaced as data-quality notes instead of silently ignored.
 
-`output/scoring.json` now contains three top-level sections:
+`output/scoring.json` still contains three top-level sections:
 
 ```text
-metadata  = window, dataset summary, and region-assignment metadata
+metadata  = window, dataset summary, and region-assignment metadata (now also includes `min_region_site_count`)
 regions   = per-region site membership, highlight summaries, counts, and strongest/weakest colony lists
 colonies  = full colony-level scores and metric comparisons
 ```
 
-The same cached sister-colony output now marks `6LR:R` as notably weaker than `6LR:L`. The main reasons are current colony weight and humidity instability: `6LR:L` is heavier at `48.71 kg` versus `37.27 kg` for `6LR:R`, and the right side is also less humidity-stable. In the latest cache window, the right colony is the clearer same-site concern at 6LR.
+The same cached sister-colony output currently shows:
+
+```text
+6LR:       right colony notably weaker (L score 1.4, R score 22.5) - mainly current colony weight, humidity instability
+DR_WLKS:   right colony notably weaker (L score 0.4, R score 32.8) - mainly current colony weight, temperature instability
+PRT_1:     left colony notably weaker  (L score 51.8, R score 2.3) - mainly current colony weight, 7-day weight percent change
+WTG_HSCHL: similar                     (L score 7.2, R score 9.2)
+```
+
+`6LR:L` is heavier (`48.64 kg`) than `6LR:R` (`37.54 kg`) and more humidity- and temperature-stable, so the right side remains the clearer same-site concern at 6LR. Note that the regional grouping change in section 16 does not change sister-comparison conclusions in general — it only reuses the (now larger) region's peer standard deviation to normalize the L-vs-R gap — but it did fix `DR_WLKS`'s own sister numbers, which were previously degenerate for the same reason its regional score was.
 
 ## 12. Sister-Colony Same-Site Output
 
@@ -419,32 +426,34 @@ The code now assigns regions automatically from site coordinates. The current ru
 1. Read each site's latitude and longitude from `hive_config.py`.
 2. Connect two sites when their haversine distance is less than or equal to `REGION_RADIUS_MILES` miles.
 3. Treat each connected component of that graph as one generated region such as `geo_region_01`.
+4. If a region has fewer than `MIN_REGION_SITE_COUNT` sites, merge it into its nearest neighboring region (minimum haversine distance between any pair of member sites across the two regions), repeating until every region meets the floor or only one region remains. See section 16 for why step 4 exists — without it, single-site regions produce mathematically degenerate, magnitude-blind peer comparisons.
 
 Important implementation detail:
 
 ```text
-This is connected-component clustering, not strict all-pairs-within-10-miles clustering.
+Step 3 is connected-component clustering, not strict all-pairs-within-10-miles clustering.
 Overlapping 10-mile neighborhoods merge into the same region.
+Step 4 can pull a region together across distances greater than REGION_RADIUS_MILES.
 ```
 
-That means a future chain of nearby sites could produce one region whose end-to-end span is greater than 10 miles, even though every step in the chain is within the 10-mile threshold.
+That means a future chain of nearby sites could produce one region whose end-to-end span is greater than 10 miles, even though every step in the chain is within the 10-mile threshold — and separately, an isolated site can now end up in a region whose other members are well past the radius, because step 4 prioritizes having enough peers over strict locality.
 
 Current implementation details:
 
-1. `beemon_scoring/data_loader.py` computes region IDs during `load_hive_config()`.
+1. `beemon_scoring/data_loader.py` computes region IDs during `load_hive_config()`, via `_coordinate_region_ids()` (steps 1-3) and `_merge_undersized_regions()` (step 4).
 2. `HiveConfig`, `SensorReading`, `ColonyFeatures`, and `ColonyScore` all carry `region_id`.
-3. `build_scores()` records `region_assignment_method` and `region_radius_miles` in metadata.
+3. `build_scores()` records `region_assignment_method`, `region_radius_miles`, and `min_region_site_count` in metadata.
 4. `beemon_scoring/reporting.py` builds top-level `regions` summaries with `site_ids`, counts, and strongest/weakest colony lists.
-5. Colony peer scoring happens only within each computed region.
-6. Sister-colony scoring stays separate and does not change the regional grouping logic.
+5. Colony peer scoring happens only within each computed (post-merge) region.
+6. Sister-colony scoring stays separate and does not change the regional grouping logic, though it does reuse each region's peer standard deviation to normalize the L-vs-R gap (section 9), so it benefits from step 4 too.
 
 ### If The 10-Mile Rule Stays
 
 Recommended next improvements:
 
-1. Add low-peer-count confidence labels, especially for single-site regions like the current `geo_region_02`.
+1. Per-metric eligible peer counts (`favorable_weather_window_count` / `poor_weather_window_count` eligibility, in `beemon_scoring/scoring.py::_eligible_metric_peers`) can still drop below the region's site count if too few colonies have qualifying weather days — that is not covered by `MIN_REGION_SITE_COUNT` and could in principle still produce a low-`n` degenerate z-score for a single metric even in an otherwise healthy region. Not observed in current cached data (all 9 metrics have full regional eligibility today), but worth a confidence label if it shows up. See section 16.
 2. Include optional pairwise site-distance debugging output if region grouping ever needs inspection.
-3. Keep `REGION_RADIUS_MILES` configurable in `hive_config.py`.
+3. Keep `REGION_RADIUS_MILES` and `MIN_REGION_SITE_COUNT` configurable in `hive_config.py` (already true).
 
 ### If The 10-Mile Rule Needs Tightening Later
 
@@ -484,13 +493,13 @@ If the system breaks any of those rules, the output can become misleading.
 
 ## 14. Recommended Next Work
 
-1. Add low-peer-count confidence labels for computed regions such as the current single-site `geo_region_02`.
+1. Region-level low-peer-count regions are now handled by `MIN_REGION_SITE_COUNT` merging (section 16); the remaining gap is per-metric eligibility (section 13's "If The 10-Mile Rule Stays" item 1) — add a confidence label there if it ever bites.
 2. Decide whether connected-component interpretation of the 10-mile rule is the long-term desired behavior.
 3. Rename internal `hive_id` concepts to `site_id` while keeping CSV compatibility.
 4. Add region-level scoring with weather-stress bands.
 5. Add inspection notes so the model can learn from queen status, brood observations, feeding, harvests, and treatments.
 6. Tune data-quality thresholds with known sensor behavior and field validation.
-7. Add tests for low-peer-count fallback and future region-vs-region scoring.
+7. Region-level low-peer-count fallback now has tests (section 16); still add tests for future region-vs-region scoring.
 
 ## 15. Code Organization Refactor (2026-06-23)
 
@@ -529,3 +538,57 @@ Naming convention used throughout the split: a function dropped its leading unde
 - `tests/test_scoring_logic.py` updated its imports for the relocated functions (`daily_weight_pct_changes` now comes from `beemon_scoring.features`, `Metric` from `beemon_scoring.metrics`) and replaced a plain-dict test fixture with a real `Metric(...)` construction. No test assertions changed.
 
 Explicitly out of scope for this pass: the 30-field `ColonyFeatures` dataclass was not broken up into nested sub-dataclasses (too many call sites for the marginal benefit), and no CLI behavior, output file paths, or JSON schema changed.
+
+## 16. Region Peer-Pool Floor + Degenerate Z-Score Fix (2026-06-25)
+
+A math audit of the peer/z-score logic (section 9) found that `_score_region_features` (`beemon_scoring/scoring.py`) computes each metric's `peer_mean`/`peer_std` over a population that **includes the colony being scored**. By Samuelson's inequality, that self-inclusion bounds any single colony's z-score at `sqrt(n-1)`, where `n` is the eligible peer count. Two concrete, then-live consequences:
+
+1. **Degenerate signal for `DR_WLKS`.** The coordinate-based regioning added in section 13 (commit `92a8280`) put `DR_WLKS` alone in its own region, `geo_region_02` (its nearest neighbor, `6LR`, is ~12.6 miles away — over `REGION_RADIUS_MILES`). At `n=2`, population stdev of two points is *always* exactly `|x1-x2|/2`, so every metric's `badness_z` for `DR_WLKS` was mathematically forced to exactly `+1.0`/`-1.0`/`0.0`, regardless of how big or small the real gap was. Before the fix, `DR_WLKS:R` had `badness_z` pinned at exactly `+-1.0` on all 9 metrics, a score of `31.5`, and 7 simultaneous "1.0 standard deviations worse" flags that pushed it to `status="underperforming"` purely via the flag-count branch of `_status` — not because anything was genuinely measured as an outlier. The same degenerate `peer_std` fed `sister_comparison.py`'s `_mean_positive_std`, so `DR_WLKS`'s sister-comparison `normalized_gap` was likewise pinned at exactly `2.0` for every differing metric.
+2. **Unreachable scale ceiling.** Before commit `92a8280`, all 8 colonies were one peer pool (`n=8`, bound `sqrt(7)~=2.65`). After it, the largest region had only 6 colonies (bound `sqrt(5)~=2.24`). `BADNESS_Z_SCORE_SCALE=35.0` (`beemon_scoring/metrics.py`) was commented as "~2.86 std devs worse maxes the 0-100 score," but that was unreachable at any region size possible with 8 total colonies.
+
+Both symptoms share one root cause: peer-pool size. Comparing a colony only against its own L/R sister (the `n=2` case) is already the dedicated job of the sister-colony report (section 12) — a regional z-score has nothing to add there.
+
+### The fix: merge undersized regions into their nearest neighbor
+
+`hive_config.py` gained `MIN_REGION_SITE_COUNT = 2`. After building the existing radius-based connected-component regions, `beemon_scoring/data_loader.py::_coordinate_region_ids()` now runs a new `_merge_undersized_regions()` post-process step: any region with fewer than `MIN_REGION_SITE_COUNT` sites is merged into its nearest neighboring region (minimum haversine distance between any pair of member sites across the two regions), repeating until every region meets the floor or only one region remains. With the real 4-site config, this collapses `geo_region_02` (`DR_WLKS` alone) into `geo_region_01`, producing one region of all 4 sites / 8 colonies. See section 13 for the full updated region-assignment rule and section 11 for the resulting before/after numbers.
+
+This is a superset of the pre-`92a8280` behavior (all 8 colonies as one pool), not a full revert — radius-based splitting still applies whenever a region is big enough to satisfy the floor on its own; merging only fires for regions that would otherwise be too small.
+
+Files touched:
+
+```text
+hive_config.py                New MIN_REGION_SITE_COUNT = 2 setting.
+beemon_scoring/data_loader.py load_hive_config() reads/threads the setting; _coordinate_region_ids() takes
+                              a min_region_site_count param and now does adjacency -> connected components ->
+                              _merge_undersized_regions() -> region-id labeling, instead of going straight from
+                              adjacency to labeled regions. New _merge_undersized_regions() implements the merge
+                              loop above, reusing the existing _haversine_miles() helper.
+beemon_scoring/scoring.py    build_scores() metadata now also records min_region_site_count, and
+                              region_assignment_method changed from "coordinate_radius_connected_components" to
+                              "coordinate_radius_connected_components_with_min_site_merge".
+beemon_scoring/metrics.py    BADNESS_Z_SCORE_SCALE comment rewritten to explain the sqrt(n-1) bound instead of
+                              stating a fixed, usually-unreachable "~2.86 std devs maxes the score" claim.
+tests/test_scoring_logic.py  test_coordinate_regions_group_sites_within_10_miles renamed to
+                              ..._radius_only and now passes min_region_site_count=1 (disables merging) so it
+                              keeps testing pure radius-based grouping in isolation. Added: a test that the real
+                              4-site config collapses to one region under the default floor; a synthetic test
+                              that an undersized region merges into its nearest neighbor (not just any neighbor)
+                              when multiple candidates exist; a no-op test confirming already-sufficient regions
+                              are left alone; a termination test confirming a floor larger than the total site
+                              count still collapses to one region without looping forever.
+README.md                    "How Scoring Works" and "Current Limitations" updated to describe and justify the
+                              two-step (radius, then floor-merge) region assignment.
+```
+
+No scoring formula changed — `_badness_z`, the metric weights, and the 0-100 scaling are untouched. Only which colonies count as "peers" for a given colony changed, by construction (upstream of `scoring.py`/`reporting.py`/`sister_comparison.py`, which all just consume whatever `region_id` each colony already carries).
+
+### Verification performed
+
+1. `python3 -m unittest discover -s tests` — 11/11 pass (7 original + 4 new region-merge tests).
+2. Against real cached `local_data`: `DR_WLKS:R`'s `badness_z` went from uniformly `+-1.0`/`0.0` across all 9 metrics to continuously varying values (e.g. `0.82, 0.68, 0.62, ...`), and its status correctly dropped from the spurious `underperforming` to `normal` — see section 11 for the current full result, where `WTG_HSCHL:R`/`WTG_HSCHL:L` are now correctly the top concerns instead.
+3. `DR_WLKS`'s sister-comparison `normalized_gap` values are no longer pinned at exactly `2.0`.
+4. Regenerated `output/scoring.json` and `output/sister_comparisons.json` to match.
+
+### Residual risk (not fixed by this change)
+
+Per-metric eligibility (`_eligible_metric_peers` in `scoring.py`) filters on `favorable_weather_window_count` / `poor_weather_window_count` for two metrics. That filter operates independently of `MIN_REGION_SITE_COUNT` and could in principle still narrow a single metric's eligible peer count to a degenerate `n=2` even inside an otherwise-healthy region, if too few colonies have qualifying weather days. Not observed in current cached data (all 9 metrics have full regional eligibility today) — flagged in section 13/14 as a known gap, not addressed here.

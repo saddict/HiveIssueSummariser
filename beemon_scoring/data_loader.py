@@ -28,10 +28,13 @@ def load_hive_config(config_path: Path) -> tuple[dict[str, HiveConfig], tuple[st
         "rolling_window_days": float(getattr(module, "ROLLING_WINDOW_DAYS", 7)),
         "zscore_badness_threshold": float(getattr(module, "ZSCORE_BADNESS_THRESHOLD", 1.0)),
         "weight_drop_pct_threshold": float(getattr(module, "WEIGHT_DROP_PCT_THRESHOLD", 5.0)),
+        "min_region_site_count": int(getattr(module, "MIN_REGION_SITE_COUNT", 2)),
     }
 
     hive_rows = {hive_id: values for hive_id, values in module.HIVES.items()}
-    region_ids = _coordinate_region_ids(hive_rows, settings["region_radius_miles"])
+    region_ids = _coordinate_region_ids(
+        hive_rows, settings["region_radius_miles"], settings["min_region_site_count"]
+    )
     hives = {
         hive_id: HiveConfig(
             hive_id=values["hive_id"],
@@ -39,6 +42,10 @@ def load_hive_config(config_path: Path) -> tuple[dict[str, HiveConfig], tuple[st
             device_uid=str(values["device_uid"]),
             latitude=float(values["latitude"]),
             longitude=float(values["longitude"]),
+            display_name=_optional_config_str(values.get("display_name")),
+            county=_optional_config_str(values.get("county")),
+            state=_optional_config_str(values.get("state")),
+            region_label=_optional_config_str(values.get("region_label")),
         )
         for hive_id, values in hive_rows.items()
     }
@@ -119,7 +126,11 @@ def load_weather_readings(data_dir: Path, hives: dict[str, HiveConfig]) -> list[
     return readings
 
 
-def _coordinate_region_ids(hive_rows: dict[str, dict[str, object]], radius_miles: float) -> dict[str, str]:
+def _coordinate_region_ids(
+    hive_rows: dict[str, dict[str, object]],
+    radius_miles: float,
+    min_region_site_count: int = 2,
+) -> dict[str, str]:
     hive_ids = sorted(hive_rows)
     adjacency: dict[str, set[str]] = {hive_id: set() for hive_id in hive_ids}
 
@@ -135,17 +146,21 @@ def _coordinate_region_ids(hive_rows: dict[str, dict[str, object]], radius_miles
                 adjacency[hive_id].add(other_hive_id)
                 adjacency[other_hive_id].add(hive_id)
 
-    region_ids: dict[str, str] = {}
+    components: list[set[str]] = []
     visited: set[str] = set()
-    region_index = 1
     for hive_id in hive_ids:
         if hive_id in visited:
             continue
-        component = sorted(_connected_component(hive_id, adjacency))
+        component = _connected_component(hive_id, adjacency)
         visited.update(component)
+        components.append(component)
+
+    components = _merge_undersized_regions(hive_rows, components, min_region_site_count)
+
+    region_ids: dict[str, str] = {}
+    for region_index, component in enumerate(sorted(components, key=lambda c: min(c)), start=1):
         region_id = f"geo_region_{region_index:02d}"
-        region_index += 1
-        for member in component:
+        for member in sorted(component):
             region_ids[member] = region_id
 
     return region_ids
@@ -163,6 +178,52 @@ def _connected_component(start_hive_id: str, adjacency: dict[str, set[str]]) -> 
         stack.extend(sorted(adjacency[hive_id] - component, reverse=True))
 
     return component
+
+
+def _merge_undersized_regions(
+    hive_rows: dict[str, dict[str, object]],
+    components: list[set[str]],
+    min_region_site_count: int,
+) -> list[set[str]]:
+    """Merge any region with fewer than min_region_site_count sites into its
+    nearest neighboring region, repeating until every region clears the floor
+    or only one region remains. A region's own L/R colonies already get a
+    dedicated comparison via the sister-colony report, so a single-site region
+    has no other sites to be meaningfully compared against."""
+    components = [set(component) for component in components]
+
+    while len(components) > 1:
+        undersized = [component for component in components if len(component) < min_region_site_count]
+        if not undersized:
+            break
+        target = min(undersized, key=lambda component: sorted(component))
+
+        best: tuple[float, set[str]] | None = None
+        for other in components:
+            if other is target:
+                continue
+            distance = min(
+                _haversine_miles(
+                    float(hive_rows[hive_a]["latitude"]),
+                    float(hive_rows[hive_a]["longitude"]),
+                    float(hive_rows[hive_b]["latitude"]),
+                    float(hive_rows[hive_b]["longitude"]),
+                )
+                for hive_a in target
+                for hive_b in other
+            )
+            if (
+                best is None
+                or distance < best[0]
+                or (distance == best[0] and sorted(other) < sorted(best[1]))
+            ):
+                best = (distance, other)
+
+        assert best is not None
+        best[1].update(target)
+        components.remove(target)
+
+    return components
 
 
 def _haversine_miles(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -193,3 +254,9 @@ def _optional_int(value: str | None) -> int | None:
     if value in (None, ""):
         return None
     return int(value)
+
+
+def _optional_config_str(value: object) -> str | None:
+    if value in (None, ""):
+        return None
+    return str(value)

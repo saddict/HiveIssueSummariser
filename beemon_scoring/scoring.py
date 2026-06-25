@@ -60,8 +60,9 @@ def build_scores(
         "colony_count": len(scores),
         "region_count": len({score.region_id for score in scores}),
         "region_ids": sorted({score.region_id for score in scores}),
-        "region_assignment_method": "coordinate_radius_connected_components",
+        "region_assignment_method": "coordinate_radius_connected_components_with_min_site_merge",
         "region_radius_miles": settings["region_radius_miles"],
+        "min_region_site_count": settings["min_region_site_count"],
         "min_colony_days_observed": round(min(score.feature.days_observed for score in scores), 2) if scores else 0,
         "max_colony_days_observed": round(max(score.feature.days_observed for score in scores), 2) if scores else 0,
     }

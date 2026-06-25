@@ -170,7 +170,24 @@ class ScoringLogicTests(unittest.TestCase):
 
         self.assertEqual([item.colony_id for item in eligible], ["A:L", "C:L"])
 
-    def test_coordinate_regions_group_sites_within_10_miles(self) -> None:
+    def test_coordinate_regions_group_sites_within_10_miles_radius_only(self) -> None:
+        region_ids = _coordinate_region_ids(
+            {
+                "DR_WLKS": {"latitude": 36.247479, "longitude": -81.90097},
+                "6LR": {"latitude": 36.212598, "longitude": -81.679678},
+                "PRT_1": {"latitude": 36.203096, "longitude": -81.625792},
+                "WTG_HSCHL": {"latitude": 36.214155, "longitude": -81.649756},
+            },
+            10.0,
+            min_region_site_count=1,
+        )
+
+        self.assertEqual(len(set(region_ids.values())), 2)
+        self.assertEqual(region_ids["6LR"], region_ids["PRT_1"])
+        self.assertEqual(region_ids["6LR"], region_ids["WTG_HSCHL"])
+        self.assertNotEqual(region_ids["DR_WLKS"], region_ids["6LR"])
+
+    def test_coordinate_regions_merge_dr_wlks_into_nearest_region_by_default(self) -> None:
         region_ids = _coordinate_region_ids(
             {
                 "DR_WLKS": {"latitude": 36.247479, "longitude": -81.90097},
@@ -181,10 +198,59 @@ class ScoringLogicTests(unittest.TestCase):
             10.0,
         )
 
+        self.assertEqual(len(set(region_ids.values())), 1)
+        self.assertEqual(region_ids["DR_WLKS"], region_ids["6LR"])
+
+    def test_coordinate_regions_merge_picks_nearest_undersized_neighbor(self) -> None:
+        region_ids = _coordinate_region_ids(
+            {
+                "A": {"latitude": 0.0, "longitude": 0.5},
+                "B": {"latitude": 0.0, "longitude": 0.0},
+                "C": {"latitude": 0.0, "longitude": 0.01},
+                "D": {"latitude": 0.0, "longitude": 10.0},
+                "E": {"latitude": 0.0, "longitude": 10.01},
+            },
+            1.0,
+            min_region_site_count=2,
+        )
+
+        # A is a singleton, far closer to {B, C} than to {D, E}, so it merges
+        # into the B/C region rather than the D/E region.
+        self.assertEqual(region_ids["A"], region_ids["B"])
+        self.assertEqual(region_ids["B"], region_ids["C"])
+        self.assertEqual(region_ids["D"], region_ids["E"])
+        self.assertNotEqual(region_ids["A"], region_ids["D"])
+
+    def test_coordinate_regions_no_merge_when_already_at_floor(self) -> None:
+        region_ids = _coordinate_region_ids(
+            {
+                "B": {"latitude": 0.0, "longitude": 0.0},
+                "C": {"latitude": 0.0, "longitude": 0.01},
+                "D": {"latitude": 0.0, "longitude": 10.0},
+                "E": {"latitude": 0.0, "longitude": 10.01},
+            },
+            1.0,
+            min_region_site_count=2,
+        )
+
         self.assertEqual(len(set(region_ids.values())), 2)
-        self.assertEqual(region_ids["6LR"], region_ids["PRT_1"])
-        self.assertEqual(region_ids["6LR"], region_ids["WTG_HSCHL"])
-        self.assertNotEqual(region_ids["DR_WLKS"], region_ids["6LR"])
+        self.assertEqual(region_ids["B"], region_ids["C"])
+        self.assertEqual(region_ids["D"], region_ids["E"])
+        self.assertNotEqual(region_ids["B"], region_ids["D"])
+
+    def test_coordinate_regions_merge_collapses_to_one_when_floor_exceeds_total_sites(self) -> None:
+        region_ids = _coordinate_region_ids(
+            {
+                "B": {"latitude": 0.0, "longitude": 0.0},
+                "C": {"latitude": 0.0, "longitude": 0.01},
+                "D": {"latitude": 0.0, "longitude": 10.0},
+                "E": {"latitude": 0.0, "longitude": 10.01},
+            },
+            1.0,
+            min_region_site_count=10,
+        )
+
+        self.assertEqual(len(set(region_ids.values())), 1)
 
     def test_region_scoring_uses_only_same_region_peers(self) -> None:
         settings = {"zscore_badness_threshold": 1.0, "weight_drop_pct_threshold": 5.0}

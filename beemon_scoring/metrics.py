@@ -15,7 +15,13 @@ class Metric:
 
 
 # A weighted-average badness z-score of 1.0 (one std dev worse than peers)
-# scales to 35 points; ~2.86 std devs worse maxes the 0-100 score.
+# scales to 35 points; a full 100 would need 2.86 std devs worse. Peer mean
+# and std are computed over the region's own colonies, including the colony
+# being scored, so by Samuelson's inequality any single metric's z-score is
+# bounded by sqrt(n-1) for a region of n colonies -- 2.86 needs a region of
+# at least 10 colonies. MIN_REGION_SITE_COUNT (hive_config.py) keeps regions
+# from shrinking to a single site (n=2), where that bound collapses to
+# exactly 1.0 and z-scores stop carrying any real magnitude information.
 BADNESS_Z_SCORE_SCALE = 35.0
 
 METRICS = [

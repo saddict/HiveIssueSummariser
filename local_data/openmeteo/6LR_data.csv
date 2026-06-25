@@ -18,5 +18,5 @@ hive_id,latitude,longitude,date,clock_time,temperature_F,pressure_hPa,cloudiness
 6LR,36.212598,-81.679678,2026-06-22,14:00,78.1,907.5,75,71,2,Warm and humid afternoon with mostly cloudy skies and Partly cloudy conditions.
 6LR,36.212598,-81.679678,2026-06-22,19:00,70.8,905.3,100,91,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
 6LR,36.212598,-81.679678,2026-06-23,07:00,63.1,903.0,100,95,65,Mild and humid morning with mostly cloudy skies and Heavy rain conditions.
-6LR,36.212598,-81.679678,2026-06-23,14:00,66.0,905.9,79,84,2,Mild and humid afternoon with mostly cloudy skies and Partly cloudy conditions.
-6LR,36.212598,-81.679678,2026-06-23,19:00,64.6,906.3,6,71,0,Mild and humid evening with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-23,14:00,62.4,904.6,100,95,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-23,19:00,64.3,906.9,3,72,0,Mild and humid evening with mostly clear skies and Clear conditions.

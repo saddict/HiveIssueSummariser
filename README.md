@@ -172,7 +172,9 @@ Weather fields include outside temperature, pressure, cloud cover, humidity, WMO
 
 ## How Scoring Works
 
-The scorer compares colonies, not sites. Regions are now assigned automatically from site coordinates by connecting sites that are within `REGION_RADIUS_MILES` of each other and treating each connected component as one region. With the current `10` mile radius, the live grouping is `geo_region_01 = 6LR, PRT_1, WTG_HSCHL` and `geo_region_02 = DR_WLKS`, so a complete run still scores eight colonies:
+The scorer compares colonies, not sites. Regions are assigned automatically from site coordinates in two steps. First, sites within `REGION_RADIUS_MILES` of each other are connected into components, one component per region. Second, any region with fewer than `MIN_REGION_SITE_COUNT` sites is merged into its nearest neighboring region by distance, even if that distance exceeds `REGION_RADIUS_MILES`, repeating until every region meets that floor or only one region remains. This second step exists because comparing a colony's metrics against too few peers produces statistically meaningless results: with only one other peer, a z-score is always exactly +-1 standard deviation regardless of how big or small the real gap is, since it carries no information beyond which side is higher (see `BADNESS_Z_SCORE_SCALE` in `beemon_scoring/metrics.py` for the math). A site's own L/R colonies are excluded from counting toward this floor, since comparing a colony only against its own sister is already the dedicated job of the [sister-colony report](#sister-colony-comparison) below.
+
+With the current `10` mile radius and a `2`-site floor, `DR_WLKS` sits alone past the radius (its nearest neighbor, `6LR`, is about 12.6 miles away) but is still merged into the `6LR, PRT_1, WTG_HSCHL` cluster to keep its peer comparisons meaningful, so the live grouping is one region, `geo_region_01 = 6LR, DR_WLKS, PRT_1, WTG_HSCHL`, and a complete run scores eight colonies:
 
 ```text
 DR_WLKS:L
@@ -351,6 +353,7 @@ This MVP is intentionally explainable and conservative, but it has limits:
 - It does not diagnose disease, queenlessness, mite pressure, or brood status.
 - It cannot know whether the temperature sensor is exactly in the brood nest.
 - Region assignment uses connected components of the `REGION_RADIUS_MILES` distance graph, so long chains of nearby sites can create a region whose end-to-end span is greater than 10 miles.
+- The `MIN_REGION_SITE_COUNT` merge step can pull an isolated site into a region well beyond `REGION_RADIUS_MILES` (DR_WLKS today, at ~12.6 miles from its nearest neighbor). This trades strict geographic locality for a peer-comparison group large enough that z-scores carry real magnitude information instead of always landing at exactly +-1 standard deviation.
 - Data-quality thresholds are conservative heuristics and should be tuned with field validation.
 - Weather adjustment is still simple day-level logic, not a full nectar-flow or forage model.
 
