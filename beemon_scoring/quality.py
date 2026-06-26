@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from .events import detect_weight_events
 from .models import SensorReading
 
 MIN_WEIGHT_KG = 0.45
@@ -31,8 +32,17 @@ def filter_quality_issues(
         by_colony[reading.colony_id].append(reading)
 
     for colony_id, colony_readings in by_colony.items():
+        ordered = sorted(colony_readings, key=lambda item: item.timestamp)
+        # Detect genuine harvest/swarm/supering steps up front so the jump
+        # filter below does not mistake them for sensor faults. A real event
+        # produces a sharp, sustained level shift; the detector ignores the
+        # transient spikes and dropouts that the jump filter exists to remove.
+        # The timestamps of confirmed events mark the readings that open a new
+        # baseline and must therefore survive instead of being excluded.
+        event_timestamps = {event.observed_at for event in detect_weight_events(ordered)}
+
         previous_kept: SensorReading | None = None
-        for reading in sorted(colony_readings, key=lambda item: item.timestamp):
+        for reading in ordered:
             impossible_reasons = _impossible_reading_reasons(reading)
             if impossible_reasons:
                 excluded_count += 1
@@ -46,7 +56,8 @@ def filter_quality_issues(
                     f"External sensor anomaly at {reading.observed_at.isoformat()}: {reason}."
                 )
 
-            if previous_kept is not None:
+            is_event_step = reading.observed_at in event_timestamps
+            if previous_kept is not None and not is_event_step:
                 jump_reasons = _sudden_jump_reasons(previous_kept, reading)
                 if jump_reasons:
                     excluded_count += 1

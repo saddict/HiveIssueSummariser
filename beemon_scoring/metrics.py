@@ -34,7 +34,7 @@ METRICS = [
     ),
     Metric(
         name="weight_pct_change",
-        label="7-day weight percent change",
+        label="weight percent change",
         direction="higher_is_better",
         weight=0.17,
         unit="%",

@@ -4,6 +4,7 @@ import statistics
 from collections import Counter, defaultdict
 from datetime import date
 
+from .events import WeightSegment, detect_weight_events, segment_readings
 from .models import ColonyFeatures, SensorReading, WeatherReading
 from .weather import RAINY_WEATHER_CODES
 
@@ -34,8 +35,18 @@ def build_features(
         external_humidities = [reading.external_humidity_pct for reading in readings if reading.external_humidity_pct is not None]
         weather = weather_by_hive.get(first.hive_id, [])
         day_types = weather_day_types.get(first.hive_id, {})
-        favorable_daily_changes = daily_weight_pct_changes(readings, day_types, "favorable")
-        poor_daily_changes = daily_weight_pct_changes(readings, day_types, "poor")
+
+        # Detect harvests/swarms/supering and split the window at each event so
+        # weight trend is measured within stable segments rather than straight
+        # across the step. A normal week yields a single segment and these
+        # values match the old first-vs-last behaviour exactly.
+        events = detect_weight_events(readings)
+        segments = segment_readings(readings, events)
+        weight_trend = _segmented_weight_trend(segments)
+        event_dates = {event.observed_at.date() for event in events}
+
+        favorable_daily_changes = daily_weight_pct_changes(readings, day_types, "favorable", event_dates)
+        poor_daily_changes = daily_weight_pct_changes(readings, day_types, "poor", event_dates)
 
         features.append(
             ColonyFeatures(
@@ -50,10 +61,10 @@ def build_features(
                 end_at=last.observed_at,
                 days_observed=elapsed_days,
                 latest_weight_kg=last.weight_kg,
-                weight_delta_kg=last.weight_kg - first.weight_kg,
-                weight_pct_change=_pct_change(first.weight_kg, last.weight_kg),
-                weight_slope_kg_per_day=_linear_slope_per_day(readings),
-                weight_slope_pct_per_day=_linear_slope_pct_per_day(readings),
+                weight_delta_kg=weight_trend["delta_kg"],
+                weight_pct_change=weight_trend["pct_change"],
+                weight_slope_kg_per_day=weight_trend["slope_kg_per_day"],
+                weight_slope_pct_per_day=weight_trend["slope_pct_per_day"],
                 favorable_weather_window_count=len(favorable_daily_changes),
                 poor_weather_window_count=len(poor_daily_changes),
                 favorable_weather_weight_slope_pct_per_day=statistics.fmean(favorable_daily_changes)
@@ -84,19 +95,82 @@ def build_features(
                 if weather
                 else None,
                 dominant_weather_overview=_dominant_weather_overview(weather),
+                weight_event_count=len(events),
+                weight_event_descriptions=[event.describe() for event in events],
+                segment_count=len(segments),
             )
         )
     return features
+
+
+def _segmented_weight_trend(segments: list[WeightSegment]) -> dict[str, float]:
+    """Combine per-segment weight trends into window-level features.
+
+    The window is split at each detected event (harvest, swarm, supering), so a
+    segment only ever contains ordinary day-to-day movement. Two quantities are
+    rebuilt from the segments:
+
+    * Net weight change (delta_kg / pct_change) is the SUM of each segment's
+      own first-to-last change. Because the segment boundaries fall on the
+      events, the artificial step jumps are excluded from the total -- what
+      remains is the colony's organic gain or loss. pct_change is expressed
+      against the very first reading so it stays comparable to the old metric.
+
+    * Trend (slope_kg_per_day / slope_pct_per_day) is a span-weighted average of
+      each segment's own linear slope. A long stable segment counts for more
+      than a short one, and a harvest no longer drags the slope down to a false
+      "collapsing" reading.
+
+    With no events there is exactly one segment, so every value reduces to the
+    original first-vs-last / single-regression behaviour and nothing changes for
+    a normal week.
+    """
+    scored = [segment for segment in segments if len(segment.readings) >= 2]
+    if not scored:
+        return {"delta_kg": 0.0, "pct_change": 0.0, "slope_kg_per_day": 0.0, "slope_pct_per_day": 0.0}
+
+    baseline_kg = scored[0].readings[0].weight_kg
+    total_delta_kg = sum(
+        segment.readings[-1].weight_kg - segment.readings[0].weight_kg for segment in scored
+    )
+
+    slope_weight = 0.0
+    slope_kg_accumulator = 0.0
+    slope_pct_accumulator = 0.0
+    for segment in scored:
+        span_days = max(segment.hours / 24, 1 / 24)
+        slope_weight += span_days
+        slope_kg_accumulator += _linear_slope_per_day(segment.readings) * span_days
+        slope_pct_accumulator += _linear_slope_pct_per_day(segment.readings) * span_days
+
+    slope_kg_per_day = slope_kg_accumulator / slope_weight if slope_weight else 0.0
+    slope_pct_per_day = slope_pct_accumulator / slope_weight if slope_weight else 0.0
+
+    return {
+        "delta_kg": total_delta_kg,
+        "pct_change": _pct_change(baseline_kg, baseline_kg + total_delta_kg),
+        "slope_kg_per_day": slope_kg_per_day,
+        "slope_pct_per_day": slope_pct_per_day,
+    }
 
 
 def daily_weight_pct_changes(
     readings: list[SensorReading],
     day_types: dict[date, str],
     weather_type: str,
+    event_dates: set[date] | None = None,
 ) -> list[float]:
+    # Skip any day on which a harvest/swarm/supering occurred: the intraday
+    # first-vs-last change on such a day reflects the beekeeper's intervention,
+    # not the weather's effect on the colony, and would otherwise blow up the
+    # poor-/favorable-weather metrics exactly the way it blew up the overall
+    # trend. Days without events are unaffected.
+    skip_dates = event_dates or set()
     by_day: dict[date, list[SensorReading]] = defaultdict(list)
     for reading in readings:
         observed_date = reading.observed_at.date()
+        if observed_date in skip_dates:
+            continue
         if day_types.get(observed_date) == weather_type:
             by_day[observed_date].append(reading)
 

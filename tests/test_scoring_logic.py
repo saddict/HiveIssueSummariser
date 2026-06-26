@@ -114,7 +114,7 @@ def colony_score(
             ),
             MetricComparison(
                 metric="weight_pct_change",
-                label="7-day weight percent change",
+                label="weight percent change",
                 value=weight_pct_change,
                 peer_mean=0.0,
                 peer_std=2.0,

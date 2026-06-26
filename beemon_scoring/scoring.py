@@ -65,6 +65,8 @@ def build_scores(
         "min_region_site_count": settings["min_region_site_count"],
         "min_colony_days_observed": round(min(score.feature.days_observed for score in scores), 2) if scores else 0,
         "max_colony_days_observed": round(max(score.feature.days_observed for score in scores), 2) if scores else 0,
+        "weight_event_count": sum(score.feature.weight_event_count for score in scores),
+        "colonies_with_weight_events": sum(1 for score in scores if score.feature.weight_event_count),
     }
     return sorted(scores, key=lambda score: (score.region_id, -score.score, score.colony_id)), metadata
 
@@ -163,6 +165,8 @@ def _flags(
     drop_threshold: float,
 ) -> list[str]:
     flags: list[str] = []
+    for description in feature.weight_event_descriptions:
+        flags.append(description)
     if feature.weight_pct_change <= -drop_threshold:
         flags.append(f"Weight dropped {abs(feature.weight_pct_change):.1f}% during the window.")
     for comparison in comparisons:
@@ -179,7 +183,8 @@ def _flags(
 
 def _status(score: float, flags: list[str]) -> str:
     quality_flags = [flag for flag in flags if flag.startswith("Data quality:") or flag.startswith("Excluded ")]
-    performance_flags = [flag for flag in flags if flag not in quality_flags]
+    event_flags = [flag for flag in flags if flag.startswith("Likely ")]
+    performance_flags = [flag for flag in flags if flag not in quality_flags and flag not in event_flags]
     if score >= 55 or len(performance_flags) >= 3:
         return "underperforming"
     if score >= 30 or performance_flags or quality_flags:

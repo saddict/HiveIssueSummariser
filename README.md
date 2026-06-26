@@ -33,9 +33,43 @@ It does this by:
 2. Splitting each site into left and right colony records.
 3. Reading cached Open-Meteo weather data for each site.
 4. Building 7-day features for each colony.
+5. Detecting abrupt weight events (harvests, swarms, supering/feeding) and splitting the window into stable segments around them, so a beekeeper's intervention is reported as an event rather than corrupting the weight trend (see "Weight events" below).
 5. Comparing each colony only against peer colonies in the same configured region.
 6. Producing region highlights plus ranked colony output for each region, along with structured JSON.
 7. Producing a separate sister-colony report comparing L vs R at each site.
+
+## Weight Events (Harvests, Swarms, Supering)
+
+Colony weight does not always move smoothly. A honey harvest removes several
+kilograms in an hour; a swarm departs with a large mass of bees; adding a super
+or feeder steps the weight up. If the scorer fit a single trend straight across
+one of these steps, it would report a thriving colony as collapsing (harvest) or
+a declining one as booming (supering), and the event itself would never be
+surfaced. Earlier versions also risked discarding a real harvest as a "sudden
+jump" data-quality fault, hiding it entirely.
+
+`beemon_scoring/events.py` detects these step changes and splits the window into
+*segments* — the stretches of ordinary day-to-day behaviour between events. The
+feature builder then:
+
+- measures weight trend (`weight_slope_*`) as a span-weighted average of each
+  segment's own slope, so a long stable stretch counts for more than a short
+  one and the step itself is excluded;
+- measures net change (`weight_delta_kg`, `weight_pct_change`) as the sum of the
+  within-segment changes, which is the colony's organic gain or loss with the
+  intervention removed;
+- skips event days when computing the poor-/favorable-weather metrics; and
+- reports each event as an explicit flag, e.g.
+  `Likely harvest: weight dropped 12.8 kg (-26.8%) around 2026-06-23T18:00...`.
+
+Events are classified as `harvest`, `swarm` (a drop paired with a sharp
+internal-climate change), or `addition` (a sustained gain). The labels are
+deliberately probabilistic — sensors cannot confirm the cause — so they are
+always phrased as "Likely ...". A normal week contains no events and reduces to
+a single segment, leaving the original behaviour unchanged. Detection is
+conservative: only a sharp, sustained level shift that survives a short
+confirmation window counts, so ordinary foraging gains and overnight respiration
+loss stay within one segment.
 
 ## Local Data Cache
 
@@ -119,6 +153,15 @@ Use a different scoring window:
 
 ```bash
 python3 run_scoring.py --window-days 14
+python3 run_scoring.py --window-days 30
+python3 run_sister_comparisons.py --window-days 30
+```
+
+`--window-days` only changes how much of the cached data is scored. If the local cache doesn't already hold that much history, fetch it first:
+
+```bash
+python3 fetch_dynamodb.py --days 30
+python3 fetch_openmeteo.py --days 30
 ```
 
 Run the unit tests:
@@ -301,7 +344,7 @@ Current weighted drivers:
 
 ```text
 30%  current colony weight
-17%  7-day weight percent change
+17%  weight percent change
 9%   weight percent trend
 6%   favorable-weather weight percent trend
 4%   poor-weather weight loss

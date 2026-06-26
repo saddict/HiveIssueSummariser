@@ -84,6 +84,9 @@ class ColonyFeatures:
     rainy_weather_reading_pct: float | None
     cloudy_weather_reading_pct: float | None
     dominant_weather_overview: str | None
+    weight_event_count: int = 0
+    weight_event_descriptions: list[str] = field(default_factory=list)
+    segment_count: int = 1
 
 
 @dataclass
