@@ -87,6 +87,9 @@ class ColonyFeatures:
     weight_event_count: int = 0
     weight_event_descriptions: list[str] = field(default_factory=list)
     segment_count: int = 1
+    thermal_efficiency_pi: float = 0.0
+    thermal_efficiency_m: float = 0.0
+    thermal_paired_count: int = 0
 
 
 @dataclass

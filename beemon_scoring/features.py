@@ -6,6 +6,7 @@ from datetime import date
 
 from .events import WeightSegment, detect_weight_events, segment_readings
 from .models import ColonyFeatures, SensorReading, WeatherReading
+from .thermal import thermal_efficiency
 from .weather import RAINY_WEATHER_CODES
 
 BROOD_TARGET_TEMP_F = 94.5
@@ -47,6 +48,11 @@ def build_features(
 
         favorable_daily_changes = daily_weight_pct_changes(readings, day_types, "favorable", event_dates)
         poor_daily_changes = daily_weight_pct_changes(readings, day_types, "poor", event_dates)
+
+        te_result = thermal_efficiency(readings)
+        te_pi = te_result["Pi"] if te_result else 0.0
+        te_m = te_result["m"] if te_result else 0.0
+        te_count = te_result["n"] if te_result else 0
 
         features.append(
             ColonyFeatures(
@@ -98,6 +104,9 @@ def build_features(
                 weight_event_count=len(events),
                 weight_event_descriptions=[event.describe() for event in events],
                 segment_count=len(segments),
+                thermal_efficiency_pi=te_pi,
+                thermal_efficiency_m=te_m,
+                thermal_paired_count=te_count,
             )
         )
     return features

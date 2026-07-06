@@ -72,11 +72,13 @@ METRICS = [
         unit="F",
     ),
     Metric(
-        name="avg_brood_temp_deviation_f",
-        label="possible brood-temperature variation",
-        direction="lower_is_better",
+        name="thermal_efficiency_pi",
+        label="thermal efficiency",
+        direction="higher_is_better",
         weight=0.10,
-        unit="F",
+        unit="",
+        min_sample_attr="thermal_paired_count",
+        min_sample_count=10,
     ),
     Metric(
         name="high_humidity_reading_pct",
