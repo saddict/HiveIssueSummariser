@@ -258,23 +258,27 @@ high standard deviation = unstable internal temperature
 
 The system does not judge instability in isolation. It compares that value against all peer colonies. A colony is flagged only when its variation is worse than the peer group.
 
-### Possible Brood-Temperature Variation
+### Thermal Efficiency
 
-This is intentionally worded as possible variation, not a certain brood diagnosis.
+Thermal efficiency measures how actively a colony is generating its own internal heat, rather than simply tracking outdoor temperature. It is based on the linear thermal model from Kovac & Stabentheiner (*Royal Society Interface*, 2026).
 
-The current MVP uses `94.5 F` as a reference point for brood-zone temperature and calculates the average absolute distance from that value:
-
-```text
-average(|internal_temp - 94.5|)
-```
-
-This does not prove brood is present, absent, healthy, or unhealthy. It only means:
+The scorer fits a regression over all paired internal/external temperature readings in the window:
 
 ```text
-This colony's internal temperature is farther from the expected brood-zone reference than its peers.
+T_H = m · T_E + ΔT
 ```
 
-The model stays cautious because sensor placement, colony state, queen status, and actual brood presence are not known from this data alone.
+Where `T_H` is the colony's internal temperature, `T_E` is the on-device external temperature, `m` is the weather-tracking coefficient, and `ΔT` is the metabolic temperature lift — the warmth the bees themselves are adding. A colony with `m` near 0 is well-insulated and thermoregulating actively; a colony with `m` near 1 is passively following outdoor temperature with little active regulation.
+
+The efficiency indicator `Pi` normalises the metabolic lift:
+
+```text
+Pi = ΔT / 34.5°C
+```
+
+Higher `Pi` is better. A colony that holds a strong, stable brood-zone temperature regardless of outdoor conditions will have a high `Pi`. A struggling or weather-tracking colony will have a low one.
+
+This replaces the previous "possible brood-temperature variation" metric, which measured average absolute distance from a 94.5°F reference. That metric could not distinguish weather-driven drift from poor thermoregulation: a healthy colony in a cold week would be penalised equally alongside a genuinely struggling one.
 
 ### Humidity Features
 
@@ -349,7 +353,7 @@ Current weighted drivers:
 6%   favorable-weather weight percent trend
 4%   poor-weather weight loss
 13%  temperature instability
-10%  possible brood-temperature variation
+10%  thermal efficiency
 6%   high-humidity exposure
 5%   humidity instability
 ```
@@ -394,7 +398,7 @@ The JSON output contains `metadata`, `regions`, and `colonies` sections for use 
 This MVP is intentionally explainable and conservative, but it has limits:
 
 - It does not diagnose disease, queenlessness, mite pressure, or brood status.
-- It cannot know whether the temperature sensor is exactly in the brood nest.
+- Thermal efficiency measures thermoregulatory behaviour, not brood presence or health directly. It cannot know sensor placement, colony state, or queen status.
 - Region assignment uses connected components of the `REGION_RADIUS_MILES` distance graph, so long chains of nearby sites can create a region whose end-to-end span is greater than 10 miles.
 - The `MIN_REGION_SITE_COUNT` merge step can pull an isolated site into a region well beyond `REGION_RADIUS_MILES` (DR_WLKS today, at ~12.6 miles from its nearest neighbor). This trades strict geographic locality for a peer-comparison group large enough that z-scores carry real magnitude information instead of always landing at exactly +-1 standard deviation.
 - Data-quality thresholds are conservative heuristics and should be tuned with field validation.
