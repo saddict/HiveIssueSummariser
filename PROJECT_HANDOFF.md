@@ -1,6 +1,6 @@
 # BeeMon Scoring Project Handoff
 
-Last updated: 2026-06-25
+Last updated: 2026-07-06
 
 This file is meant to let a future developer understand and continue the project without needing the full chat history. It explains what exists today, how the scoring works, what logic must not be broken, and how to extend the system to many sites and regions.
 
@@ -129,6 +129,20 @@ Regenerate only sister-colony JSON from cached data:
 python3 run_sister_comparisons.py --format json --output output/sister_comparisons.json
 ```
 
+Score a longer window on demand (default stays 7 days everywhere; `--window-days` is purely a per-run override and does not touch `hive_config.py`):
+
+```bash
+python3 run_scoring.py --window-days 30
+python3 run_sister_comparisons.py --window-days 30
+```
+
+`--window-days` only changes how much of the already-cached data gets scored. If `local_data/` doesn't hold that much history yet, fetch it first — `fetch_dynamodb.py`/`fetch_openmeteo.py` both take a `--days` flag (default 7) that controls how far back they pull:
+
+```bash
+python3 fetch_dynamodb.py --days 30
+python3 fetch_openmeteo.py --days 30
+```
+
 Run tests:
 
 ```bash
@@ -187,12 +201,12 @@ The scorer compares these peer-relative metrics:
 
 ```text
 30%  current colony weight
-17%  7-day weight percent change
+17%  weight percent change
 9%   weight percent trend
 6%   favorable-weather weight percent trend
 4%   poor-weather weight loss
 13%  temperature instability
-10%  possible brood-temperature variation
+10%  thermal efficiency
 6%   high-humidity exposure
 5%   humidity instability
 ```
@@ -246,27 +260,38 @@ low standard deviation  = stable internal temperature
 high standard deviation = unstable internal temperature
 ```
 
-### Possible Brood-Temperature Variation
+### Thermal Efficiency
 
-This is intentionally cautious wording. The system cannot prove brood is present or that the sensor is in the brood nest.
+Based on the linear thermal model from Kovac & Stabentheiner (*Royal Society Interface*, 2026).
 
-The scorer measures average distance from a brood-zone reference of `94.5 F`:
-
-```text
-average(abs(internal_temp - 94.5))
-```
-
-Interpretation should be:
+The scorer fits an ordinary least-squares regression over all hourly paired readings in the window:
 
 ```text
-This colony is farther from the brood-zone reference than peers.
+T_H = m · T_E + ΔT
 ```
 
-Not:
+Where:
+
+- `T_H` — internal hive temperature (converted to °C for the regression)
+- `T_E` — external temperature from the on-device sensor (`tE` field, also °C)
+- `m` — weather-tracking coefficient: 0 = perfectly insulated, 1 = fully tracking outdoor temperature
+- `ΔT` — metabolic temperature lift from the bees (°C)
+
+The efficiency indicator `Pi` normalises the metabolic lift against a fixed reference differential:
 
 ```text
-This colony definitely has a brood problem.
+Pi = ΔT / T_d     where T_d = 34.5°C
 ```
+
+`T_d = 34.5°C` is the reference maximum metabolic differential from the paper. `Pi` ranges from 0 (no active thermoregulation, e.g. dead colony) toward 1 (full metabolic lift). Higher Pi is better.
+
+This metric is only scored for a colony when it has at least 10 valid paired `(T_H, T_E)` readings in the window. With hourly data and a 7-day window, every colony normally has ~168 paired points, so the guard fires only in edge cases (sensor dropout, very short window).
+
+The regression uses no external weather data — only the device's own `tE` sensor. There is no R² threshold; a low R² on a well-insulated colony is expected and physically meaningful (T_H barely moves regardless of T_E, so there is little variance for the regression to explain).
+
+The `avg_brood_temp_deviation_f` field remains in `ColonyFeatures` and is still computed in `features.py`, but it is no longer in the `METRICS` catalog and is not scored. This was deliberate: the old metric measured absolute distance from a 94.5°F reference and could not distinguish weather-driven drift from poor thermoregulation.
+
+Implementation: `beemon_scoring/thermal.py::thermal_efficiency()`.
 
 ### Humidity Features
 
@@ -367,7 +392,7 @@ The same cached sister-colony output currently shows:
 ```text
 6LR:       right colony notably weaker (L score 1.4, R score 22.5) - mainly current colony weight, humidity instability
 DR_WLKS:   right colony notably weaker (L score 0.4, R score 32.8) - mainly current colony weight, temperature instability
-PRT_1:     left colony notably weaker  (L score 51.8, R score 2.3) - mainly current colony weight, 7-day weight percent change
+PRT_1:     left colony notably weaker  (L score 51.8, R score 2.3) - mainly current colony weight, weight percent change
 WTG_HSCHL: similar                     (L score 7.2, R score 9.2)
 ```
 
@@ -592,3 +617,68 @@ No scoring formula changed — `_badness_z`, the metric weights, and the 0-100 s
 ### Residual risk (not fixed by this change)
 
 Per-metric eligibility (`_eligible_metric_peers` in `scoring.py`) filters on `favorable_weather_window_count` / `poor_weather_window_count` for two metrics. That filter operates independently of `MIN_REGION_SITE_COUNT` and could in principle still narrow a single metric's eligible peer count to a degenerate `n=2` even inside an otherwise-healthy region, if too few colonies have qualifying weather days. Not observed in current cached data (all 9 metrics have full regional eligibility today) — flagged in section 13/14 as a known gap, not addressed here.
+
+## 17. Thermal Efficiency Indicator (2026-07-06)
+
+Replaced the `avg_brood_temp_deviation_f` metric (10% weight, "possible brood-temperature variation") with `thermal_efficiency_pi` (10% weight, "thermal efficiency") in the scoring model.
+
+### Motivation
+
+The old metric measured average absolute distance of internal temperature from a 94.5°F reference. It could not distinguish two very different situations: a cold-snap week where the bees thermoregulate normally but outdoor conditions drag the internal temp down, versus a colony that is genuinely failing to maintain brood-zone temperature. A cold week would penalise every colony equally regardless of thermoregulatory ability, and a peer-relative comparison would then reflect only which colony had slightly better insulation — not which colony's bees were doing worse.
+
+### Model
+
+OLS regression over paired hourly internal/external readings within the scoring window:
+
+```text
+T_H = m · T_E + ΔT
+```
+
+All values in °C for the regression (converted from °F). The regression is implemented from scratch using the `statistics` stdlib module — no numpy/scipy dependency — consistent with the rest of the codebase.
+
+```text
+m      = Σ(x_i − x̄)(y_i − ȳ) / Σ(x_i − x̄)²       (OLS slope)
+ΔT     = ȳ − m · x̄                                   (OLS intercept = metabolic lift)
+Pi     = ΔT / T_d    where T_d = 34.5°C
+R²     = 1 − SS_res / SS_tot                          (computed but not used as a gate)
+```
+
+T_E comes from the device's own `tE` sensor field — not Open-Meteo — so both T_H and T_E share the same timestamp and no time-alignment join is needed.
+
+### Fit-quality guardrails
+
+| Guard | Value | Rationale |
+|-------|-------|-----------|
+| Minimum paired points (`n`) | 10 | Below this, OLS has too few degrees of freedom |
+| R² threshold | none | Low R² on a well-insulated colony is physically expected |
+| Flat T_E guard | \|SS_x\| < 1e-9 | Returns None to avoid division by zero |
+
+A degenerate fit sets `thermal_paired_count = 0`, which excludes the colony from this metric's peer pool via `min_sample_attr` — the same mechanism used by favorable/poor-weather metrics. The colony is neither scored on thermal efficiency nor counted as a peer for others.
+
+### Direction
+
+`Pi` is `higher_is_better`. A colony with strong metabolic lift (high Pi) is thermoregulating actively. A weather-tracking colony (low Pi, high m) appears worse than peers — consistent with how bad thermoregulation would already surface through temperature-instability and weight trends.
+
+### Spike validation (2026-07-06)
+
+Run `spike_thermal_efficiency.py` against cached 7- and 30-day windows. Results were physically coherent:
+
+- WTG_HSCHL:R (score 38.6, underperforming): m = 0.85, Pi = 0.095 — nearly fully weather-tracking
+- WTG_HSCHL:L (score 33.0, underperforming): m = 0.70, Pi = 0.177 — weather-tracking
+- 6LR:L (score ~0, normal): m = 0.09, Pi = 0.929 — well-insulated, strong metabolic lift
+- PRT_1:R (normal): m = 0.02, Pi = 0.997 — near-perfect thermoregulation
+
+The WTG_HSCHL colonies, already flagged underperforming on weight and temperature instability, also have the lowest Pi values — consistent and independently confirming.
+
+### Files changed
+
+```text
+beemon_scoring/thermal.py     NEW. thermal_efficiency() pure function, T_D_C = 34.5, MIN_THERMAL_POINTS = 10.
+beemon_scoring/models.py      ColonyFeatures gained: thermal_efficiency_pi, thermal_efficiency_m, thermal_paired_count (all default 0).
+beemon_scoring/features.py    build_features() calls thermal_efficiency() and populates the three new fields.
+beemon_scoring/metrics.py     Replaced avg_brood_temp_deviation_f entry with thermal_efficiency_pi (higher_is_better, 0.10, min_sample_attr guard).
+tests/test_thermal_efficiency.py  NEW. Unit tests for the thermal_efficiency() function.
+PROJECT_HANDOFF.md            Section 8 updated; "Possible Brood-Temperature Variation" subsection replaced; this section added.
+```
+
+Total metric weight is unchanged at 1.00. No other metric weights were modified.
