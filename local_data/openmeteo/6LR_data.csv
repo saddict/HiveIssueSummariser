@@ -1,4 +1,73 @@
 hive_id,latitude,longitude,date,clock_time,temperature_F,pressure_hPa,cloudiness_percent,humidity_percent,weather_condition_code,weather_overview
+6LR,36.212598,-81.679678,2026-06-09,07:00,63.3,912.8,100,100,45,Mild and humid morning with mostly cloudy skies and Fog conditions.
+6LR,36.212598,-81.679678,2026-06-09,14:00,66.7,913.1,100,94,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-09,19:00,67.9,910.5,100,90,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-10,07:00,64.6,908.8,99,90,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-10,14:00,76.3,910.3,32,75,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-06-10,19:00,77.4,906.3,23,63,1,Warm and moderately humid evening with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-06-11,07:00,68.1,907.0,5,86,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-11,14:00,80.7,908.9,13,65,0,Warm and humid afternoon with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-11,19:00,79.4,907.1,0,61,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-12,07:00,68.9,905.9,1,85,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-12,14:00,81.1,908.7,28,64,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-06-12,19:00,75.7,906.2,99,72,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-13,07:00,64.2,905.8,5,90,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-13,14:00,78.3,909.2,35,65,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-06-13,19:00,78.4,907.3,0,51,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-14,07:00,62.1,903.6,0,79,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-14,14:00,73.3,905.9,55,79,2,Warm and humid afternoon with partly cloudy skies and Partly cloudy conditions.
+6LR,36.212598,-81.679678,2026-06-14,19:00,69.9,901.7,99,89,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-15,07:00,55.3,899.3,3,88,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-15,14:00,66.1,903.5,100,67,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-15,19:00,66.3,903.1,1,66,0,Mild and humid evening with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-16,07:00,55.6,902.0,97,86,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-16,14:00,66.7,902.8,68,75,2,Mild and humid afternoon with mostly cloudy skies and Partly cloudy conditions.
+6LR,36.212598,-81.679678,2026-06-16,19:00,65.0,902.5,100,77,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-17,07:00,57.3,901.0,1,85,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-17,14:00,74.0,903.9,44,66,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-06-17,19:00,74.0,903.5,92,57,3,Warm and moderately humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-18,07:00,67.7,901.5,0,76,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-18,14:00,73.0,904.5,100,83,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-18,19:00,71.9,903.6,100,87,51,Warm and humid evening with mostly cloudy skies and Light drizzle conditions.
+6LR,36.212598,-81.679678,2026-06-19,07:00,62.4,900.9,99,99,51,Mild and humid morning with mostly cloudy skies and Light drizzle conditions.
+6LR,36.212598,-81.679678,2026-06-19,14:00,70.8,905.1,37,74,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-06-19,19:00,68.9,905.6,1,61,0,Mild and moderately humid evening with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-20,07:00,56.1,904.1,99,80,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-20,14:00,71.4,908.0,59,50,2,Warm and moderately humid afternoon with partly cloudy skies and Partly cloudy conditions.
+6LR,36.212598,-81.679678,2026-06-20,19:00,72.4,906.7,0,56,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-21,07:00,59.7,904.5,0,75,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-21,14:00,76.8,908.0,27,54,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-06-21,19:00,74.2,907.0,20,64,1,Warm and moderately humid evening with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-06-22,07:00,61.4,904.3,7,80,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-22,14:00,78.1,907.5,75,71,2,Warm and humid afternoon with mostly cloudy skies and Partly cloudy conditions.
+6LR,36.212598,-81.679678,2026-06-22,19:00,70.8,905.3,100,91,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-23,07:00,63.1,903.0,100,95,65,Mild and humid morning with mostly cloudy skies and Heavy rain conditions.
+6LR,36.212598,-81.679678,2026-06-23,14:00,62.4,904.6,100,95,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-23,19:00,64.4,906.5,1,74,0,Mild and humid evening with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-24,07:00,53.2,906.7,15,79,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-24,14:00,69.9,909.6,12,58,0,Mild and moderately humid afternoon with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-24,19:00,69.4,909.3,74,61,2,Mild and moderately humid evening with mostly cloudy skies and Partly cloudy conditions.
+6LR,36.212598,-81.679678,2026-06-25,07:00,55.3,906.2,98,69,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-25,14:00,73.9,910.8,19,65,0,Warm and humid afternoon with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-25,19:00,72.5,909.2,100,70,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-26,07:00,61.3,908.9,0,80,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-26,14:00,74.5,912.3,97,73,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-26,19:00,75.3,910.8,100,68,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-27,07:00,65.5,908.6,99,79,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-27,14:00,73.2,910.2,63,81,2,Warm and humid afternoon with mostly cloudy skies and Partly cloudy conditions.
+6LR,36.212598,-81.679678,2026-06-27,19:00,68.8,907.0,100,82,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-28,07:00,65.4,906.4,100,91,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-28,14:00,70.7,906.9,99,88,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-28,19:00,71.6,907.1,100,80,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-29,07:00,65.8,908.1,0,89,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-06-29,14:00,79.7,912.2,42,66,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-06-29,19:00,80.4,912.1,31,61,1,Warm and moderately humid evening with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-06-30,07:00,67.2,910.0,100,93,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-30,14:00,80.9,912.9,100,76,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-06-30,19:00,75.0,910.6,6,88,0,Warm and humid evening with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-07-01,07:00,67.7,909.5,0,81,0,Mild and humid morning with mostly clear skies and Clear conditions.
+6LR,36.212598,-81.679678,2026-07-01,14:00,84.8,913.1,23,61,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-07-01,19:00,83.7,912.2,0,63,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
 6LR,36.212598,-81.679678,2026-07-02,07:00,66.7,909.5,0,68,0,Mild and humid morning with mostly clear skies and Clear conditions.
 6LR,36.212598,-81.679678,2026-07-02,14:00,86.6,914.5,21,50,1,Hot and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
 6LR,36.212598,-81.679678,2026-07-02,19:00,84.4,912.7,0,49,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
@@ -18,5 +87,5 @@ hive_id,latitude,longitude,date,clock_time,temperature_F,pressure_hPa,cloudiness
 6LR,36.212598,-81.679678,2026-07-07,14:00,79.0,909.7,23,71,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
 6LR,36.212598,-81.679678,2026-07-07,19:00,75.8,908.3,6,75,0,Warm and humid evening with mostly clear skies and Clear conditions.
 6LR,36.212598,-81.679678,2026-07-08,07:00,66.5,907.9,0,86,0,Mild and humid morning with mostly clear skies and Clear conditions.
-6LR,36.212598,-81.679678,2026-07-08,14:00,80.6,911.5,27,56,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-6LR,36.212598,-81.679678,2026-07-08,19:00,71.5,908.2,95,84,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+6LR,36.212598,-81.679678,2026-07-08,14:00,79.5,910.9,37,69,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+6LR,36.212598,-81.679678,2026-07-08,19:00,71.2,908.1,100,82,63,Warm and humid evening with mostly cloudy skies and Moderate rain conditions.
