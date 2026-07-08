@@ -36,13 +36,25 @@ from .models import SensorReading
 MIN_EVENT_DROP_KG = 2.5
 MIN_EVENT_DROP_PCT = 7.0
 
+# Physical sanity floors applied before the MAD z-score check.
+# Additions must clear a minimum absolute gain: foraging returns rarely exceed
+# 2-3 kg in a single hour even on a strong flow day; real supers and feeders
+# typically add 3 kg or more. Setting 3.0 filters the foraging-burst false
+# positives seen at WTG_HSCHL (peak +2.7 kg) while keeping genuine additions.
+MIN_CANDIDATE_ADDITION_KG = 3.0
+# Harvests must clear a minimum percentage drop: sensor drift and minor
+# calibration shifts are typically < 1-2 %; real harvests remove at least
+# 3-4 % of colony weight (6LR:R lost 4.0 % in the 2026-07-07 harvest, the
+# smallest confirmed harvest in the dataset).
+MIN_CANDIDATE_HARVEST_PCT = 3.0
+
 # MAD-based outlier threshold. A step whose hour-normalised delta scores
 # MAD_SENSITIVITY_K or more standard deviations away from the colony's own
 # typical inter-reading movement is flagged as a candidate event.
-# Value of 5.3 confirmed via spike_mad_events.py on cached data (2026-07-08):
-# confirmed harvests reach z ≥ 5.47; highest ordinary foraging step was 4.98
-# (DR_WLKS:L, active nectar flow). 5.3 gives a 0.32σ buffer above that peak
-# while still clearing the 6LR:R harvest (z=5.47).
+# Value of 5.3 validated via spike_mad_events.py (2026-07-08):
+# confirmed harvests reach z ≥ 5.37 (6LR:R); highest ordinary foraging step
+# was 4.92 (DR_WLKS:L, active nectar flow). 5.3 gives a 0.38σ buffer above
+# that peak while still clearing the confirmed 6LR:R harvest (z = 5.37).
 MAD_SENSITIVITY_K = 5.3
 
 # Threshold for sister-corroborated promotion (see corroborate_sister_events in
@@ -178,6 +190,19 @@ def detect_weight_events(readings: list[SensorReading]) -> list[WeightEvent]:
 
         delta_kg = current.weight_kg - previous.weight_kg
         pct_change = (delta_kg / previous.weight_kg) * 100
+
+        # Physical sanity floors before the MAD check. These filter steps that
+        # are statistically anomalous but physically implausible as beekeeping
+        # events: strong foraging returns look like additions, and sensor drift
+        # looks like a tiny harvest. The MAD z-score alone cannot distinguish
+        # these because a very stable colony will score even small steps as
+        # outliers. Corroboration bypasses these floors intentionally — a
+        # sub-threshold drop on the sister side may be physically small yet
+        # still represent a real apiary-level event.
+        if delta_kg > 0 and delta_kg < MIN_CANDIDATE_ADDITION_KG:
+            continue
+        if delta_kg < 0 and abs(pct_change) < MIN_CANDIDATE_HARVEST_PCT:
+            continue
 
         # Flag when this step is a clear outlier relative to the colony's own
         # typical hourly movement. If MAD is unavailable (too few readings or
