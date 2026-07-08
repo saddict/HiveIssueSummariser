@@ -1,91 +1,22 @@
 hive_id,latitude,longitude,date,clock_time,temperature_F,pressure_hPa,cloudiness_percent,humidity_percent,weather_condition_code,weather_overview
-WTG_HSCHL,36.214155,-81.649756,2026-05-28,07:00,62.9,906.4,4,90,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-28,14:00,74.5,909.7,26,65,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-28,19:00,72.3,908.2,0,54,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-29,07:00,51.5,905.9,0,83,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-29,14:00,70.1,908.4,14,63,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-29,19:00,70.4,906.5,70,75,2,Warm and humid evening with mostly cloudy skies and Partly cloudy conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-30,07:00,62.3,904.8,100,91,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-30,14:00,73.1,907.8,44,69,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-30,19:00,69.4,906.5,0,73,0,Mild and humid evening with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-31,07:00,51.9,907.7,100,77,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-31,14:00,63.8,909.1,67,80,2,Mild and humid afternoon with mostly cloudy skies and Partly cloudy conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-05-31,19:00,64.8,907.6,100,81,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-01,07:00,59.6,904.9,87,92,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-01,14:00,66.8,907.5,71,72,53,Mild and humid afternoon with mostly cloudy skies and Moderate drizzle conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-01,19:00,67.3,907.2,99,54,3,Mild and moderately humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-02,07:00,55.0,909.4,100,73,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-02,14:00,61.1,913.7,43,67,1,Mild and humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-02,19:00,57.1,913.7,64,78,2,Mild and humid evening with mostly cloudy skies and Partly cloudy conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-03,07:00,42.8,912.3,12,81,45,Cool and humid morning with mostly clear skies and Fog conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-03,14:00,66.3,916.6,0,41,0,Mild and moderately humid afternoon with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-03,19:00,66.8,914.6,10,51,0,Mild and moderately humid evening with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-04,07:00,47.9,910.6,0,70,0,Cool and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-04,14:00,72.9,915.3,10,47,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-04,19:00,71.9,912.7,35,54,1,Warm and moderately humid evening with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-05,07:00,52.0,909.3,0,73,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-05,14:00,76.2,913.5,0,51,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-05,19:00,72.9,910.6,93,64,3,Warm and moderately humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-06,07:00,55.5,907.9,0,80,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-06,14:00,74.5,910.7,29,63,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-06,19:00,73.6,908.8,33,62,1,Warm and moderately humid evening with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-07,07:00,58.9,906.5,17,77,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-07,14:00,76.1,909.8,20,59,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-07,19:00,73.9,908.2,93,57,3,Warm and moderately humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-08,07:00,58.1,909.0,99,79,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-08,14:00,75.5,913.9,27,71,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-08,19:00,71.9,913.0,99,82,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-09,07:00,63.0,914.0,100,100,45,Mild and humid morning with mostly cloudy skies and Fog conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-09,14:00,66.6,914.3,100,94,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-09,19:00,68.3,911.7,85,86,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-10,07:00,62.4,909.5,88,88,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-10,14:00,76.5,911.5,29,72,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-10,19:00,76.6,907.3,52,71,2,Warm and humid evening with partly cloudy skies and Partly cloudy conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-11,07:00,65.1,907.6,2,86,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-11,14:00,80.8,910.0,4,61,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-11,19:00,80.5,908.4,0,56,95,Warm and moderately humid evening with mostly clear skies and Thunderstorm conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-12,07:00,69.2,907.1,0,83,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-12,14:00,81.8,909.9,24,60,95,Warm and moderately humid afternoon with partly cloudy skies and Thunderstorm conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-12,19:00,76.4,907.4,99,69,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-13,07:00,61.8,906.5,3,89,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-13,14:00,78.4,910.3,35,62,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-13,19:00,79.2,908.6,0,47,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-14,07:00,60.2,904.4,0,79,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-14,14:00,72.8,906.9,38,79,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-14,19:00,70.2,902.8,99,86,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-15,07:00,55.9,900.6,1,85,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-15,14:00,66.5,904.7,100,64,3,Mild and moderately humid afternoon with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-15,19:00,66.9,904.3,0,63,0,Mild and moderately humid evening with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-16,07:00,54.6,903.0,97,87,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-16,14:00,66.5,903.9,79,71,2,Mild and humid afternoon with mostly cloudy skies and Partly cloudy conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-16,19:00,65.3,903.7,100,76,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-17,07:00,53.9,901.4,0,82,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-17,14:00,73.7,905.0,44,64,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-17,19:00,73.8,904.5,95,58,3,Warm and moderately humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-18,07:00,65.6,902.2,0,77,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-18,14:00,73.0,905.6,100,80,95,Warm and humid afternoon with mostly cloudy skies and Thunderstorm conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-18,19:00,72.3,904.8,100,82,95,Warm and humid evening with mostly cloudy skies and Thunderstorm conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-19,07:00,63.0,902.1,98,95,51,Mild and humid morning with mostly cloudy skies and Light drizzle conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-19,14:00,71.0,906.2,100,70,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-19,19:00,69.1,906.7,1,59,0,Mild and moderately humid evening with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-20,07:00,53.4,904.7,99,80,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-20,14:00,71.8,909.2,12,47,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-20,19:00,72.8,907.8,0,53,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-21,07:00,56.1,904.9,0,78,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-21,14:00,76.8,909.1,18,51,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-21,19:00,74.6,908.2,29,61,1,Warm and moderately humid evening with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-22,07:00,60.6,905.3,5,79,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-22,14:00,78.3,908.6,54,67,95,Warm and humid afternoon with partly cloudy skies and Thunderstorm conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-22,19:00,71.4,906.5,100,87,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-23,07:00,62.7,904.0,100,94,63,Mild and humid morning with mostly cloudy skies and Moderate rain conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-23,14:00,64.6,906.1,100,89,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-23,19:00,64.7,907.7,0,71,0,Mild and humid evening with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-24,07:00,50.6,907.5,16,83,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-24,14:00,69.9,910.7,29,55,1,Mild and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-24,19:00,69.5,910.4,77,60,2,Mild and moderately humid evening with mostly cloudy skies and Partly cloudy conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-25,07:00,54.1,907.1,98,71,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-25,14:00,74.0,912.0,9,60,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-25,19:00,72.7,910.5,100,67,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-26,07:00,58.0,909.4,1,79,0,Mild and humid morning with mostly clear skies and Clear conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-26,14:00,66.3,911.6,100,90,65,Mild and humid afternoon with mostly cloudy skies and Heavy rain conditions.
-WTG_HSCHL,36.214155,-81.649756,2026-06-26,19:00,70.8,911.1,100,76,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-02,07:00,64.8,910.2,0,71,0,Mild and humid morning with mostly clear skies and Clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-02,14:00,88.2,915.8,19,46,0,Hot and moderately humid afternoon with mostly clear skies and Clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-02,19:00,86.6,914.2,0,32,0,Hot and dry evening with mostly clear skies and Clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-03,07:00,64.2,910.8,2,65,0,Mild and humid morning with mostly clear skies and Clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-03,14:00,87.6,915.6,0,43,0,Hot and moderately humid afternoon with mostly clear skies and Clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-03,19:00,86.7,913.6,99,41,3,Hot and moderately humid evening with mostly cloudy skies and Overcast conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-04,07:00,64.7,909.3,0,80,0,Mild and humid morning with mostly clear skies and Clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-04,14:00,86.4,912.6,7,42,0,Hot and moderately humid afternoon with mostly clear skies and Clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-04,19:00,80.0,909.1,52,66,2,Warm and humid evening with partly cloudy skies and Partly cloudy conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-05,07:00,65.2,906.7,40,66,1,Mild and humid morning with partly cloudy skies and Mainly clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-05,14:00,78.2,909.7,100,63,3,Warm and moderately humid afternoon with mostly cloudy skies and Overcast conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-05,19:00,76.9,907.8,50,71,2,Warm and humid evening with partly cloudy skies and Partly cloudy conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-06,07:00,62.8,906.9,36,82,1,Mild and humid morning with partly cloudy skies and Mainly clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-06,14:00,79.9,910.1,22,69,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-06,19:00,74.0,908.4,27,74,1,Warm and humid evening with partly cloudy skies and Mainly clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-07,07:00,62.1,906.7,0,82,0,Mild and humid morning with mostly clear skies and Clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-07,14:00,80.0,910.9,30,63,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-07,19:00,76.8,909.5,43,69,1,Warm and humid evening with partly cloudy skies and Mainly clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-08,07:00,63.6,908.5,0,86,0,Mild and humid morning with mostly clear skies and Clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-08,14:00,81.4,912.6,39,53,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
+WTG_HSCHL,36.214155,-81.649756,2026-07-08,19:00,71.5,909.2,100,80,51,Warm and humid evening with mostly cloudy skies and Light drizzle conditions.

@@ -1,91 +1,22 @@
 hive_id,latitude,longitude,date,clock_time,temperature_F,pressure_hPa,cloudiness_percent,humidity_percent,weather_condition_code,weather_overview
-DR_WLKS,36.247479,-81.90097,2026-05-28,07:00,65.1,923.1,100,91,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-28,14:00,77.0,926.1,38,62,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-28,19:00,76.4,924.7,0,48,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-29,07:00,56.0,922.4,0,76,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-29,14:00,77.5,925.0,37,55,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-29,19:00,77.1,923.1,71,60,2,Warm and moderately humid evening with mostly cloudy skies and Partly cloudy conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-30,07:00,64.9,921.3,100,91,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-30,14:00,75.9,924.1,36,69,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-30,19:00,73.5,922.8,2,38,0,Warm and dry evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-31,07:00,54.9,923.6,100,75,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-31,14:00,71.7,925.8,46,64,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-05-31,19:00,71.4,924.3,100,69,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-01,07:00,62.6,921.6,84,91,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-01,14:00,70.8,924.3,100,67,65,Warm and humid afternoon with mostly cloudy skies and Heavy rain conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-01,19:00,70.8,923.6,100,51,3,Warm and moderately humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-02,07:00,57.6,925.6,41,66,1,Mild and humid morning with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-02,14:00,66.4,930.4,26,59,1,Mild and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-02,19:00,60.4,930.2,100,75,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-03,07:00,45.8,929.4,0,73,45,Cool and humid morning with mostly clear skies and Fog conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-03,14:00,70.8,933.3,0,36,0,Warm and dry afternoon with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-03,19:00,71.0,931.0,6,43,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-04,07:00,50.7,927.4,0,71,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-04,14:00,75.4,931.5,0,49,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-04,19:00,74.9,928.9,0,49,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-05,07:00,53.8,925.9,0,72,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-05,14:00,77.9,929.5,4,56,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-05,19:00,75.8,926.7,94,58,3,Warm and moderately humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-06,07:00,57.7,924.6,0,78,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-06,14:00,76.7,926.8,27,64,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-06,19:00,76.5,924.9,12,53,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-07,07:00,60.6,923.1,10,71,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-07,14:00,79.1,926.1,23,57,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-07,19:00,76.8,924.3,100,55,3,Warm and moderately humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-08,07:00,59.4,925.2,99,82,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-08,14:00,80.5,930.4,17,56,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-08,19:00,78.0,929.4,99,65,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-09,07:00,66.2,930.1,91,90,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-09,14:00,73.2,930.7,100,85,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-09,19:00,73.0,928.2,88,79,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-10,07:00,64.7,925.9,99,90,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-10,14:00,77.4,927.3,100,70,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-10,19:00,80.0,923.3,0,57,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-11,07:00,66.4,923.7,12,84,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-11,14:00,83.1,925.9,21,61,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-11,19:00,80.7,924.0,0,60,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-12,07:00,69.8,923.3,23,85,51,Mild and humid morning with partly cloudy skies and Light drizzle conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-12,14:00,83.4,925.8,37,62,95,Warm and moderately humid afternoon with partly cloudy skies and Thunderstorm conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-12,19:00,80.6,923.8,99,65,95,Warm and humid evening with mostly cloudy skies and Thunderstorm conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-13,07:00,63.5,922.9,50,89,2,Mild and humid morning with partly cloudy skies and Partly cloudy conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-13,14:00,80.2,926.2,28,61,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-13,19:00,81.2,924.5,0,48,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-14,07:00,62.4,920.7,0,85,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-14,14:00,78.7,923.6,18,64,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-14,19:00,72.9,919.2,100,82,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-15,07:00,56.9,917.2,3,90,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-15,14:00,67.2,920.6,5,66,0,Mild and humid afternoon with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-15,19:00,68.1,920.4,1,62,0,Mild and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-16,07:00,55.1,919.0,97,88,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-16,14:00,71.8,920.3,36,61,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-16,19:00,67.4,919.7,100,68,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-17,07:00,54.9,917.9,2,83,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-17,14:00,75.3,920.8,18,62,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-17,19:00,77.1,920.5,7,50,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-18,07:00,67.7,918.3,100,77,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-18,14:00,75.6,921.9,100,83,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-18,19:00,72.1,920.2,100,92,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-19,07:00,64.3,918.5,100,98,45,Mild and humid morning with mostly cloudy skies and Fog conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-19,14:00,70.8,922.4,27,75,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-19,19:00,71.4,923.2,1,57,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-20,07:00,55.2,921.1,99,80,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-20,14:00,72.6,925.1,1,51,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-20,19:00,74.4,923.9,0,51,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-21,07:00,57.9,921.4,0,72,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-21,14:00,78.6,924.9,2,53,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-21,19:00,77.1,924.0,67,65,2,Warm and humid evening with mostly cloudy skies and Partly cloudy conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-22,07:00,62.9,921.4,0,89,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-22,14:00,79.5,924.5,46,71,95,Warm and humid afternoon with partly cloudy skies and Thunderstorm conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-22,19:00,71.9,922.5,100,86,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-23,07:00,64.1,920.4,100,96,65,Mild and humid morning with mostly cloudy skies and Heavy rain conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-23,14:00,63.4,922.4,100,97,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-23,19:00,65.7,924.2,0,76,0,Mild and humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-24,07:00,51.5,923.9,17,82,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-24,14:00,70.2,926.5,22,62,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-24,19:00,70.1,926.4,0,61,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-25,07:00,54.7,923.2,98,81,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-25,14:00,74.2,927.8,4,67,0,Warm and humid afternoon with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-25,19:00,74.6,926.3,39,67,1,Warm and humid evening with partly cloudy skies and Mainly clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-26,07:00,59.2,925.6,0,80,0,Mild and humid morning with mostly clear skies and Clear conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-26,14:00,77.9,929.6,99,58,3,Warm and moderately humid afternoon with mostly cloudy skies and Overcast conditions.
-DR_WLKS,36.247479,-81.90097,2026-06-26,19:00,76.3,927.8,100,65,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-02,07:00,64.5,926.2,0,68,0,Mild and humid morning with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-02,14:00,86.1,931.0,0,54,0,Hot and moderately humid afternoon with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-02,19:00,84.9,929.3,0,68,0,Warm and humid evening with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-03,07:00,66.2,927.1,0,66,0,Mild and humid morning with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-03,14:00,87.9,931.1,0,49,0,Hot and moderately humid afternoon with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-03,19:00,85.6,929.1,87,56,3,Hot and moderately humid evening with mostly cloudy skies and Overcast conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-04,07:00,65.3,925.6,0,79,0,Mild and humid morning with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-04,14:00,79.1,927.3,81,86,80,Warm and humid afternoon with mostly cloudy skies and Slight rain showers conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-04,19:00,79.1,924.5,2,77,0,Warm and humid evening with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-05,07:00,62.6,921.9,43,78,1,Mild and humid morning with partly cloudy skies and Mainly clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-05,14:00,81.8,925.6,1,64,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-05,19:00,76.0,923.3,100,82,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-06,07:00,64.3,923.1,1,78,0,Mild and humid morning with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-06,14:00,82.4,926.1,2,69,0,Warm and humid afternoon with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-06,19:00,71.5,923.7,88,88,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-07,07:00,63.3,923.0,0,80,0,Mild and humid morning with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-07,14:00,79.5,926.7,16,74,0,Warm and humid afternoon with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-07,19:00,77.8,925.4,5,73,0,Warm and humid evening with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-08,07:00,65.9,924.9,5,78,0,Mild and humid morning with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-08,14:00,80.3,928.3,12,62,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
+DR_WLKS,36.247479,-81.90097,2026-07-08,19:00,79.1,926.5,90,58,3,Warm and moderately humid evening with mostly cloudy skies and Overcast conditions.
