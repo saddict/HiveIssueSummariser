@@ -114,6 +114,21 @@ def build_features(
                 dominant_weather_overview=_dominant_weather_overview(weather),
                 weight_event_count=len(events),
                 weight_event_descriptions=[event.describe() for event in events],
+                weight_events=sorted(
+                    [
+                        {
+                            "kind": event.kind,
+                            "observed_at": event.observed_at.isoformat(),
+                            "delta_kg": round(event.delta_kg, 3),
+                            "pct_change": round(event.pct_change, 1),
+                            "before_kg": round(event.before_kg, 3),
+                            "after_kg": round(event.after_kg, 3),
+                        }
+                        for event in events
+                    ],
+                    key=lambda e: e["observed_at"],
+                    reverse=True,
+                ),
                 segment_count=len(segments),
                 thermal_efficiency_pi=te_pi,
                 thermal_efficiency_m=te_m,
