@@ -29,12 +29,37 @@ from datetime import datetime
 
 from .models import SensorReading
 
-# A level shift only counts when it clears BOTH an absolute and a relative
-# floor. The absolute floor stops tiny colonies from registering an "event"
-# every time a few hundred grams move; the relative floor stops large colonies
-# from hiding a real harvest inside normal-looking kilograms.
+# Minimum net delta for a coalesced cluster to be treated as a real event.
+# No longer used for single-step candidate detection (replaced by MAD robust-z),
+# but still needed by _coalesce_events to drop clusters that net out to nothing
+# (e.g. a transient dip that fully recovers within the confirmation window).
 MIN_EVENT_DROP_KG = 2.5
 MIN_EVENT_DROP_PCT = 7.0
+
+# MAD-based outlier threshold. A step whose hour-normalised delta scores
+# MAD_SENSITIVITY_K or more standard deviations away from the colony's own
+# typical inter-reading movement is flagged as a candidate event.
+# Value of 5.3 confirmed via spike_mad_events.py on cached data (2026-07-08):
+# confirmed harvests reach z ≥ 5.47; highest ordinary foraging step was 4.98
+# (DR_WLKS:L, active nectar flow). 5.3 gives a 0.32σ buffer above that peak
+# while still clearing the 6LR:R harvest (z=5.47).
+MAD_SENSITIVITY_K = 5.3
+
+# Threshold for sister-corroborated promotion (see corroborate_sister_events in
+# features.py). A drop between MAD_CORROBORATE_K and MAD_SENSITIVITY_K on one
+# colony is promoted to a confirmed event when its sister at the same site has
+# a confirmed event in the same reading window. Value of 4.0 sits below the
+# 6LR:R harvest (z=5.47) and above most ordinary foraging noise; the temporal-
+# proximity and directional constraints in corroboration prevent false positives
+# from the positive foraging spikes seen on DR_WLKS:L (max ordinary z=4.98).
+MAD_CORROBORATE_K = 4.0
+
+# Minimum number of usable inter-reading deltas required before MAD-based
+# detection is trusted. Below this, the MAD estimate is too noisy.
+_MIN_MAD_DELTAS = 8
+# MAD below this is treated as a near-flat window where the robust-z diverges;
+# skip MAD-based detection for the colony in that case.
+_MAD_EPSILON = 1e-6
 
 # How quickly the shift has to happen. A harvest or a swarm departure moves the
 # scale within an hour or two; seasonal nectar flow does not. Anything slower
@@ -95,6 +120,35 @@ class WeightSegment:
         return (self.end_at - self.start_at).total_seconds() / 3600
 
 
+def _robust_step_stats(ordered: list[SensorReading]) -> tuple[float, float, int]:
+    """Hour-normalised inter-reading weight deltas, their median and scaled MAD.
+
+    Only pairs within MAX_EVENT_INTERVAL_HOURS with positive weights are used,
+    matching the pairs the event detector examines. MAD is scaled by 1.4826 so
+    it estimates the standard deviation under a normal distribution.
+
+    Returns (median_delta_per_hour, mad_scaled, n_usable).
+    """
+    deltas: list[float] = []
+    for i in range(1, len(ordered)):
+        prev = ordered[i - 1]
+        curr = ordered[i]
+        if prev.weight_kg <= 0 or curr.weight_kg <= 0:
+            continue
+        elapsed_hours = (curr.observed_at - prev.observed_at).total_seconds() / 3600
+        if elapsed_hours <= 0 or elapsed_hours > MAX_EVENT_INTERVAL_HOURS:
+            continue
+        deltas.append((curr.weight_kg - prev.weight_kg) / elapsed_hours)
+
+    n = len(deltas)
+    if n < _MIN_MAD_DELTAS:
+        return 0.0, 0.0, n
+
+    med = _median(deltas)
+    mad = _median([abs(d - med) for d in deltas]) * 1.4826
+    return med, mad, n
+
+
 def detect_weight_events(readings: list[SensorReading]) -> list[WeightEvent]:
     """Return the abrupt weight events in a single colony's readings.
 
@@ -102,6 +156,12 @@ def detect_weight_events(readings: list[SensorReading]) -> list[WeightEvent]:
     callers do not have to guarantee ordering.
     """
     ordered = sorted(readings, key=lambda reading: reading.timestamp)
+
+    # MAD-based self-calibrating path: characterise typical inter-reading
+    # movement for this colony, then flag steps that are statistical outliers.
+    median_delta, mad, n_usable = _robust_step_stats(ordered)
+    use_mad = n_usable >= _MIN_MAD_DELTAS and mad >= _MAD_EPSILON
+
     candidates: list[WeightEvent] = []
 
     for index in range(1, len(ordered)):
@@ -118,7 +178,14 @@ def detect_weight_events(readings: list[SensorReading]) -> list[WeightEvent]:
 
         delta_kg = current.weight_kg - previous.weight_kg
         pct_change = (delta_kg / previous.weight_kg) * 100
-        if abs(delta_kg) < MIN_EVENT_DROP_KG or abs(pct_change) < MIN_EVENT_DROP_PCT:
+
+        # Flag when this step is a clear outlier relative to the colony's own
+        # typical hourly movement. If MAD is unavailable (too few readings or
+        # near-flat window), emit no candidates for this colony.
+        if not use_mad:
+            continue
+        robust_z = (delta_kg / elapsed_hours - median_delta) / mad
+        if abs(robust_z) < MAD_SENSITIVITY_K:
             continue
 
         candidates.append(
@@ -307,6 +374,99 @@ def _merge_short_segments(segments: list[WeightSegment]) -> list[WeightSegment]:
         else:
             merged.append(list(segment.readings))
     return [WeightSegment(readings=group) for group in merged]
+
+
+def corroborate_sister_events(
+    events_by_side: dict[str, list[WeightEvent]],
+    readings_by_side: dict[str, list[SensorReading]],
+) -> dict[str, list[WeightEvent]]:
+    """Promote soft drops on one colony when its sister has a confirmed event.
+
+    Harvests are apiary-level actions: a beekeeper typically works both hives in
+    one visit. When one side has a confirmed event (robust-z >= MAD_SENSITIVITY_K)
+    and the sister has a sub-threshold drop (MAD_CORROBORATE_K <= z < SENSITIVITY_K)
+    within one reading interval of that event, the sister drop is promoted to a
+    confirmed event tagged as "sister-corroborated" in its description.
+
+    Constraints:
+    - This function is strictly site-level. It never modifies the per-colony
+      detector (detect_weight_events) and never calls it; the caller supplies
+      already-detected events.
+    - Corroboration only promotes DROPS (negative delta_kg) temporally close to
+      a confirmed event. Positive steps (additions) are not promoted this way.
+    - Single-colony sites skip corroboration silently.
+    - Direction and temporal proximity together prevent the foraging-gain spikes
+      seen on active colonies (e.g. DR_WLKS:L) from being falsely promoted.
+    """
+    sides = list(events_by_side.keys())
+    if len(sides) < 2:
+        return events_by_side
+
+    result: dict[str, list[WeightEvent]] = {side: list(evts) for side, evts in events_by_side.items()}
+
+    for i, confirmed_side in enumerate(sides):
+        sister_side = sides[1 - i]
+        confirmed_events = events_by_side[confirmed_side]
+        sister_readings = sorted(readings_by_side.get(sister_side, []), key=lambda r: r.timestamp)
+        if not confirmed_events or not sister_readings:
+            continue
+
+        confirmed_times = {e.observed_at for e in confirmed_events}
+
+        # Determine one reading interval for temporal proximity guard.
+        intervals: list[float] = []
+        for j in range(1, len(sister_readings)):
+            h = (sister_readings[j].observed_at - sister_readings[j - 1].observed_at).total_seconds() / 3600
+            if 0 < h <= MAX_EVENT_INTERVAL_HOURS:
+                intervals.append(h)
+        one_interval_hours = _median(intervals) if intervals else 1.0
+
+        # Characterise sister colony's typical movement for robust-z.
+        med, mad, n_usable = _robust_step_stats(sister_readings)
+        if n_usable < _MIN_MAD_DELTAS or mad < _MAD_EPSILON:
+            continue
+
+        # Scan sister readings for sub-threshold drops near a confirmed event.
+        already_confirmed = {e.observed_at for e in result[sister_side]}
+        for j in range(1, len(sister_readings)):
+            prev = sister_readings[j - 1]
+            curr = sister_readings[j]
+            if curr.observed_at in already_confirmed:
+                continue
+            if prev.weight_kg <= 0 or curr.weight_kg <= 0:
+                continue
+            elapsed_h = (curr.observed_at - prev.observed_at).total_seconds() / 3600
+            if elapsed_h <= 0 or elapsed_h > MAX_EVENT_INTERVAL_HOURS:
+                continue
+            delta_kg = curr.weight_kg - prev.weight_kg
+            if delta_kg >= 0:
+                continue  # only drops can be corroborated as harvests
+            robust_z = (delta_kg / elapsed_h - med) / mad
+            if not (MAD_CORROBORATE_K <= abs(robust_z) < MAD_SENSITIVITY_K):
+                continue
+
+            # Check temporal proximity: within one reading interval of any confirmed event.
+            near = any(
+                abs((curr.observed_at - ct).total_seconds() / 3600) <= one_interval_hours
+                for ct in confirmed_times
+            )
+            if not near:
+                continue
+
+            pct_change = (delta_kg / prev.weight_kg) * 100
+            promoted = WeightEvent(
+                kind="harvest (sister-corroborated)",
+                observed_at=curr.observed_at,
+                before_kg=prev.weight_kg,
+                after_kg=curr.weight_kg,
+                delta_kg=delta_kg,
+                pct_change=pct_change,
+                elapsed_hours=elapsed_h,
+            )
+            result[sister_side] = result[sister_side] + [promoted]
+            already_confirmed.add(curr.observed_at)
+
+    return result
 
 
 def _median(values: list[float]) -> float:

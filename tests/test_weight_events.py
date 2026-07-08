@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import unittest
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -42,9 +43,24 @@ def reading(
     )
 
 
-def flat_series(start_hour: float, count: int, weight: float, drift: float = 0.0) -> list[SensorReading]:
-    """Hourly readings hovering around ``weight`` with a tiny per-hour drift."""
-    return [reading(start_hour + i, weight + i * drift) for i in range(count)]
+def flat_series(
+    start_hour: float,
+    count: int,
+    weight: float,
+    drift: float = 0.0,
+    jitter: float = 0.05,
+) -> list[SensorReading]:
+    """Hourly readings hovering around ``weight`` with a tiny per-hour drift.
+
+    A sinusoidal jitter (amplitude ``jitter``) adds realistic per-reading
+    variation so consecutive-pair deltas are all distinct. Without variation,
+    all deltas are identical and MAD = 0, which disables the robust-z detector.
+    With jitter=0.05, the MAD-scaled std is ~0.02 kg/h, so harvest steps of
+    ≥3 kg score z ≥ 150 (well above MAD_SENSITIVITY_K) while ordinary
+    foraging peaks stay below z = 3. Pass jitter=0 only when flat-exact
+    readings are required for a non-MAD code path.
+    """
+    return [reading(start_hour + i, weight + i * drift + jitter * math.sin(i)) for i in range(count)]
 
 
 class WeightEventDetectionTests(unittest.TestCase):

@@ -4,7 +4,7 @@ import statistics
 from collections import Counter, defaultdict
 from datetime import date
 
-from .events import WeightSegment, detect_weight_events, segment_readings
+from .events import WeightSegment, corroborate_sister_events, detect_weight_events, segment_readings
 from .models import ColonyFeatures, SensorReading, WeatherReading
 from .thermal import thermal_efficiency
 from .weather import RAINY_WEATHER_CODES
@@ -24,6 +24,20 @@ def build_features(
     for reading in sensor_readings:
         by_colony[reading.colony_id].append(reading)
 
+    # Run per-colony event detection, then apply site-level sister corroboration
+    # so a soft drop on one side can be promoted when the sister has a confirmed
+    # event in the same reading window (harvests are apiary-level actions).
+    by_hive: dict[str, dict[str, list[SensorReading]]] = defaultdict(lambda: defaultdict(list))
+    for reading in sensor_readings:
+        by_hive[reading.hive_id][reading.colony_side].append(reading)
+
+    events_by_colony: dict[str, list] = {}
+    for hive_id, sides in by_hive.items():
+        raw_events = {side: detect_weight_events(rdgs) for side, rdgs in sides.items()}
+        corroborated = corroborate_sister_events(raw_events, sides)
+        for side, evts in corroborated.items():
+            events_by_colony[f"{hive_id}:{side}"] = evts
+
     features: list[ColonyFeatures] = []
     for colony_id, readings in sorted(by_colony.items()):
         readings = sorted(readings, key=lambda reading: reading.timestamp)
@@ -37,11 +51,8 @@ def build_features(
         weather = weather_by_hive.get(first.hive_id, [])
         day_types = weather_day_types.get(first.hive_id, {})
 
-        # Detect harvests/swarms/supering and split the window at each event so
-        # weight trend is measured within stable segments rather than straight
-        # across the step. A normal week yields a single segment and these
-        # values match the old first-vs-last behaviour exactly.
-        events = detect_weight_events(readings)
+        # Use pre-computed events (with sister corroboration applied at site level).
+        events = events_by_colony.get(colony_id, [])
         segments = segment_readings(readings, events)
         weight_trend = _segmented_weight_trend(segments)
         event_dates = {event.observed_at.date() for event in events}
