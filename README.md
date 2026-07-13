@@ -59,17 +59,58 @@ feature builder then:
   within-segment changes, which is the colony's organic gain or loss with the
   intervention removed;
 - skips event days when computing the poor-/favorable-weather metrics; and
-- reports each event as an explicit flag, e.g.
-  `Likely harvest: weight dropped 12.8 kg (-26.8%) around 2026-06-23T18:00...`.
+- reports each event as a structured table in both the CLI and JSON output.
 
-Events are classified as `harvest`, `swarm` (a drop paired with a sharp
-internal-climate change), or `addition` (a sustained gain). The labels are
-deliberately probabilistic — sensors cannot confirm the cause — so they are
-always phrased as "Likely ...". A normal week contains no events and reduces to
-a single segment, leaving the original behaviour unchanged. Detection is
-conservative: only a sharp, sustained level shift that survives a short
-confirmation window counts, so ordinary foraging gains and overnight respiration
-loss stay within one segment.
+### Detection
+
+Detection uses a self-calibrating MAD (Median Absolute Deviation) robust-z
+scorer. For each colony, the detector characterises its own typical
+inter-reading weight movement and flags steps that are statistical outliers
+against that baseline. This means detection thresholds adjust automatically to
+each colony's noise level rather than using fixed kilogram or percentage cutoffs
+that would miss small harvests on light colonies or false-trigger on heavy ones.
+
+Physical sanity floors are applied first to suppress obvious non-events:
+additions must exceed 3 kg (foraging returns stay below this) and harvest
+candidates must exceed 3% of colony weight (sensor drift stays below this).
+
+### Sister Corroboration
+
+Harvests are typically an apiary-level action — when a beekeeper pulls honey
+from one colony at a site they usually work both. A sub-threshold drop on one
+side (not large enough to trigger standalone detection) is promoted to a
+confirmed event when the sister colony at the same site has a confirmed event in
+the same reading window. These events are tagged `harvest (sister-corroborated)`.
+
+### Classification
+
+Events are classified as `harvest` (a drop), `swarm` (a drop paired with a
+sharp internal-climate disturbance), or `addition` (a sustained gain). The
+labels are deliberately probabilistic — sensors cannot confirm the cause.
+Detection is conservative: only a sharp, sustained level shift that survives a
+12-hour confirmation window counts, so ordinary foraging gains and overnight
+respiration loss stay within one segment.
+
+### Viewing Events
+
+The scoring CLI (`run_scoring.py`) shows a weight events table under each colony
+that had events in the current scoring window:
+
+```text
+Weight events (newest first):
+  2026-07-07 17:00 -04:00  harvest       -4.040 kg    -6.6%  61.249 → 57.209 kg
+```
+
+The JSON output (`output/scoring.json`) includes a `weight_events` list at the
+top level of each colony entry.
+
+To see the full event history across all colonies regardless of the scoring
+window, use the dedicated event log:
+
+```bash
+python3 list_events.py
+python3 list_events.py --site 6LR
+```
 
 ## Local Data Cache
 
@@ -162,6 +203,19 @@ python3 run_sister_comparisons.py --window-days 30
 ```bash
 python3 fetch_dynamodb.py --days 30
 python3 fetch_openmeteo.py --days 30
+```
+
+View the full historical event log across all colonies (no rolling window):
+
+```bash
+python3 list_events.py
+```
+
+Filter to specific sites:
+
+```bash
+python3 list_events.py --site 6LR
+python3 list_events.py --site PRT_1 --site DR_WLKS
 ```
 
 Run the unit tests:
@@ -381,6 +435,13 @@ output/scoring.json
 output/sister_comparisons.json
 ```
 
+Full historical event log (all colonies, no rolling window):
+
+```bash
+python3 list_events.py
+python3 list_events.py --site 6LR
+```
+
 The text report gives:
 
 - scoring window
@@ -389,9 +450,10 @@ The text report gives:
 - regional highlights for strong and weak colonies
 - ranked colony lists within each region
 - top metric drivers
-- explicit flags
+- weight event table (kind, timestamp, delta, before→after) for colonies with events in the window
+- data quality flags
 
-The JSON output contains `metadata`, `regions`, and `colonies` sections for use by a future dashboard, API, or LLM explanation layer.
+The JSON output contains `metadata`, `regions`, and `colonies` sections for use by a future dashboard, API, or LLM explanation layer. Each colony entry includes a `weight_events` list sorted newest to oldest.
 
 ## Current Limitations
 
