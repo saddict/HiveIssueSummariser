@@ -137,6 +137,7 @@ def _score_region_features(features: list[ColonyFeatures], settings: dict[str, f
                 comparisons=sorted(comparisons, key=lambda item: item.badness_z, reverse=True),
                 feature=feature,
                 flags=flags,
+                weight_events=feature.weight_events,
             )
         )
 

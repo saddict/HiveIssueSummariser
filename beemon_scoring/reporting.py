@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from collections import defaultdict
 from dataclasses import asdict
+from datetime import datetime
 
 from .models import ColonyScore, MetricComparison, RegionColonyHighlight, RegionSummary
 
@@ -104,9 +105,13 @@ def build_text_report(scores: list[ColonyScore], metadata: dict[str, object]) ->
                     f"vs peer avg {comparison.peer_mean:.2f}{_unit(comparison)} "
                     f"(badness z {comparison.badness_z:.1f})"
                 )
-            if score.flags:
-                for flag in score.flags[:4]:
-                    lines.append(f"   - Flag: {flag}")
+            if score.weight_events:
+                lines.append("   Weight events (newest first):")
+                for ev in score.weight_events:
+                    lines.append(_format_weight_event_row(ev))
+            non_event_flags = [f for f in score.flags if not f.startswith("Likely ")]
+            for flag in non_event_flags[:4]:
+                lines.append(f"   - Flag: {flag}")
         lines.append("")
 
     return "\n".join(lines).rstrip()
@@ -162,3 +167,13 @@ def _top_drivers(comparisons: list[MetricComparison], limit: int) -> list[Metric
 
 def _unit(comparison: MetricComparison) -> str:
     return f" {comparison.unit}" if comparison.unit else ""
+
+
+def _format_weight_event_row(ev: dict) -> str:
+    dt = datetime.fromisoformat(ev["observed_at"])
+    time_str = dt.strftime("%Y-%m-%d %H:%M") + " " + ev["observed_at"][-6:]
+    kind_str = ev["kind"].ljust(12)
+    delta_str = f"{ev['delta_kg']:+.3f} kg".rjust(11)
+    pct_str = f"({ev['pct_change']:+.1f}%)".rjust(8)
+    range_str = f"{ev['before_kg']:.3f} → {ev['after_kg']:.3f} kg"
+    return f"     {time_str}  {kind_str}  {delta_str}  {pct_str}  {range_str}"

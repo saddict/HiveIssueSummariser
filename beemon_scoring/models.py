@@ -86,6 +86,7 @@ class ColonyFeatures:
     dominant_weather_overview: str | None
     weight_event_count: int = 0
     weight_event_descriptions: list[str] = field(default_factory=list)
+    weight_events: list[dict] = field(default_factory=list)
     segment_count: int = 1
     thermal_efficiency_pi: float = 0.0
     thermal_efficiency_m: float = 0.0
@@ -115,6 +116,7 @@ class ColonyScore:
     comparisons: list[MetricComparison]
     feature: ColonyFeatures
     flags: list[str] = field(default_factory=list)
+    weight_events: list[dict] = field(default_factory=list)
 
 
 @dataclass
