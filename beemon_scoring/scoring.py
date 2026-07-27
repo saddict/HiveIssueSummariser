@@ -6,6 +6,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from .data_loader import load_hive_config, load_sensor_readings, load_weather_readings
+from .events import detect_site_events
 from .features import build_features, stddev
 from .metrics import BADNESS_Z_SCORE_SCALE, METRICS, Metric
 from .models import ColonyFeatures, ColonyScore, MetricComparison
@@ -38,7 +39,15 @@ def build_scores(
     start_at = end_at - timedelta(days=window_days)
 
     windowed_sensor_readings = [reading for reading in sensor_readings if reading.observed_at >= start_at]
-    filtered_readings, quality_by_colony, quality_summary = filter_quality_issues(windowed_sensor_readings)
+    # Detect + corroborate events once, up front, on the pre-filter readings.
+    # The quality filter and feature builder both consume this same result so
+    # a corroborated event (only visible after sister corroboration) is
+    # exempt from data-quality checks instead of being invisible to a second,
+    # independent detection pass over a different slice of the data.
+    events_by_colony = detect_site_events(windowed_sensor_readings)
+    filtered_readings, quality_by_colony, quality_summary = filter_quality_issues(
+        windowed_sensor_readings, events_by_colony
+    )
     if not filtered_readings:
         raise RuntimeError("No valid sensor readings found after data quality filtering.")
 
@@ -46,7 +55,9 @@ def build_scores(
     hive_weather = weather_by_hive(weather_readings, window_dates)
     hive_weather_day_types = weather_day_types(hive_weather)
 
-    features = build_features(filtered_readings, hive_weather, hive_weather_day_types, quality_by_colony)
+    features = build_features(
+        filtered_readings, hive_weather, hive_weather_day_types, quality_by_colony, events_by_colony=events_by_colony
+    )
     scores = _score_features(features, settings)
     metadata = {
         "window_days": window_days,

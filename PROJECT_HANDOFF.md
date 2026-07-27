@@ -682,3 +682,68 @@ PROJECT_HANDOFF.md            Section 8 updated; "Possible Brood-Temperature Var
 ```
 
 Total metric weight is unchanged at 1.00. No other metric weights were modified.
+
+## 18. Event Detection vs. Data-Quality Clash (2026-07-27)
+
+Before this change the MAD detector (`events.py`) and the quality filter
+(`quality.py`) each ran their own event detection over different slices of the
+data. A corroborated event — visible only after site-level sister corroboration
+— was invisible to the quality filter's independent per-colony pass, so it could
+still be excluded as a "sudden jump," and the two passes disagreed about what
+counted as an event. This pass makes the detected event set a **single source of
+truth** and extends corroboration and the quality filter to match. See
+`CHANGELOG_weight_events.md` ("Update (2026-07-27)") for the full narrative.
+
+### What changed
+
+- **`events.py`** — `detect_site_events` is now the single entry point (group by
+  site → detect per side → corroborate → coalesce). Corroboration is symmetric
+  (gain↔gain and drop↔drop) and adds **paired corroboration**
+  (`_promote_paired_events`: both sisters move sub-threshold together within one
+  interval → timing is the evidence) and an **aggregate multi-step pass**
+  (`_aggregate_candidates` / `_aggregate_window_shares`: a gradual move split
+  into sub-floor hourly steps, caught on its net change with a dominant-step-share
+  guard). New constants: `PAIRED_MIN_GAIN_KG=1.5`, `PAIRED_MIN_GAIN_PCT=3.0`,
+  `AGGREGATE_SPAN_HOURS=3.0`, `AGGREGATE_MAX_DOMINANT_STEP_SHARE=0.6`.
+- **`quality.py`** (updates section 7) — consumes the shared `events_by_colony`
+  set instead of re-detecting; a **settle window** (`EVENT_SETTLE_WINDOW_HOURS=3.0`)
+  exempts post-event readings (not just the exact timestamp) from jump checks;
+  an **anti-cascade** rule (`CONSISTENT_RUN_TO_ACCEPT=3`) re-admits a run of
+  mutually consistent readings excluded against a stale anchor (a real level
+  shift the detector missed) while keeping a lone fault excluded.
+- **`scoring.py`** (updates section 6, step order) — `build_scores` runs
+  `detect_site_events` **once**, up front, on the pre-filter readings and threads
+  that single result into both `filter_quality_issues` and `build_features`.
+- **`features.py`** — `build_features` accepts the pre-computed `events_by_colony`
+  (falls back to `detect_site_events`) instead of detecting inline.
+
+### Threshold decision (Step 7)
+
+The promotion floors were locked against a 60-day, all-sites sweep
+(`spike_paired_corroboration.py`, run 2026-07-27; the script is the reproducible
+evidence and stays in the repo):
+
+- `PAIRED_MIN_GAIN_KG=1.5` / `PAIRED_MIN_GAIN_PCT=3.0` — false-pair population
+  (shared-foraging co-gains; post-harvest rebounds) tops out at 1.21 / 1.20
+  kg/side, both rejected; smallest genuine paired step is 1.6 kg. The kg floor
+  discriminates; the % floor is a small-colony guard.
+- `AGGREGATE_MAX_DOMINANT_STEP_SHARE=0.6` — genuine multi-step moves land at
+  share ≤ 0.53; single-step-dominated windows (incl. the WTG_HSCHL:R foraging
+  burst at 0.78) land ≥ 0.60.
+
+### Verification performed
+
+- `python3 -m unittest discover -s tests` — **47/47 pass** (adds
+  `tests/test_event_quality_clash.py`, 9 cases pinning the F1–F5 acceptance).
+- `run_scoring.py --window-days 60` reproduces the tuned validation snapshot
+  byte-for-byte, confirming the `_aggregate_window_shares` extraction is
+  behavior-preserving.
+- Regenerated `output/scoring.json` + `output/sister_comparisons.json` at the
+  documented default 7-day window.
+
+### Invariants preserved
+
+`detect_weight_events` is still strictly single-colony; corroboration remains
+site-level orchestration in `detect_site_events`, never called from inside the
+single-colony detector; `quality.py` still holds no event *logic* — it only
+consumes the shared event set.

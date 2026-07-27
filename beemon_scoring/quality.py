@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import timedelta
 
-from .events import detect_weight_events
+from .events import WeightEvent, detect_weight_events
 from .models import SensorReading
 
 MIN_WEIGHT_KG = 0.45
@@ -19,9 +20,22 @@ MAX_TEMP_JUMP_F = 25.0
 MAX_HUMIDITY_JUMP_PCT = 45.0
 MAX_JUMP_INTERVAL_HOURS = 6.0
 
+# A management visit disturbs the sensors (temperature, humidity, sometimes
+# weight) for a while, not just for the single reading at the event's exact
+# timestamp. Readings within this window AFTER a confirmed event are exempt
+# from the jump checks (all three types); impossible-range checks still apply.
+EVENT_SETTLE_WINDOW_HOURS = 3.0
+
+# If this many consecutive readings are each excluded as a "jump" versus the
+# stale previous_kept anchor, but are mutually consistent with one another
+# (each one a small step from the last), treat them as a real sustained level
+# shift the detector missed rather than sensor noise, and re-admit the run.
+CONSISTENT_RUN_TO_ACCEPT = 3
+
 
 def filter_quality_issues(
     readings: list[SensorReading],
+    events_by_colony: dict[str, list[WeightEvent]] | None = None,
 ) -> tuple[list[SensorReading], dict[str, list[str]], dict[str, int]]:
     by_colony: dict[str, list[SensorReading]] = defaultdict(list)
     quality_by_colony: dict[str, list[str]] = defaultdict(list)
@@ -33,18 +47,47 @@ def filter_quality_issues(
 
     for colony_id, colony_readings in by_colony.items():
         ordered = sorted(colony_readings, key=lambda item: item.timestamp)
-        # Detect genuine harvest/swarm/supering steps up front so the jump
-        # filter below does not mistake them for sensor faults. A real event
-        # produces a sharp, sustained level shift; the detector ignores the
-        # transient spikes and dropouts that the jump filter exists to remove.
-        # The timestamps of confirmed events mark the readings that open a new
-        # baseline and must therefore survive instead of being excluded.
-        event_timestamps = {event.observed_at for event in detect_weight_events(ordered)}
+        # Genuine harvest/swarm/supering/paired/corroborated steps are exempt
+        # from the jump filter below so it does not mistake them for sensor
+        # faults. A real event produces a sharp, sustained level shift; the
+        # detector ignores the transient spikes and dropouts that the jump
+        # filter exists to remove. The timestamps of confirmed events mark the
+        # readings that open a new baseline and must therefore survive instead
+        # of being excluded.
+        #
+        # When the caller supplies events_by_colony (the single-source-of-
+        # truth path via detect_site_events), those events -- including ones
+        # only visible after sister corroboration -- are used directly and no
+        # detection is run here. Falling back to self-detection (events_by_colony
+        # is None) preserves the old per-colony-only behaviour for direct
+        # callers that have not adopted the site-level pipeline.
+        if events_by_colony is not None:
+            colony_events = events_by_colony.get(colony_id, [])
+        else:
+            colony_events = detect_weight_events(ordered)
+        event_times = sorted(event.observed_at for event in colony_events)
 
         previous_kept: SensorReading | None = None
+        # Readings tentatively excluded as a "jump" versus previous_kept, held
+        # here in case they turn out to be the start of a sustained shift the
+        # detector missed (see CONSISTENT_RUN_TO_ACCEPT).
+        pending: list[tuple[SensorReading, list[str]]] = []
+
+        def flush_pending_as_excluded() -> None:
+            nonlocal excluded_count
+            for pending_reading, reasons in pending:
+                excluded_count += 1
+                quality_by_colony[colony_id].append(
+                    f"Excluded reading at {pending_reading.observed_at.isoformat()} because {', '.join(reasons)}."
+                )
+            pending.clear()
+
         for reading in ordered:
             impossible_reasons = _impossible_reading_reasons(reading)
             if impossible_reasons:
+                # A genuinely impossible value can never anchor a sustained
+                # shift; it also breaks any run in progress.
+                flush_pending_as_excluded()
                 excluded_count += 1
                 quality_by_colony[colony_id].append(
                     f"Excluded reading at {reading.observed_at.isoformat()} because {', '.join(impossible_reasons)}."
@@ -56,18 +99,45 @@ def filter_quality_issues(
                     f"External sensor anomaly at {reading.observed_at.isoformat()}: {reason}."
                 )
 
-            is_event_step = reading.observed_at in event_timestamps
-            if previous_kept is not None and not is_event_step:
-                jump_reasons = _sudden_jump_reasons(previous_kept, reading)
-                if jump_reasons:
-                    excluded_count += 1
-                    quality_by_colony[colony_id].append(
-                        f"Excluded reading at {reading.observed_at.isoformat()} because {', '.join(jump_reasons)}."
-                    )
-                    continue
+            in_settle_window = any(
+                event_time <= reading.observed_at <= event_time + timedelta(hours=EVENT_SETTLE_WINDOW_HOURS)
+                for event_time in event_times
+            )
+            if previous_kept is None or in_settle_window:
+                flush_pending_as_excluded()
+                filtered.append(reading)
+                previous_kept = reading
+                continue
 
-            filtered.append(reading)
-            previous_kept = reading
+            jump_reasons = _sudden_jump_reasons(previous_kept, reading)
+            if not jump_reasons:
+                flush_pending_as_excluded()
+                filtered.append(reading)
+                previous_kept = reading
+                continue
+
+            # Excluded versus the (possibly stale) anchor. Check whether it is
+            # consistent with the run building up so far -- a real sustained
+            # shift moves in small, mutually consistent steps; an isolated
+            # sensor fault does not resemble what comes after it.
+            if pending and _sudden_jump_reasons(pending[-1][0], reading):
+                flush_pending_as_excluded()
+            pending.append((reading, jump_reasons))
+
+            if len(pending) < CONSISTENT_RUN_TO_ACCEPT:
+                continue
+
+            shift_kg = abs(pending[-1][0].weight_kg - previous_kept.weight_kg)
+            quality_by_colony[colony_id].append(
+                f"Possible missed event: sustained level shift of {shift_kg:.2f} kg near "
+                f"{pending[0][0].observed_at.isoformat()} accepted after {len(pending)} consistent readings."
+            )
+            for pending_reading, _reasons in pending:
+                filtered.append(pending_reading)
+            previous_kept = pending[-1][0]
+            pending.clear()
+
+        flush_pending_as_excluded()
 
     issue_count = sum(len(values) for values in quality_by_colony.values())
     return sorted(filtered, key=lambda reading: (reading.hive_id, reading.colony_side, reading.timestamp)), quality_by_colony, {

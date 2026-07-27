@@ -71,3 +71,70 @@ segmentation, organic-trend recovery, supering vs swarm classification, normal
 week unchanged, transient dip ignored, drop-then-settle coalescing, zero-weight
 dropout handling, quality-filter pass-through, event-day skipping, and short
 post-event segment merging. All 23 tests in the suite pass.
+
+## Update (2026-07-27): event detection vs. data-quality clash
+
+The MAD detector and the quality filter each ran their own event detection over
+different slices of the data, so a corroborated event visible only to the
+site-level detector could still be excluded by the quality filter as a "sudden
+jump" — the two disagreed about what counted as an event. This pass makes the
+detected event set a single source of truth and extends corroboration and the
+quality filter to match.
+
+`beemon_scoring/events.py`:
+
+- **Symmetric sister corroboration.** `corroborate_sister_events` promotes
+  same-sign sub-threshold moves in *both* directions (gain↔gain as well as
+  drop↔drop), and rescues gains that cleared the MAD z-bar but were blocked only
+  by the absolute addition floor.
+- **Paired corroboration** (`_promote_paired_events`). When *neither* sister has
+  an individually confirmed event but both show a same-direction sub-threshold
+  step within one reading interval of each other, the timing itself is the
+  evidence and both are promoted. Gated per side by `PAIRED_MIN_GAIN_KG=1.5` /
+  `PAIRED_MIN_GAIN_PCT=3.0` for gains (drops need no extra floor), since sisters
+  share weather and forage and a shared foraging burst would otherwise pass.
+- **Aggregate multi-step pass** (`_aggregate_candidates` /
+  `_aggregate_window_shares`). A gradual move split into individually sub-floor
+  hourly steps is caught by a second rolling `AGGREGATE_SPAN_HOURS=3.0` scan on
+  its net change, with `AGGREGATE_MAX_DOMINANT_STEP_SHARE=0.6` rejecting a window
+  whose single largest step dominates the net (an ordinary trend containing one
+  already-blocked spike).
+- `detect_site_events` is the single entry point: group by site → detect per
+  side → corroborate → coalesce.
+
+`beemon_scoring/quality.py`:
+
+- Consumes the shared `events_by_colony` set (including corroborated events its
+  own per-colony detection could not see) instead of re-detecting.
+- **Settle window** (`EVENT_SETTLE_WINDOW_HOURS=3.0`): post-event readings, not
+  just the exact event timestamp, are exempt from jump checks — a visit disturbs
+  the sensor for hours.
+- **Anti-cascade** (`CONSISTENT_RUN_TO_ACCEPT=3`): a run of mutually consistent
+  readings excluded against a stale anchor (a real level shift the detector
+  missed) is re-admitted, while a lone fault stays excluded.
+
+`beemon_scoring/scoring.py`: `build_scores` runs `detect_site_events` once, up
+front, on the pre-filter readings and threads that one result into both
+`filter_quality_issues` and `build_features`.
+
+### Threshold validation (Step 7)
+
+The provisional promotion floors were locked against a 60-day sweep over all
+four sites (`spike_paired_corroboration.py`, 2026-07-27):
+
+- `PAIRED_MIN_GAIN_KG=1.5` / `PAIRED_MIN_GAIN_PCT=3.0` — the false-pair
+  population (shared-foraging dual co-gains; post-harvest settle-back rebounds)
+  tops out at 1.21 kg/side and 1.20 kg/side respectively, both rejected at
+  1.5 kg; the smallest genuine paired step is 1.6 kg.
+- `AGGREGATE_MAX_DOMINANT_STEP_SHARE=0.6` — genuine multi-step moves land at a
+  dominant-step share ≤ 0.53; single-step-dominated windows (including the
+  WTG_HSCHL:R foraging burst at 0.78) land ≥ 0.60.
+
+### Tests
+
+`tests/test_event_quality_clash.py` (9 cases) pins the acceptance criteria:
+paired sub-threshold additions, the foraging-burst false-positive guard,
+quality-filter exemption of corroborated events, end-to-end survival into
+`weight_event_count`, stale-anchor no-cascade, the settle window, aggregate
+split-addition plus a smooth-nectar-flow guard, and symmetric gain
+corroboration. All 47 tests in the suite pass.

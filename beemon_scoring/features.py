@@ -4,7 +4,7 @@ import statistics
 from collections import Counter, defaultdict
 from datetime import date
 
-from .events import WeightSegment, corroborate_sister_events, detect_weight_events, segment_readings
+from .events import WeightEvent, WeightSegment, detect_site_events, segment_readings
 from .models import ColonyFeatures, SensorReading, WeatherReading
 from .thermal import thermal_efficiency
 from .weather import RAINY_WEATHER_CODES
@@ -19,24 +19,18 @@ def build_features(
     weather_by_hive: dict[str, list[WeatherReading]],
     weather_day_types: dict[str, dict[date, str]],
     quality_by_colony: dict[str, list[str]],
+    events_by_colony: dict[str, list[WeightEvent]] | None = None,
 ) -> list[ColonyFeatures]:
     by_colony: dict[str, list[SensorReading]] = defaultdict(list)
     for reading in sensor_readings:
         by_colony[reading.colony_id].append(reading)
 
-    # Run per-colony event detection, then apply site-level sister corroboration
-    # so a soft drop on one side can be promoted when the sister has a confirmed
-    # event in the same reading window (harvests are apiary-level actions).
-    by_hive: dict[str, dict[str, list[SensorReading]]] = defaultdict(lambda: defaultdict(list))
-    for reading in sensor_readings:
-        by_hive[reading.hive_id][reading.colony_side].append(reading)
-
-    events_by_colony: dict[str, list] = {}
-    for hive_id, sides in by_hive.items():
-        raw_events = {side: detect_weight_events(rdgs) for side, rdgs in sides.items()}
-        corroborated = corroborate_sister_events(raw_events, sides)
-        for side, evts in corroborated.items():
-            events_by_colony[f"{hive_id}:{side}"] = evts
+    # Use pre-computed site-level events (detection + sister corroboration) when
+    # supplied by the caller -- this is the single source of truth shared with
+    # the quality filter. Fall back to detecting them here for direct callers
+    # that have not adopted the site-level pipeline.
+    if events_by_colony is None:
+        events_by_colony = detect_site_events(sensor_readings)
 
     features: list[ColonyFeatures] = []
     for colony_id, readings in sorted(by_colony.items()):
