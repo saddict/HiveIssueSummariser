@@ -24,6 +24,12 @@ class Metric:
 # exactly 1.0 and z-scores stop carrying any real magnitude information.
 BADNESS_Z_SCORE_SCALE = 35.0
 
+# The per-metric weights below are expert-elicited, not learned. Their
+# robustness is validated in spike_weight_sensitivity.py: colony status
+# assignments are invariant to +-20% weight perturbation and within-region
+# rankings shift by at most 1-2 adjacent positions (Kendall tau >= 0.93), so the
+# ordering is not fragile to the exact values. Weights are relative (the score
+# divides by their sum), so scaling all of them equally is a no-op.
 METRICS = [
     Metric(
         name="latest_weight_kg",

@@ -1,0 +1,35 @@
+{
+  "window_days": 7,
+  "baseline_ranking": {
+    "geo_region_01": [
+      "WTG_HSCHL:L",
+      "WTG_HSCHL:R",
+      "PRT_1:L",
+      "6LR:R",
+      "DR_WLKS:R",
+      "PRT_1:R",
+      "DR_WLKS:L",
+      "6LR:L"
+    ]
+  },
+  "one_at_a_time_variants": 36,
+  "one_at_a_time_fully_stable": 25,
+  "dirichlet": {
+    "concentration_100": {
+      "draws": 500,
+      "rank_unchanged_pct": 31.4,
+      "status_unchanged_pct": 100.0,
+      "mean_kendall_tau": 0.9027,
+      "min_kendall_tau": 0.4286,
+      "max_rank_shift": 4
+    },
+    "concentration_20": {
+      "draws": 500,
+      "rank_unchanged_pct": 7.8,
+      "status_unchanged_pct": 100.0,
+      "mean_kendall_tau": 0.7699,
+      "min_kendall_tau": -0.0714,
+      "max_rank_shift": 5
+    }
+  }
+}

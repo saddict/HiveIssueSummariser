@@ -15,12 +15,17 @@ from .quality import filter_quality_issues
 from .weather import weather_by_hive, weather_day_types
 
 
-def build_scores(
+def prepare_features(
     project_root: Path,
     window_days: int | None = None,
     sensor_dir: Path | None = None,
     weather_dir: Path | None = None,
-) -> tuple[list[ColonyScore], dict[str, object]]:
+) -> tuple[list[ColonyFeatures], dict[str, float], dict[str, object]]:
+    """Load, window, event-detect, quality-filter, and feature-build — the whole
+    score-independent half of the pipeline. Returns ``(features, settings,
+    prep_metadata)``. Split out so callers that rescore under many metric-weight
+    variants (e.g. spike_weight_sensitivity.py) prepare the data once and rescore
+    cheaply, instead of re-running the entire pipeline per variant."""
     hives, colony_sides, settings = load_hive_config(project_root / "hive_config.py")
     default_local_data = project_root / "local_data"
     sensor_dir = sensor_dir or default_local_data / "dynamodb"
@@ -59,8 +64,7 @@ def build_scores(
     features = build_features(
         filtered_readings, hive_weather, hive_weather_day_types, quality_by_colony, events_by_colony=events_by_colony
     )
-    scores = _score_features(features, settings)
-    metadata = {
+    prep_metadata = {
         "window_days": window_days,
         "start_at": start_at.isoformat(),
         "end_at": end_at.isoformat(),
@@ -69,12 +73,35 @@ def build_scores(
         "excluded_sensor_reading_count": quality_summary["excluded_sensor_reading_count"],
         "data_quality_issue_count": quality_summary["data_quality_issue_count"],
         "weather_reading_count": sum(len(values) for values in hive_weather.values()),
+        "region_radius_miles": settings["region_radius_miles"],
+        "min_region_site_count": settings["min_region_site_count"],
+    }
+    return features, settings, prep_metadata
+
+
+def build_scores(
+    project_root: Path,
+    window_days: int | None = None,
+    sensor_dir: Path | None = None,
+    weather_dir: Path | None = None,
+) -> tuple[list[ColonyScore], dict[str, object]]:
+    features, settings, prep = prepare_features(project_root, window_days, sensor_dir, weather_dir)
+    scores = _score_features(features, settings)
+    metadata = {
+        "window_days": prep["window_days"],
+        "start_at": prep["start_at"],
+        "end_at": prep["end_at"],
+        "sensor_reading_count": prep["sensor_reading_count"],
+        "valid_sensor_reading_count": prep["valid_sensor_reading_count"],
+        "excluded_sensor_reading_count": prep["excluded_sensor_reading_count"],
+        "data_quality_issue_count": prep["data_quality_issue_count"],
+        "weather_reading_count": prep["weather_reading_count"],
         "colony_count": len(scores),
         "region_count": len({score.region_id for score in scores}),
         "region_ids": sorted({score.region_id for score in scores}),
         "region_assignment_method": "coordinate_radius_connected_components_with_min_site_merge",
-        "region_radius_miles": settings["region_radius_miles"],
-        "min_region_site_count": settings["min_region_site_count"],
+        "region_radius_miles": prep["region_radius_miles"],
+        "min_region_site_count": prep["min_region_site_count"],
         "min_colony_days_observed": round(min(score.feature.days_observed for score in scores), 2) if scores else 0,
         "max_colony_days_observed": round(max(score.feature.days_observed for score in scores), 2) if scores else 0,
         "weight_event_count": sum(score.feature.weight_event_count for score in scores),
@@ -88,7 +115,11 @@ def _require_data_dir(path: Path, label: str) -> None:
         raise RuntimeError(f"Missing {label} data directory: {path}")
 
 
-def _score_features(features: list[ColonyFeatures], settings: dict[str, float]) -> list[ColonyScore]:
+def _score_features(
+    features: list[ColonyFeatures],
+    settings: dict[str, float],
+    metrics: list[Metric] = METRICS,
+) -> list[ColonyScore]:
     by_region: dict[str, list[ColonyFeatures]] = defaultdict(list)
     for feature in features:
         by_region[feature.region_id].append(feature)
@@ -96,11 +127,15 @@ def _score_features(features: list[ColonyFeatures], settings: dict[str, float]) 
     scores: list[ColonyScore] = []
     for region_id in sorted(by_region):
         region_features = sorted(by_region[region_id], key=lambda feature: feature.colony_id)
-        scores.extend(_score_region_features(region_features, settings))
+        scores.extend(_score_region_features(region_features, settings, metrics))
     return scores
 
 
-def _score_region_features(features: list[ColonyFeatures], settings: dict[str, float]) -> list[ColonyScore]:
+def _score_region_features(
+    features: list[ColonyFeatures],
+    settings: dict[str, float],
+    metrics: list[Metric] = METRICS,
+) -> list[ColonyScore]:
     scores: list[ColonyScore] = []
     threshold = settings["zscore_badness_threshold"]
     drop_threshold = settings["weight_drop_pct_threshold"]
@@ -110,7 +145,7 @@ def _score_region_features(features: list[ColonyFeatures], settings: dict[str, f
         raw_score = 0.0
         total_weight = 0.0
 
-        for metric in METRICS:
+        for metric in metrics:
             eligible_peers = _eligible_metric_peers(features, metric)
             if feature not in eligible_peers or len(eligible_peers) < 2:
                 continue

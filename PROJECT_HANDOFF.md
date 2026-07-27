@@ -774,3 +774,34 @@ On current cached data all 8×9 = 72 comparisons are `confidence="normal"` (ever
 metric has full regional eligibility), so `output/scoring.json` gains the three
 fields with no status or ranking change. Tests: `tests/test_metric_confidence.py`
 (4 cases). Full suite 51/51.
+
+## 20. Metric-Weight Sensitivity Analysis (2026-07-27)
+
+The 9 metric weights (`metrics.py`) are expert-elicited, not learned — a
+standard reviewer challenge. `spike_weight_sensitivity.py` quantifies how much
+the conclusions depend on them, so the defensible claim is not "these weights are
+optimal" but "the ordering they produce is not fragile to them."
+
+Enabling refactor (behavior-preserving, verified byte-identical output):
+`build_scores` now delegates its whole score-independent first half to a new
+public `prepare_features()`; `_score_features` / `_score_region_features` take an
+optional `metrics` list (defaulting to `METRICS`). The spike prepares the data
+once and rescores each weight variant with just the cheap arithmetic. Two facts
+make this valid: the score divides by `total_weight` (weights are purely
+relative), and `badness_z` is weight-independent (per-metric flags never change
+under perturbation — only the aggregate score, the 30/55 status cuts, and the
+ranking move).
+
+Modes: one-at-a-time (each weight ×{0.5,0.75,1.25,1.5}) and seeded Dirichlet
+sampling (stdlib `gammavariate`) at ~±10% and ~±20% jitter. Reports per-region
+rank retention, status retention, max rank shift, and Kendall τ. `--json` writes
+`output/weight_sensitivity.json`.
+
+**Headline result: colony *status* assignments are 100% invariant to ±20% weight
+perturbation at both the 7-day and 60-day windows.** Ranking stability is
+window-dependent — strong over 60 days (mean τ ≥ 0.93, max shift 1–2 adjacent
+positions) and looser over 7 days (mean τ ≈ 0.77–0.90, max shift 4–5), because
+short-window scores bunch near ties. The actionable output (status) is robust
+regardless; fine-grained rank order is only robust once the window is long enough
+to separate the colonies. The committed `output/weight_sensitivity.json` is the
+default 7-day run (consistent with `scoring.json`).
