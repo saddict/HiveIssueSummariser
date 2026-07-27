@@ -14,6 +14,17 @@ MIN_EXTERNAL_TEMP_F = -40.0
 MAX_EXTERNAL_TEMP_F = 130.0
 MIN_HUMIDITY_PCT = 0.0
 MAX_HUMIDITY_PCT = 100.0
+# Sudden-jump thresholds: a short-interval move larger than these is treated as a
+# sensor artifact and the reading is excluded. Grounded against the real
+# inter-reading movement distribution via spike_quality_thresholds.py (2026-07-27,
+# full raw history, 11,400 normal pairs with event-adjacent pairs excluded).
+# Decision rule: keep a value if it sits >= p99.9 of normal movement so it clips
+# only genuine outliers; genuine harvests/supering are exempt anyway (detected
+# first). All four thresholds clear that bar with margin, so none were nudged:
+#   weight kg  3.63 -> 99.96th pct (p99.9 = 1.23 kg, max normal 5.99 kg)
+#   weight %   12.0 -> 99.98th pct (p99.9 = 4.05 %)   [applied jointly with kg]
+#   temp F     25.0 -> 99.95th pct (p99.9 = 11.3 F)
+#   humidity   45.0 -> 99.99th pct (p99.9 = 18.4 pp)
 MAX_WEIGHT_JUMP_PCT = 12.0
 MAX_WEIGHT_JUMP_KG = 3.63
 MAX_TEMP_JUMP_F = 25.0

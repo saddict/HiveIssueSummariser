@@ -837,3 +837,23 @@ On the seeded confirmed subset (6 events + 1 non-event across the 07-03 supering
 F1 1.000**, TP time offsets 0–1 h, with 21 further detections flagged as
 unaudited pending beekeeper confirmation. Tests: `tests/test_event_validation.py`
 (11 cases). Full suite 62/62.
+
+## 22. Data-Quality Threshold Grounding (2026-07-27)
+
+The jump thresholds in `quality.py` were heuristics. `spike_quality_thresholds.py`
+characterises the real per-colony inter-reading movement distribution (weight
+kg/%, internal temp F, internal humidity pp, over <= 6 h) from the full raw
+history, **excluding event-adjacent pairs** (reusing the `EVENT_SETTLE_WINDOW_HOURS`
+exemption) so genuine harvests/supering do not pollute the "normal movement"
+baseline. It reports per-channel percentiles, where each threshold lands, and a
+±25% exclusion-count sensitivity.
+
+Result (11,400 normal pairs): every threshold sits at the 99.95th percentile or
+above of normal movement — weight kg 3.63 → 99.96th (p99.9 = 1.23 kg), weight %
+12.0 → 99.98th, temp 25 F → 99.95th, humidity 45 pp → 99.99th — so each clips
+only genuine outliers and none needed nudging. The decision rule and these
+numbers are now cited in a comment above the constants (comment-only; outputs
+byte-identical). The physical bounds are justified as impossible, not
+statistical: the spike shows real data hitting 0.0 kg dropouts and 162 °F sensor
+spikes, which the `MIN_WEIGHT_KG` / `MAX_INTERNAL_TEMP_F` bounds correctly reject.
+No test or output change; suite 62/62.
