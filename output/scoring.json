@@ -103,7 +103,10 @@
           "peer_std": 2.524870858260916,
           "badness_z": 2.0605151056958744,
           "weight": 0.13,
-          "unit": "F"
+          "unit": "F",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "thermal_efficiency_pi",
@@ -113,7 +116,10 @@
           "peer_std": 0.2637219314748514,
           "badness_z": 1.9025725401309301,
           "weight": 0.1,
-          "unit": ""
+          "unit": "",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -123,7 +129,10 @@
           "peer_std": 1.6537921327412808,
           "badness_z": 1.724670008359669,
           "weight": 0.05,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -133,7 +142,10 @@
           "peer_std": 41.428504539878936,
           "badness_z": 1.3765070173856087,
           "weight": 0.06,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "latest_weight_kg",
@@ -143,7 +155,10 @@
           "peer_std": 16.80783312572774,
           "badness_z": 0.9052133392918396,
           "weight": 0.3,
-          "unit": "kg"
+          "unit": "kg",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
@@ -153,7 +168,10 @@
           "peer_std": 1.449312043613763,
           "badness_z": 0.3219401299470416,
           "weight": 0.06,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_pct_change",
@@ -163,7 +181,10 @@
           "peer_std": 5.988713736803574,
           "badness_z": -0.24617034444591465,
           "weight": 0.17,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -173,7 +194,10 @@
           "peer_std": 1.0450029895001784,
           "badness_z": -0.3123313122212886,
           "weight": 0.09,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "poor_weather_weight_loss_pct",
@@ -183,7 +207,10 @@
           "peer_std": 0.5040631496230484,
           "badness_z": -0.6249726621899039,
           "weight": 0.04,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         }
       ],
       "feature": {
@@ -273,7 +300,10 @@
           "peer_std": 1.449312043613763,
           "badness_z": 2.3732185540161446,
           "weight": 0.06,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -283,7 +313,10 @@
           "peer_std": 41.428504539878936,
           "badness_z": 1.6621634671673176,
           "weight": 0.06,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "latest_weight_kg",
@@ -293,7 +326,10 @@
           "peer_std": 16.80783312572774,
           "badness_z": 0.9698935388076191,
           "weight": 0.3,
-          "unit": "kg"
+          "unit": "kg",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "thermal_efficiency_pi",
@@ -303,7 +339,10 @@
           "peer_std": 0.2637219314748514,
           "badness_z": 0.5867686652281596,
           "weight": 0.1,
-          "unit": ""
+          "unit": "",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "poor_weather_weight_loss_pct",
@@ -313,7 +352,10 @@
           "peer_std": 0.5040631496230484,
           "badness_z": -0.6249726621899039,
           "weight": 0.04,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_temp_std_f",
@@ -323,7 +365,10 @@
           "peer_std": 2.524870858260916,
           "badness_z": -1.1084073676066801,
           "weight": 0.13,
-          "unit": "F"
+          "unit": "F",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -333,7 +378,10 @@
           "peer_std": 1.6537921327412808,
           "badness_z": -1.6170739862196932,
           "weight": 0.05,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_pct_change",
@@ -343,7 +391,10 @@
           "peer_std": 5.988713736803574,
           "badness_z": -1.7950023093886984,
           "weight": 0.17,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -353,7 +404,10 @@
           "peer_std": 1.0450029895001784,
           "badness_z": -2.3915307329607045,
           "weight": 0.09,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         }
       ],
       "feature": {
@@ -441,7 +495,10 @@
           "peer_std": 0.5040631496230484,
           "badness_z": 2.5957346731665547,
           "weight": 0.04,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "latest_weight_kg",
@@ -451,7 +508,10 @@
           "peer_std": 16.80783312572774,
           "badness_z": 0.8994777397485268,
           "weight": 0.3,
-          "unit": "kg"
+          "unit": "kg",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -461,7 +521,10 @@
           "peer_std": 1.6537921327412808,
           "badness_z": 0.8771611326759802,
           "weight": 0.05,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -471,7 +534,10 @@
           "peer_std": 41.428504539878936,
           "badness_z": 0.7194971828876788,
           "weight": 0.06,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_temp_std_f",
@@ -481,7 +547,10 @@
           "peer_std": 2.524870858260916,
           "badness_z": 0.26845646520167027,
           "weight": 0.13,
-          "unit": "F"
+          "unit": "F",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "thermal_efficiency_pi",
@@ -491,7 +560,10 @@
           "peer_std": 0.2637219314748514,
           "badness_z": 0.0036799300523971176,
           "weight": 0.1,
-          "unit": ""
+          "unit": "",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -501,7 +573,10 @@
           "peer_std": 1.0450029895001784,
           "badness_z": -0.19821717508118997,
           "weight": 0.09,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
@@ -511,7 +586,10 @@
           "peer_std": 1.449312043613763,
           "badness_z": -1.2395358486522214,
           "weight": 0.06,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_pct_change",
@@ -521,7 +599,10 @@
           "peer_std": 5.988713736803574,
           "badness_z": -1.2949805444874654,
           "weight": 0.17,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         }
       ],
       "feature": {
@@ -587,7 +668,10 @@
           "peer_std": 0.2637219314748514,
           "badness_z": 0.9054894179009748,
           "weight": 0.1,
-          "unit": ""
+          "unit": "",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -597,7 +681,10 @@
           "peer_std": 1.6537921327412808,
           "badness_z": 0.7833142320528925,
           "weight": 0.05,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_temp_std_f",
@@ -607,7 +694,10 @@
           "peer_std": 2.524870858260916,
           "badness_z": 0.7126457289179121,
           "weight": 0.13,
-          "unit": "F"
+          "unit": "F",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_pct_change",
@@ -617,7 +707,10 @@
           "peer_std": 5.988713736803574,
           "badness_z": 0.40961985983509347,
           "weight": 0.17,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -627,7 +720,10 @@
           "peer_std": 1.0450029895001784,
           "badness_z": 0.20256585388870302,
           "weight": 0.09,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
@@ -637,7 +733,10 @@
           "peer_std": 1.449312043613763,
           "badness_z": 0.15650784445633753,
           "weight": 0.06,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "latest_weight_kg",
@@ -647,7 +746,10 @@
           "peer_std": 16.80783312572774,
           "badness_z": -0.388086269134563,
           "weight": 0.3,
-          "unit": "kg"
+          "unit": "kg",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "poor_weather_weight_loss_pct",
@@ -657,7 +759,10 @@
           "peer_std": 0.5040631496230484,
           "badness_z": -0.4750175052096379,
           "weight": 0.04,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -667,7 +772,10 @@
           "peer_std": 41.428504539878936,
           "badness_z": -0.751633533488121,
           "weight": 0.06,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         }
       ],
       "feature": {
@@ -731,7 +839,10 @@
           "peer_std": 5.988713736803574,
           "badness_z": 1.1583116996534735,
           "weight": 0.17,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -741,7 +852,10 @@
           "peer_std": 1.0450029895001784,
           "badness_z": 1.000418447169543,
           "weight": 0.09,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "poor_weather_weight_loss_pct",
@@ -751,7 +865,10 @@
           "peer_std": 0.5040631496230484,
           "badness_z": 0.0015759993473107683,
           "weight": 0.04,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "latest_weight_kg",
@@ -761,7 +878,10 @@
           "peer_std": 16.80783312572774,
           "badness_z": -0.04930202744169139,
           "weight": 0.3,
-          "unit": "kg"
+          "unit": "kg",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
@@ -771,7 +891,10 @@
           "peer_std": 1.449312043613763,
           "badness_z": -0.36762830990206435,
           "weight": 0.06,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_temp_std_f",
@@ -781,7 +904,10 @@
           "peer_std": 2.524870858260916,
           "badness_z": -0.6664880773636529,
           "weight": 0.13,
-          "unit": "F"
+          "unit": "F",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -791,7 +917,10 @@
           "peer_std": 1.6537921327412808,
           "badness_z": -0.7419445835946835,
           "weight": 0.05,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -801,7 +930,10 @@
           "peer_std": 41.428504539878936,
           "badness_z": -0.751633533488121,
           "weight": 0.06,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "thermal_efficiency_pi",
@@ -811,7 +943,10 @@
           "peer_std": 0.2637219314748514,
           "badness_z": -0.8811938727175296,
           "weight": 0.1,
-          "unit": ""
+          "unit": "",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         }
       ],
       "feature": {
@@ -878,7 +1013,10 @@
           "peer_std": 16.80783312572774,
           "badness_z": 0.5223614896890442,
           "weight": 0.3,
-          "unit": "kg"
+          "unit": "kg",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_temp_std_f",
@@ -888,7 +1026,10 @@
           "peer_std": 2.524870858260916,
           "badness_z": 0.3633373666218666,
           "weight": 0.13,
-          "unit": "F"
+          "unit": "F",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -898,7 +1039,10 @@
           "peer_std": 1.0450029895001784,
           "badness_z": 0.2629688764582004,
           "weight": 0.09,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_pct_change",
@@ -908,7 +1052,10 @@
           "peer_std": 5.988713736803574,
           "badness_z": 0.02054323819763282,
           "weight": 0.17,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -918,7 +1065,10 @@
           "peer_std": 1.6537921327412808,
           "badness_z": -0.06659899455115775,
           "weight": 0.05,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "poor_weather_weight_loss_pct",
@@ -928,7 +1078,10 @@
           "peer_std": 0.5040631496230484,
           "badness_z": -0.282374879889853,
           "weight": 0.04,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "thermal_efficiency_pi",
@@ -938,7 +1091,10 @@
           "peer_std": 0.2637219314748514,
           "badness_z": -0.4601292041907168,
           "weight": 0.1,
-          "unit": ""
+          "unit": "",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
@@ -948,7 +1104,10 @@
           "peer_std": 1.449312043613763,
           "badness_z": -0.6004504266306976,
           "weight": 0.06,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -958,7 +1117,10 @@
           "peer_std": 41.428504539878936,
           "badness_z": -0.751633533488121,
           "weight": 0.06,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         }
       ],
       "feature": {
@@ -1022,7 +1184,10 @@
           "peer_std": 5.988713736803574,
           "badness_z": 0.9144957890698953,
           "weight": 0.17,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -1032,7 +1197,10 @@
           "peer_std": 1.0450029895001784,
           "badness_z": 0.7453414588398704,
           "weight": 0.09,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "poor_weather_weight_loss_pct",
@@ -1042,7 +1210,10 @@
           "peer_std": 0.5040631496230484,
           "badness_z": -0.3229696387124185,
           "weight": 0.04,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
@@ -1052,7 +1223,10 @@
           "peer_std": 1.449312043613763,
           "badness_z": -0.3307345954557548,
           "weight": 0.06,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -1062,7 +1236,10 @@
           "peer_std": 1.6537921327412808,
           "badness_z": -0.4012519706027189,
           "weight": 0.05,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -1072,7 +1249,10 @@
           "peer_std": 41.428504539878936,
           "badness_z": -0.751633533488121,
           "weight": 0.06,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_temp_std_f",
@@ -1082,7 +1262,10 @@
           "peer_std": 2.524870858260916,
           "badness_z": -0.9582267929411692,
           "weight": 0.13,
-          "unit": "F"
+          "unit": "F",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "thermal_efficiency_pi",
@@ -1092,7 +1275,10 @@
           "peer_std": 0.2637219314748514,
           "badness_z": -1.2649874276578497,
           "weight": 0.1,
-          "unit": ""
+          "unit": "",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "latest_weight_kg",
@@ -1102,7 +1288,10 @@
           "peer_std": 16.80783312572774,
           "badness_z": -2.106682341806442,
           "weight": 0.3,
-          "unit": "kg"
+          "unit": "kg",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         }
       ],
       "feature": {
@@ -1166,7 +1355,10 @@
           "peer_std": 5.988713736803574,
           "badness_z": 0.833182611565983,
           "weight": 0.17,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "weight_slope_pct_per_day",
@@ -1176,7 +1368,10 @@
           "peer_std": 1.0450029895001784,
           "badness_z": 0.6907845839068665,
           "weight": 0.09,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "poor_weather_weight_loss_pct",
@@ -1186,7 +1381,10 @@
           "peer_std": 0.5040631496230484,
           "badness_z": -0.2670033243221479,
           "weight": 0.04,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
@@ -1196,7 +1394,10 @@
           "peer_std": 1.449312043613763,
           "badness_z": -0.3133173477787857,
           "weight": 0.06,
-          "unit": "%/day"
+          "unit": "%/day",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_humidity_std_pct",
@@ -1206,7 +1407,10 @@
           "peer_std": 1.6537921327412808,
           "badness_z": -0.558275838120288,
           "weight": 0.05,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "internal_temp_std_f",
@@ -1216,7 +1420,10 @@
           "peer_std": 2.524870858260916,
           "badness_z": -0.6718324285258208,
           "weight": 0.13,
-          "unit": "F"
+          "unit": "F",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -1226,7 +1433,10 @@
           "peer_std": 41.428504539878936,
           "badness_z": -0.751633533488121,
           "weight": 0.06,
-          "unit": "%"
+          "unit": "%",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "latest_weight_kg",
@@ -1236,7 +1446,10 @@
           "peer_std": 16.80783312572774,
           "badness_z": -0.7528754691543321,
           "weight": 0.3,
-          "unit": "kg"
+          "unit": "kg",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         },
         {
           "metric": "thermal_efficiency_pi",
@@ -1246,7 +1459,10 @@
           "peer_std": 0.2637219314748514,
           "badness_z": -0.7922000487463647,
           "weight": 0.1,
-          "unit": ""
+          "unit": "",
+          "peer_count": 8,
+          "z_bound": 2.6457513110645907,
+          "confidence": "normal"
         }
       ],
       "feature": {

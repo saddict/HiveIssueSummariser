@@ -614,9 +614,9 @@ No scoring formula changed — `_badness_z`, the metric weights, and the 0-100 s
 3. `DR_WLKS`'s sister-comparison `normalized_gap` values are no longer pinned at exactly `2.0`.
 4. Regenerated `output/scoring.json` and `output/sister_comparisons.json` to match.
 
-### Residual risk (not fixed by this change)
+### Residual risk (RESOLVED 2026-07-27, see section 19)
 
-Per-metric eligibility (`_eligible_metric_peers` in `scoring.py`) filters on `favorable_weather_window_count` / `poor_weather_window_count` for two metrics. That filter operates independently of `MIN_REGION_SITE_COUNT` and could in principle still narrow a single metric's eligible peer count to a degenerate `n=2` even inside an otherwise-healthy region, if too few colonies have qualifying weather days. Not observed in current cached data (all 9 metrics have full regional eligibility today) — flagged in section 13/14 as a known gap, not addressed here.
+Per-metric eligibility (`_eligible_metric_peers` in `scoring.py`) filters on `favorable_weather_window_count` / `poor_weather_window_count` for two metrics. That filter operates independently of `MIN_REGION_SITE_COUNT` and could in principle still narrow a single metric's eligible peer count to a degenerate `n=2` even inside an otherwise-healthy region, if too few colonies have qualifying weather days. Not observed in current cached data (all 9 metrics have full regional eligibility today) — flagged in section 13/14 as a known gap. **Now addressed by the per-metric confidence labels in section 19:** the degenerate case is detected and surfaced rather than silently reported as a magnitude-bearing z-score.
 
 ## 17. Thermal Efficiency Indicator (2026-07-06)
 
@@ -747,3 +747,30 @@ evidence and stays in the repo):
 site-level orchestration in `detect_site_events`, never called from inside the
 single-colony detector; `quality.py` still holds no event *logic* — it only
 consumes the shared event set.
+
+## 19. Per-Metric Confidence Labels (2026-07-27)
+
+Closes the section 16 residual risk. `_eligible_metric_peers` can shrink one
+metric's peer pool below the region size via `min_sample_attr` gating (the two
+weather metrics). At `n<=2` Samuelson's inequality pins `|badness_z|` at the
+`sqrt(n-1)` bound (exactly `1.0` at `n=2`), so the z carries only sign, not
+magnitude — the same degeneracy section 16 fixed at the region level, resurfacing
+for a single metric.
+
+The fix **labels, it does not reweight** (down-weighting would silently change
+every published score; a small pool is a property of the region, not a colony
+fault):
+
+- `models.py` — `MetricComparison` gains `peer_count`, `z_bound` (`= sqrt(n-1)`),
+  and `confidence` (`"normal"`/`"low"`), all defaulted for backward compatibility.
+- `scoring.py` — `_score_region_features` computes them per metric;
+  `_metric_confidence()` returns `"low"` when `n<=2` or the z is pinned at the
+  bound (`|z| >= 0.999*z_bound`). `_flags` emits up to two `Low confidence: ...`
+  lines; `_status` excludes them from both the underperforming and watch triggers.
+- `reporting.py` — top-driver lines gain a `[low confidence: n=... peers]` marker;
+  JSON flows the new fields automatically via `asdict`.
+
+On current cached data all 8×9 = 72 comparisons are `confidence="normal"` (every
+metric has full regional eligibility), so `output/scoring.json` gains the three
+fields with no status or ranking change. Tests: `tests/test_metric_confidence.py`
+(4 cases). Full suite 51/51.

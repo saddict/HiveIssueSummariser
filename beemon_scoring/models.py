@@ -103,6 +103,14 @@ class MetricComparison:
     badness_z: float
     weight: float
     unit: str = ""
+    # Peer-pool size this metric was scored against, and the Samuelson bound
+    # sqrt(peer_count - 1) on |badness_z|. When the pool is degenerate (n<=2, or
+    # z pinned at the bound) confidence is "low": the z-score carries only sign,
+    # not magnitude. See scoring._score_region_features and the metrics.py
+    # BADNESS_Z_SCORE_SCALE note.
+    peer_count: int = 0
+    z_bound: float = 0.0
+    confidence: str = "normal"
 
 
 @dataclass

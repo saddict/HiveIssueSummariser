@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import statistics
 from collections import defaultdict
 from datetime import timedelta
@@ -121,6 +122,14 @@ def _score_region_features(features: list[ColonyFeatures], settings: dict[str, f
             metric_weight = metric.weight
             total_weight += metric_weight
             raw_score += max(0.0, badness_z) * metric_weight
+            # Per-metric peer-pool confidence. min_sample_attr gating (weather
+            # metrics) can shrink one metric's pool below the region size; at
+            # n<=2 Samuelson's inequality pins |badness_z| at the sqrt(n-1)
+            # bound, so the z carries only sign, not magnitude. Label it (do not
+            # reweight): a small pool is a property of the region, not a fault.
+            peer_count = len(eligible_peers)
+            z_bound = math.sqrt(peer_count - 1)
+            confidence = _metric_confidence(peer_count, badness_z, peer_std, z_bound)
             comparisons.append(
                 MetricComparison(
                     metric=metric.name,
@@ -131,6 +140,9 @@ def _score_region_features(features: list[ColonyFeatures], settings: dict[str, f
                     badness_z=badness_z,
                     weight=metric_weight,
                     unit=metric.unit,
+                    peer_count=peer_count,
+                    z_bound=z_bound,
+                    confidence=confidence,
                 )
             )
 
@@ -161,6 +173,17 @@ def _eligible_metric_peers(features: list[ColonyFeatures], metric: Metric) -> li
     return [feature for feature in features if getattr(feature, metric.min_sample_attr) >= metric.min_sample_count]
 
 
+def _metric_confidence(peer_count: int, badness_z: float, peer_std: float, z_bound: float) -> str:
+    """"low" when this metric's peer pool is too small for the z to carry
+    magnitude: n<=2 (bound collapses to <=1.0), or the z is pinned at the
+    Samuelson bound sqrt(n-1) — the degenerate case documented in metrics.py."""
+    if peer_count <= 2:
+        return "low"
+    if peer_std > 0 and z_bound > 0 and abs(badness_z) >= 0.999 * z_bound:
+        return "low"
+    return "normal"
+
+
 def _badness_z(value: float, peer_mean: float, peer_std: float, direction: str) -> float:
     if peer_std < 0.000001:
         return 0.0
@@ -186,6 +209,13 @@ def _flags(
             flags.append(
                 f"{comparison.label} is {comparison.badness_z:.1f} standard deviations worse than peers."
             )
+    low_confidence = [c for c in comparisons if c.confidence == "low"]
+    for comparison in low_confidence[:2]:
+        flags.append(
+            f"Low confidence: {comparison.label} compared against only "
+            f"{comparison.peer_count} eligible peers (z-score bounded at "
+            f"±{comparison.z_bound:.1f})."
+        )
     if feature.excluded_reading_count:
         flags.append(f"Excluded {feature.excluded_reading_count} sensor readings due to data quality checks.")
     for data_flag in feature.data_quality_flags[:2]:
@@ -196,7 +226,14 @@ def _flags(
 def _status(score: float, flags: list[str]) -> str:
     quality_flags = [flag for flag in flags if flag.startswith("Data quality:") or flag.startswith("Excluded ")]
     event_flags = [flag for flag in flags if flag.startswith("Likely ")]
-    performance_flags = [flag for flag in flags if flag not in quality_flags and flag not in event_flags]
+    # A small peer pool is a property of the region, not a colony problem, so
+    # low-confidence flags drive neither the underperforming nor the watch cut.
+    confidence_flags = [flag for flag in flags if flag.startswith("Low confidence:")]
+    performance_flags = [
+        flag
+        for flag in flags
+        if flag not in quality_flags and flag not in event_flags and flag not in confidence_flags
+    ]
     if score >= 55 or len(performance_flags) >= 3:
         return "underperforming"
     if score >= 30 or performance_flags or quality_flags:

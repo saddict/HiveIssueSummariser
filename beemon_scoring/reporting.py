@@ -100,10 +100,15 @@ def build_text_report(scores: list[ColonyScore], metadata: dict[str, object]) ->
                 f"weight {feature.weight_delta_kg:+.2f} kg ({feature.weight_pct_change:+.1f}%) over {feature.days_observed:.1f} days)"
             )
             for comparison in _top_drivers(score.comparisons, limit=3):
+                confidence_note = (
+                    f" [low confidence: n={comparison.peer_count} peers]"
+                    if comparison.confidence == "low"
+                    else ""
+                )
                 lines.append(
                     f"   - {comparison.label}: {comparison.value:.2f}{_unit(comparison)} "
                     f"vs peer avg {comparison.peer_mean:.2f}{_unit(comparison)} "
-                    f"(badness z {comparison.badness_z:.1f})"
+                    f"(badness z {comparison.badness_z:.1f}){confidence_note}"
                 )
             if score.weight_events:
                 lines.append("   Weight events (newest first):")
