@@ -1,0 +1,224 @@
+{
+  "mode": "full history",
+  "tolerance_hours": 6.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "confusion": {
+    "true_positive": 6,
+    "false_negative": 0,
+    "false_positive": 0,
+    "true_negative": 1,
+    "unaudited_detection": 21
+  },
+  "true_positives": [
+    {
+      "colony_id": "DR_WLKS:L",
+      "observed_at": "2026-07-03T16:00:00-04:00",
+      "kinds": [
+        "addition"
+      ],
+      "source": "beekeeper_log",
+      "notes": "super added (both sides worked)",
+      "detected_kind": "addition",
+      "detected_at": "2026-07-03T16:00:00-04:00",
+      "detected_delta_kg": 6.138,
+      "offset_hours": 0.0
+    },
+    {
+      "colony_id": "DR_WLKS:R",
+      "observed_at": "2026-07-03T16:00:00-04:00",
+      "kinds": [
+        "addition"
+      ],
+      "source": "beekeeper_log",
+      "notes": "super added (both sides worked)",
+      "detected_kind": "addition",
+      "detected_at": "2026-07-03T16:00:00-04:00",
+      "detected_delta_kg": 5.128,
+      "offset_hours": 0.0
+    },
+    {
+      "colony_id": "6LR:L",
+      "observed_at": "2026-07-07T17:00:00-04:00",
+      "kinds": [
+        "harvest"
+      ],
+      "source": "beekeeper_log",
+      "notes": "honey harvest, apiary-level (both sides)",
+      "detected_kind": "harvest",
+      "detected_at": "2026-07-07T17:00:00-04:00",
+      "detected_delta_kg": -4.04,
+      "offset_hours": 0.0
+    },
+    {
+      "colony_id": "6LR:R",
+      "observed_at": "2026-07-07T17:00:00-04:00",
+      "kinds": [
+        "harvest"
+      ],
+      "source": "beekeeper_log",
+      "notes": "honey harvest, apiary-level (both sides)",
+      "detected_kind": "harvest",
+      "detected_at": "2026-07-07T17:00:00-04:00",
+      "detected_delta_kg": -2.0,
+      "offset_hours": 0.0
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "observed_at": "2026-07-09T17:00:00-04:00",
+      "kinds": [
+        "harvest"
+      ],
+      "source": "beekeeper_log",
+      "notes": "honey harvest",
+      "detected_kind": "harvest",
+      "detected_at": "2026-07-09T17:00:00-04:00",
+      "detected_delta_kg": -5.135,
+      "offset_hours": 0.0
+    },
+    {
+      "colony_id": "PRT_1:R",
+      "observed_at": "2026-07-09T17:00:00-04:00",
+      "kinds": [
+        "harvest"
+      ],
+      "source": "beekeeper_log",
+      "notes": "honey harvest, sister side lightly worked",
+      "detected_kind": "harvest",
+      "detected_at": "2026-07-09T18:00:00-04:00",
+      "detected_delta_kg": -1.477,
+      "offset_hours": 1.0
+    }
+  ],
+  "false_negatives": [],
+  "false_positives": [],
+  "unaudited_detections": [
+    {
+      "colony_id": "6LR:L",
+      "detected_kind": "harvest",
+      "detected_at": "2026-06-10T10:00:00-04:00",
+      "detected_delta_kg": -4.516
+    },
+    {
+      "colony_id": "6LR:R",
+      "detected_kind": "harvest (paired)",
+      "detected_at": "2026-05-28T20:00:00-04:00",
+      "detected_delta_kg": -1.152
+    },
+    {
+      "colony_id": "6LR:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-06-03T20:00:00-04:00",
+      "detected_delta_kg": -1.393
+    },
+    {
+      "colony_id": "6LR:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-07-02T20:00:00-04:00",
+      "detected_delta_kg": -1.483
+    },
+    {
+      "colony_id": "6LR:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-07-14T20:00:00-04:00",
+      "detected_delta_kg": -1.597
+    },
+    {
+      "colony_id": "DR_WLKS:L",
+      "detected_kind": "addition",
+      "detected_at": "2026-05-29T15:00:00-04:00",
+      "detected_delta_kg": 5.779
+    },
+    {
+      "colony_id": "DR_WLKS:L",
+      "detected_kind": "harvest",
+      "detected_at": "2026-06-08T12:00:00-04:00",
+      "detected_delta_kg": -25.428
+    },
+    {
+      "colony_id": "DR_WLKS:L",
+      "detected_kind": "addition",
+      "detected_at": "2026-06-29T16:00:00-04:00",
+      "detected_delta_kg": 4.236
+    },
+    {
+      "colony_id": "DR_WLKS:R",
+      "detected_kind": "addition (sister-corroborated)",
+      "detected_at": "2026-06-29T16:00:00-04:00",
+      "detected_delta_kg": 0.355
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "detected_kind": "harvest",
+      "detected_at": "2026-05-27T18:00:44-04:00",
+      "detected_delta_kg": -13.23
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "detected_kind": "addition",
+      "detected_at": "2026-06-04T18:00:00-04:00",
+      "detected_delta_kg": 3.49
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "detected_kind": "harvest",
+      "detected_at": "2026-06-06T15:00:00-04:00",
+      "detected_delta_kg": -1.018
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "detected_kind": "addition",
+      "detected_at": "2026-06-23T18:00:00-04:00",
+      "detected_delta_kg": 11.069
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "detected_kind": "harvest (paired)",
+      "detected_at": "2026-07-01T10:00:00-04:00",
+      "detected_delta_kg": -0.857
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "detected_kind": "harvest",
+      "detected_at": "2026-07-07T18:00:00-04:00",
+      "detected_delta_kg": -3.646
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "detected_kind": "harvest",
+      "detected_at": "2026-07-15T19:00:00-04:00",
+      "detected_delta_kg": -11.785
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "detected_kind": "addition",
+      "detected_at": "2026-07-16T12:00:00-04:00",
+      "detected_delta_kg": 3.379
+    },
+    {
+      "colony_id": "PRT_1:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-05-27T18:00:44-04:00",
+      "detected_delta_kg": -15.996
+    },
+    {
+      "colony_id": "PRT_1:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-05-28T16:00:00-04:00",
+      "detected_delta_kg": -1.491
+    },
+    {
+      "colony_id": "PRT_1:R",
+      "detected_kind": "addition",
+      "detected_at": "2026-06-20T16:00:00-04:00",
+      "detected_delta_kg": 5.638
+    },
+    {
+      "colony_id": "PRT_1:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-06-23T18:00:00-04:00",
+      "detected_delta_kg": -12.764
+    }
+  ]
+}

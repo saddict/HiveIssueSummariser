@@ -805,3 +805,35 @@ short-window scores bunch near ties. The actionable output (status) is robust
 regardless; fine-grained rank order is only robust once the window is long enough
 to separate the colonies. The committed `output/weight_sensitivity.json` is the
 default 7-day run (consistent with `scoring.json`).
+
+## 21. Ground-Truth Event-Detection Validation (2026-07-27)
+
+The event detector had no precision/recall evidence — the paper's central claim.
+This adds a beekeeper ground-truth log and a matching harness.
+
+- **`ground_truth/events.json`** — hand-curated confirmed events and known
+  non-events. Fields: `site_id`, `colony_side`, `observed_at`, `label`
+  (`event`/`non_event`), `kinds` (acceptable base kinds; a list so an ambiguous
+  drop can declare `["harvest","swarm"]`), plus `audited_ranges`. **Honesty
+  rule:** false positives are only counted inside an audited range, so a partial
+  log cannot manufacture false alarms; unmatched detections outside every range
+  are reported as "unaudited," not as errors. SEED FILE — extend from the full
+  inspection log by adding records and an audited range per accounted-for span.
+- **`beemon_scoring/validation.py`** — `load_ground_truth`, `base_kind` (strips
+  `(paired)`/`(sister-corroborated)` decorations), and `match_events` (greedy
+  nearest-first, one detection per record, `tolerance_hours` default 6.0).
+  Reports precision/recall/F1, a confusion matrix, and the TP time-offset spread.
+- **`validate_events.py`** — CLI. Runs `detect_site_events` on the **pre-filter**
+  readings to match production ordering in `build_scores`; `--windowed N` replays
+  rolling windows for the operational-recall view; `--json` writes
+  `output/event_validation.json`.
+- **`list_events.py` aligned** to the same pre-filter `detect_site_events`
+  ordering (it previously filtered first and re-detected). No change in the
+  detected set on current data — the quality filter's settle-window already
+  converges the two orderings.
+
+On the seeded confirmed subset (6 events + 1 non-event across the 07-03 supering,
+07-07 6LR harvest, and 07-09 PRT_1 harvest): **precision 1.000, recall 1.000,
+F1 1.000**, TP time offsets 0–1 h, with 21 further detections flagged as
+unaudited pending beekeeper confirmation. Tests: `tests/test_event_validation.py`
+(11 cases). Full suite 62/62.

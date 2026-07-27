@@ -11,13 +11,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
 from beemon_scoring.data_loader import load_hive_config, load_sensor_readings
-from beemon_scoring.events import corroborate_sister_events, detect_weight_events
-from beemon_scoring.quality import filter_quality_issues
+from beemon_scoring.events import detect_site_events
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
@@ -30,32 +28,26 @@ def main() -> None:
 
     hives, colony_sides, _ = load_hive_config(PROJECT_ROOT / "hive_config.py")
     all_raw = load_sensor_readings(PROJECT_ROOT / "local_data" / "dynamodb", hives, colony_sides)
-    all_clean, _, _ = filter_quality_issues(all_raw)
 
-    if not all_clean:
-        print("No valid sensor readings found.")
+    if not all_raw:
+        print("No sensor readings found.")
         return
 
-    start = min(r.observed_at for r in all_clean)
-    end = max(r.observed_at for r in all_clean)
+    start = min(r.observed_at for r in all_raw)
+    end = max(r.observed_at for r in all_raw)
     span_days = (end - start).total_seconds() / 86400
 
     site_filter = set(args.sites) if args.sites else None
 
-    # Group readings by hive → side
-    by_hive: dict[str, dict[str, list]] = defaultdict(lambda: defaultdict(list))
-    for r in all_clean:
-        if site_filter and r.hive_id not in site_filter:
-            continue
-        by_hive[r.hive_id][r.colony_side].append(r)
-
-    # Detect events per hive with sister corroboration
+    # Detect events exactly as production does: detect_site_events on the
+    # pre-filter readings (the single source of truth used by build_scores), not
+    # a second pass over quality-filtered data.
+    detected = detect_site_events(all_raw)
     events_by_colony: dict[str, list] = {}
-    for hive_id, sides in by_hive.items():
-        raw = {side: detect_weight_events(rdgs) for side, rdgs in sides.items()}
-        corroborated = corroborate_sister_events(raw, sides)
-        for side, evts in corroborated.items():
-            events_by_colony[f"{hive_id}:{side}"] = sorted(evts, key=lambda e: e.observed_at, reverse=True)
+    for colony_id, evts in detected.items():
+        if site_filter and colony_id.split(":")[0] not in site_filter:
+            continue
+        events_by_colony[colony_id] = sorted(evts, key=lambda e: e.observed_at, reverse=True)
 
     total_events = sum(len(evts) for evts in events_by_colony.values())
 

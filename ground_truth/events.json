@@ -1,0 +1,35 @@
+{
+  "description": "Beekeeper-confirmed hive events and known non-events, for validating beemon_scoring event detection (validate_events.py). SEED FILE: contains only the events already established as ground truth in the project's tests and spikes. EXTEND from the full inspection log. false positives are only counted inside audited_ranges, so add an audited range for every colony-span you have fully accounted for.",
+  "audited_ranges": [
+    {"site_id": "DR_WLKS", "colony_side": "L", "start": "2026-07-03T00:00:00-04:00", "end": "2026-07-04T00:00:00-04:00"},
+    {"site_id": "DR_WLKS", "colony_side": "R", "start": "2026-07-03T00:00:00-04:00", "end": "2026-07-04T00:00:00-04:00"},
+    {"site_id": "6LR", "colony_side": "L", "start": "2026-07-07T00:00:00-04:00", "end": "2026-07-08T00:00:00-04:00"},
+    {"site_id": "6LR", "colony_side": "R", "start": "2026-07-07T00:00:00-04:00", "end": "2026-07-08T00:00:00-04:00"},
+    {"site_id": "PRT_1", "colony_side": "L", "start": "2026-07-09T00:00:00-04:00", "end": "2026-07-10T00:00:00-04:00"},
+    {"site_id": "PRT_1", "colony_side": "R", "start": "2026-07-09T00:00:00-04:00", "end": "2026-07-10T00:00:00-04:00"},
+    {"site_id": "WTG_HSCHL", "colony_side": "R", "start": "2026-07-03T00:00:00-04:00", "end": "2026-07-04T00:00:00-04:00"}
+  ],
+  "records": [
+    {"site_id": "DR_WLKS", "colony_side": "L", "observed_at": "2026-07-03T16:00:00-04:00",
+     "label": "event", "kinds": ["addition"], "approx_delta_kg": 6.1,
+     "source": "beekeeper_log", "notes": "super added (both sides worked)"},
+    {"site_id": "DR_WLKS", "colony_side": "R", "observed_at": "2026-07-03T16:00:00-04:00",
+     "label": "event", "kinds": ["addition"], "approx_delta_kg": 5.1,
+     "source": "beekeeper_log", "notes": "super added (both sides worked)"},
+    {"site_id": "6LR", "colony_side": "L", "observed_at": "2026-07-07T17:00:00-04:00",
+     "label": "event", "kinds": ["harvest"], "approx_delta_kg": -4.0,
+     "source": "beekeeper_log", "notes": "honey harvest, apiary-level (both sides)"},
+    {"site_id": "6LR", "colony_side": "R", "observed_at": "2026-07-07T17:00:00-04:00",
+     "label": "event", "kinds": ["harvest"], "approx_delta_kg": -2.0,
+     "source": "beekeeper_log", "notes": "honey harvest, apiary-level (both sides)"},
+    {"site_id": "PRT_1", "colony_side": "L", "observed_at": "2026-07-09T17:00:00-04:00",
+     "label": "event", "kinds": ["harvest"], "approx_delta_kg": -10.0,
+     "source": "beekeeper_log", "notes": "honey harvest"},
+    {"site_id": "PRT_1", "colony_side": "R", "observed_at": "2026-07-09T17:00:00-04:00",
+     "label": "event", "kinds": ["harvest"], "approx_delta_kg": -1.5,
+     "source": "beekeeper_log", "notes": "honey harvest, sister side lightly worked"},
+    {"site_id": "WTG_HSCHL", "colony_side": "R", "observed_at": "2026-07-03T12:00:00-04:00",
+     "label": "non_event", "kinds": ["addition"],
+     "source": "inspection", "notes": "foraging burst (+2.7 kg midday); no beekeeper visit — must NOT be flagged"}
+  ]
+}
