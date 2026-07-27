@@ -1,4 +1,46 @@
 hive_id,latitude,longitude,date,clock_time,temperature_F,pressure_hPa,cloudiness_percent,humidity_percent,weather_condition_code,weather_overview
+PRT_1,36.203096,-81.625792,2026-05-26,07:00,61.3,903.1,100,93,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-05-26,14:00,68.1,904.3,100,88,63,Mild and humid afternoon with mostly cloudy skies and Moderate rain conditions.
+PRT_1,36.203096,-81.625792,2026-05-26,19:00,66.9,902.3,100,98,53,Mild and humid evening with mostly cloudy skies and Moderate drizzle conditions.
+PRT_1,36.203096,-81.625792,2026-05-27,07:00,62.7,901.9,100,90,45,Mild and humid morning with mostly cloudy skies and Fog conditions.
+PRT_1,36.203096,-81.625792,2026-05-27,14:00,72.9,903.5,44,79,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-05-27,19:00,71.4,900.8,0,74,0,Warm and humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-05-28,07:00,62.1,899.4,5,91,0,Mild and humid morning with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-05-28,14:00,73.3,902.7,28,67,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-05-28,19:00,71.1,901.2,0,54,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-05-29,07:00,51.0,898.8,0,82,0,Mild and humid morning with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-05-29,14:00,69.0,901.5,13,65,0,Mild and humid afternoon with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-05-29,19:00,69.1,899.5,55,77,2,Mild and humid evening with partly cloudy skies and Partly cloudy conditions.
+PRT_1,36.203096,-81.625792,2026-05-30,07:00,61.8,897.8,100,90,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-05-30,14:00,72.7,900.9,48,68,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-05-30,19:00,67.9,899.4,8,89,0,Mild and humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-05-31,07:00,50.8,900.6,100,79,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-05-31,14:00,61.9,901.9,83,87,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-05-31,19:00,63.5,900.5,100,83,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-06-01,07:00,59.1,897.9,86,93,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-06-01,14:00,67.2,900.7,65,70,2,Mild and humid afternoon with mostly cloudy skies and Partly cloudy conditions.
+PRT_1,36.203096,-81.625792,2026-06-01,19:00,66.4,900.3,99,54,3,Mild and moderately humid evening with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-06-02,07:00,54.3,902.4,100,71,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-06-02,14:00,59.8,906.5,100,69,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-06-02,19:00,55.8,906.4,64,78,2,Mild and humid evening with mostly cloudy skies and Partly cloudy conditions.
+PRT_1,36.203096,-81.625792,2026-06-03,07:00,42.2,905.1,0,83,45,Cool and humid morning with mostly clear skies and Fog conditions.
+PRT_1,36.203096,-81.625792,2026-06-03,14:00,64.9,909.5,0,42,0,Mild and moderately humid afternoon with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-03,19:00,65.7,907.5,0,53,0,Mild and moderately humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-04,07:00,47.8,903.5,0,71,0,Cool and humid morning with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-04,14:00,71.7,908.3,8,49,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-04,19:00,70.4,905.7,10,57,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-05,07:00,53.4,902.6,0,71,0,Mild and humid morning with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-05,14:00,74.7,906.5,0,55,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-05,19:00,71.7,903.5,75,68,2,Warm and humid evening with mostly cloudy skies and Partly cloudy conditions.
+PRT_1,36.203096,-81.625792,2026-06-06,07:00,56.0,901.0,0,82,0,Mild and humid morning with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-06,14:00,73.3,903.6,29,65,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-06,19:00,72.3,901.8,5,66,0,Warm and humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-07,07:00,60.3,899.9,10,77,0,Mild and humid morning with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-07,14:00,74.9,902.8,23,62,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-07,19:00,72.6,901.2,91,62,3,Warm and moderately humid evening with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-06-08,07:00,57.6,902.0,99,79,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-06-08,14:00,74.4,906.9,28,73,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-06-08,19:00,70.3,905.9,99,86,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
 PRT_1,36.203096,-81.625792,2026-06-09,07:00,62.1,906.9,100,100,45,Mild and humid morning with mostly cloudy skies and Fog conditions.
 PRT_1,36.203096,-81.625792,2026-06-09,14:00,63.7,906.9,100,100,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
 PRT_1,36.203096,-81.625792,2026-06-09,19:00,67.5,904.7,41,86,1,Mild and humid evening with partly cloudy skies and Mainly clear conditions.
@@ -88,4 +130,52 @@ PRT_1,36.203096,-81.625792,2026-07-07,14:00,78.1,903.8,28,66,1,Warm and humid af
 PRT_1,36.203096,-81.625792,2026-07-07,19:00,75.6,902.5,57,70,2,Warm and humid evening with partly cloudy skies and Partly cloudy conditions.
 PRT_1,36.203096,-81.625792,2026-07-08,07:00,63.9,901.7,0,88,0,Mild and humid morning with mostly clear skies and Clear conditions.
 PRT_1,36.203096,-81.625792,2026-07-08,14:00,79.4,905.1,40,64,1,Warm and moderately humid afternoon with partly cloudy skies and Mainly clear conditions.
-PRT_1,36.203096,-81.625792,2026-07-08,19:00,70.8,902.2,100,79,63,Warm and humid evening with mostly cloudy skies and Moderate rain conditions.
+PRT_1,36.203096,-81.625792,2026-07-08,19:00,69.1,901.5,100,96,81,Mild and humid evening with mostly cloudy skies and Moderate rain showers conditions.
+PRT_1,36.203096,-81.625792,2026-07-09,07:00,64.6,901.1,10,89,0,Mild and humid morning with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-09,14:00,76.1,903.5,29,68,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-09,19:00,76.2,902.3,1,63,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-10,07:00,66.0,900.9,100,86,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-10,14:00,72.5,903.1,100,77,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-10,19:00,69.2,900.8,100,80,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-11,07:00,65.2,901.3,100,91,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-11,14:00,69.5,902.9,32,84,1,Mild and humid afternoon with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-11,19:00,71.3,902.0,100,79,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-12,07:00,64.6,903.2,100,88,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-12,14:00,70.1,905.5,100,88,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-12,19:00,69.4,904.2,90,94,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-13,07:00,63.3,903.8,100,99,51,Mild and humid morning with mostly cloudy skies and Light drizzle conditions.
+PRT_1,36.203096,-81.625792,2026-07-13,14:00,63.4,904.8,100,100,45,Mild and humid afternoon with mostly cloudy skies and Fog conditions.
+PRT_1,36.203096,-81.625792,2026-07-13,19:00,61.9,903.5,100,100,3,Mild and humid evening with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-14,07:00,61.1,904.7,100,100,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-14,14:00,71.6,907.9,39,77,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-14,19:00,72.2,905.5,0,68,0,Warm and humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-15,07:00,58.9,902.4,0,73,45,Mild and humid morning with mostly clear skies and Fog conditions.
+PRT_1,36.203096,-81.625792,2026-07-15,14:00,79.8,906.0,3,53,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-15,19:00,79.7,904.1,17,61,0,Warm and moderately humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-16,07:00,63.2,901.2,0,74,0,Mild and humid morning with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-16,14:00,79.6,904.5,16,61,0,Warm and moderately humid afternoon with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-16,19:00,79.5,904.2,50,57,2,Warm and moderately humid evening with partly cloudy skies and Partly cloudy conditions.
+PRT_1,36.203096,-81.625792,2026-07-17,07:00,63.6,903.1,0,81,0,Mild and humid morning with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-17,14:00,80.0,906.2,15,68,0,Warm and humid afternoon with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-17,19:00,78.3,904.6,4,67,0,Warm and humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-18,07:00,66.0,901.1,66,84,2,Mild and humid morning with mostly cloudy skies and Partly cloudy conditions.
+PRT_1,36.203096,-81.625792,2026-07-18,14:00,74.9,902.1,100,81,81,Warm and humid afternoon with mostly cloudy skies and Moderate rain showers conditions.
+PRT_1,36.203096,-81.625792,2026-07-18,19:00,75.8,901.2,2,75,0,Warm and humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-19,07:00,65.8,898.7,99,97,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-19,14:00,77.0,901.4,29,78,1,Warm and humid afternoon with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-19,19:00,74.6,899.5,0,71,0,Warm and humid evening with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-20,07:00,63.6,899.3,90,91,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-20,14:00,77.0,901.4,53,82,2,Warm and humid afternoon with partly cloudy skies and Partly cloudy conditions.
+PRT_1,36.203096,-81.625792,2026-07-20,19:00,73.8,900.1,51,84,2,Warm and humid evening with partly cloudy skies and Partly cloudy conditions.
+PRT_1,36.203096,-81.625792,2026-07-21,07:00,66.8,898.8,100,81,51,Mild and humid morning with mostly cloudy skies and Light drizzle conditions.
+PRT_1,36.203096,-81.625792,2026-07-21,14:00,78.9,901.0,100,75,3,Warm and humid afternoon with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-21,19:00,72.6,897.7,100,91,3,Warm and humid evening with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-22,07:00,68.1,897.4,0,87,0,Mild and humid morning with mostly clear skies and Clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-22,14:00,68.9,899.8,100,94,3,Mild and humid afternoon with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-22,19:00,71.8,900.4,41,81,1,Warm and humid evening with partly cloudy skies and Mainly clear conditions.
+PRT_1,36.203096,-81.625792,2026-07-23,07:00,65.5,901.8,100,95,3,Mild and humid morning with mostly cloudy skies and Overcast conditions.
+PRT_1,36.203096,-81.625792,2026-07-23,14:00,60.5,902.8,100,100,63,Mild and humid afternoon with mostly cloudy skies and Moderate rain conditions.
+PRT_1,36.203096,-81.625792,2026-07-23,19:00,59.0,902.7,100,97,45,Mild and humid evening with mostly cloudy skies and Fog conditions.
+PRT_1,36.203096,-81.625792,2026-07-24,07:00,57.4,902.7,100,99,45,Mild and humid morning with mostly cloudy skies and Fog conditions.
+PRT_1,36.203096,-81.625792,2026-07-24,14:00,60.9,903.0,100,100,45,Mild and humid afternoon with mostly cloudy skies and Fog conditions.
+PRT_1,36.203096,-81.625792,2026-07-24,19:00,62.0,902.4,100,100,45,Mild and humid evening with mostly cloudy skies and Fog conditions.
