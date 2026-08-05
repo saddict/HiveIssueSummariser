@@ -857,3 +857,66 @@ byte-identical). The physical bounds are justified as impossible, not
 statistical: the spike shows real data hitting 0.0 kg dropouts and 162 °F sensor
 spikes, which the `MIN_WEIGHT_KG` / `MAX_INTERNAL_TEMP_F` bounds correctly reject.
 No test or output change; suite 62/62.
+
+## 23. Event-Detection Simplification: Hard Floors + Confidence Corroboration (2026-07-31)
+
+The detector had accreted three layers whose combined output was not supported by
+the ground truth: a self-calibrating MAD robust-z scorer, a rolling aggregate
+multi-step pass with a dominant-step-share guard, and a two-tier sister/paired
+**promotion** layer that *lowered* the detection bar. Reviewing the actual output
+against `ground_truth/events.json` showed all 6 ground-truth events were caught by
+plain hard-floor logic, while the ~250-line corroboration machinery produced only
+5 events — every one a sub-1 kg / sub-3% move, none in the ground truth (e.g. a
++0.355 kg "addition"). The complexity was manufacturing unvalidated positives.
+
+### What changed
+- **Detection is now hard-floor only.** `detect_weight_events` flags an adjacent
+  step within `MAX_EVENT_INTERVAL_HOURS` as a candidate when it clears a fixed
+  floor — `ADDITION_FLOOR_KG = 3.0`, or a drop of `HARVEST_FLOOR_PCT = 3.0`
+  **and** `HARVEST_FLOOR_KG = 1.0` — then coalesces (settle-back / spike-revert)
+  and confirms persistence (`_shift_persists`). No MAD, no z-score, no
+  per-colony calibration, no aggregate pass.
+- **Corroboration inverted to a confidence signal.** New `_tag_corroboration`
+  runs *after* independent per-colony detection and sets `WeightEvent.corroborated`
+  (new field, default `False`) when the sister colony also has a floor-clearing
+  event within `CORROBORATION_WINDOW_HOURS`. **Direction-agnostic** — a joint
+  harvest, joint supering, or equalisation (harvest one side, feed/super the
+  other) all count. It never lowers the bar and never invents an event, so it
+  cannot add a false positive. `detect_site_events` now just detects each side
+  and calls `_tag_corroboration`; `corroborate_sister_events` /
+  `_promote_paired_events` and helpers are gone.
+- **Removed:** functions `_robust_step_stats`, `_aggregate_candidates`,
+  `_aggregate_window_shares`, `corroborate_sister_events`, `_candidate_moves`,
+  `_paired_floor_ok`, `_one_interval_hours`, `_promote_paired_events`,
+  `_coalesced_paired_events`; constants `MAD_SENSITIVITY_K`, `MAD_CORROBORATE_K`,
+  `PAIRED_MIN_GAIN_KG/PCT`, `AGGREGATE_*`, `MIN_EVENT_DROP_KG/PCT`, `_MIN_MAD_*`,
+  `_MAD_EPSILON`. Deleted `spike_mad_events.py`,
+  `spike_paired_corroboration.py`, `tests/test_mad_events.py`. `events.py` drops
+  from 918 → ~380 lines.
+- **Surfacing:** `features.py` adds `"corroborated"` to each `weight_events` dict;
+  `reporting.py` appends `[corroborated]` / `[isolated]` to event rows;
+  `validation.py` `base_kind` is now a plain normaliser.
+
+### Invariants preserved
+`detect_site_events` / `detect_weight_events` / `segment_readings` / `WeightEvent`
+/ `WeightSegment` signatures unchanged, so `quality.py`, `scoring.py`,
+`list_events.py`, `validate_events.py` need no edits and events stay exempt from
+the quality jump filter. Detection is still single-colony; corroboration is still
+site-level orchestration only.
+
+### Verification
+- Suite 56/56 (was 62: −6 MAD tests deleted, new `tests/test_corroboration.py`
+  added, `test_event_quality_clash.py` refocused on the quality/feature wiring).
+- `validate_events.py`: precision / recall / F1 = **1.000** (6 TP, 0 FP, 0 FN) —
+  simplification loses no real event.
+- `list_events.py`: 27 → 20 events (the 5 phantom sub-kg events gone; WTG_HSCHL
+  correctly drops to 0). All 6 ground-truth L/R pairs tagged `corroborated`,
+  including the PRT_1 2026-06-23 equalisation (L +11 kg / R −15 kg).
+- Outputs regenerated via `refresh_and_score.py --skip-fetch`.
+
+### Paper note
+The former "novel contribution" (MAD + promotion) is removed. The reframed angle:
+colony-level hard-floor detection + **apiary-level co-occurrence as a confidence
+signal**, plus the honest ablation finding that physical thresholds match the
+paired-colony machinery against ground truth while the extra layers added only
+unvalidated sub-kg detections. See `docs/METHODS.md`.

@@ -53,12 +53,10 @@ def flat_series(
     """Hourly readings hovering around ``weight`` with a tiny per-hour drift.
 
     A sinusoidal jitter (amplitude ``jitter``) adds realistic per-reading
-    variation so consecutive-pair deltas are all distinct. Without variation,
-    all deltas are identical and MAD = 0, which disables the robust-z detector.
-    With jitter=0.05, the MAD-scaled std is ~0.02 kg/h, so harvest steps of
-    ≥3 kg score z ≥ 150 (well above MAD_SENSITIVITY_K) while ordinary
-    foraging peaks stay below z = 3. Pass jitter=0 only when flat-exact
-    readings are required for a non-MAD code path.
+    variation. It stays far below the hard event floors (ADDITION_FLOOR_KG,
+    HARVEST_FLOOR_PCT/KG), so a plain baseline never produces an event while a
+    genuine >=3 kg step still clears the floor cleanly. Pass jitter=0 for
+    flat-exact readings.
     """
     return [reading(start_hour + i, weight + i * drift + jitter * math.sin(i)) for i in range(count)]
 

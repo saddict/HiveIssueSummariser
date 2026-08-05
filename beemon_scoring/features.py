@@ -117,6 +117,7 @@ def build_features(
                             "pct_change": round(event.pct_change, 1),
                             "before_kg": round(event.before_kg, 3),
                             "after_kg": round(event.after_kg, 3),
+                            "corroborated": event.corroborated,
                         }
                         for event in events
                     ],

@@ -63,24 +63,25 @@ feature builder then:
 
 ### Detection
 
-Detection uses a self-calibrating MAD (Median Absolute Deviation) robust-z
-scorer. For each colony, the detector characterises its own typical
-inter-reading weight movement and flags steps that are statistical outliers
-against that baseline. This means detection thresholds adjust automatically to
-each colony's noise level rather than using fixed kilogram or percentage cutoffs
-that would miss small harvests on light colonies or false-trigger on heavy ones.
+Detection uses hard physical floors. A step counts as a candidate event when it
+clears a fixed magnitude within a short interval: additions must gain at least
+**3 kg** (a super or feeder is an object of known mass; foraging returns stay
+below this), and harvest candidates must drop at least **3% of colony weight and
+at least 1 kg** (sensor drift and ordinary movement stay below this). The floors
+are chosen as physical thresholds rather than statistical outlier scores, which
+keeps the rule simple and directly defensible.
 
-Physical sanity floors are applied first to suppress obvious non-events:
-additions must exceed 3 kg (foraging returns stay below this) and harvest
-candidates must exceed 3% of colony weight (sensor drift stays below this).
+### Sister Corroboration (confidence, not detection)
 
-### Sister Corroboration
-
-Harvests are typically an apiary-level action — when a beekeeper pulls honey
-from one colony at a site they usually work both. A sub-threshold drop on one
-side (not large enough to trigger standalone detection) is promoted to a
-confirmed event when the sister colony at the same site has a confirmed event in
-the same reading window. These events are tagged `harvest (sister-corroborated)`.
+Management actions are typically apiary-level — a beekeeper working one colony at
+a site usually works its neighbour in the same visit. Each colony is detected
+**independently** with the hard floors; then an event is tagged `corroborated`
+when the sister colony also has a floor-clearing event within the corroboration
+window. This is **direction-agnostic**: a joint harvest, a joint supering, or an
+*equalisation* (harvest one side, feed/super the other in the same visit) are all
+one visit. Corroboration never lowers the detection bar and never invents an
+event — it only labels how much apiary-level evidence supports one, so it cannot
+introduce a false positive.
 
 ### Classification
 

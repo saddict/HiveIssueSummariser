@@ -75,9 +75,8 @@ def _report_channel(name: str, unit: str, normal: list[float], threshold: float,
     print(f"    threshold {threshold:g} {unit} is at the {pctile:.2f}th percentile of normal movement")
     if smallest_event is not None:
         # Informational only: confirmed events are detected first and are exempt
-        # from the jump filter, so no threshold can clip one regardless of size
-        # (the smallest events here are deliberately tiny sister-corroborated
-        # steps). The threshold's real job is to sit above the normal bulk.
+        # from the jump filter, so no threshold can clip one regardless of size.
+        # The threshold's real job is to sit above the normal bulk.
         print(f"    (context) smallest confirmed event magnitude: {smallest_event:.3f} {unit}; "
               f"events bypass this filter, so this is not a clipping risk")
     # Exclusion-count sensitivity.

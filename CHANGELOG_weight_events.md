@@ -138,3 +138,24 @@ quality-filter exemption of corroborated events, end-to-end survival into
 `weight_event_count`, stale-anchor no-cascade, the settle window, aggregate
 split-addition plus a smooth-nectar-flow guard, and symmetric gain
 corroboration. All 47 tests in the suite pass.
+
+## Simplification: hard floors + confidence corroboration (2026-07-31)
+
+The MAD + aggregate + sister/paired-**promotion** design above was replaced with
+a simple hard-floor detector after review against `ground_truth/events.json`
+showed the machinery produced 5 unvalidated sub-1 kg events (none in the ground
+truth) while all 6 real events were caught by physical floors alone.
+
+- **Detection:** an adjacent step is an event when it clears a fixed floor
+  (`ADDITION_FLOOR_KG=3.0`, or a drop ≥ `HARVEST_FLOOR_PCT=3.0` **and**
+  ≥ `HARVEST_FLOOR_KG=1.0`), coalesced and persistence-confirmed. No MAD, no
+  z-score, no aggregate pass.
+- **Corroboration → confidence:** each colony is detected independently; an event
+  is then tagged `corroborated` (new `WeightEvent.corroborated` field) when the
+  sister has a floor-clearing event within `CORROBORATION_WINDOW_HOURS`,
+  **direction-agnostic** (joint work or equalisation). It never lowers the bar,
+  so it adds zero false positives.
+- **Result:** 27 → 20 events; precision/recall/F1 = 1.000 preserved; `events.py`
+  918 → ~380 lines. Suite 56/56 (MAD tests removed; `test_corroboration.py`
+  added; the clash tests refocused on the quality/feature wiring). Full detail in
+  `PROJECT_HANDOFF.md` §23 and `docs/METHODS.md`.

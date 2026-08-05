@@ -50,11 +50,12 @@ def main() -> None:
         events_by_colony[colony_id] = sorted(evts, key=lambda e: e.observed_at, reverse=True)
 
     total_events = sum(len(evts) for evts in events_by_colony.values())
+    corroborated_events = sum(1 for evts in events_by_colony.values() for ev in evts if ev.corroborated)
 
     print(f"BeeMon — Full event history")
     print(f"{'=' * 42}")
     print(f"Data span: {start.strftime('%Y-%m-%d')} to {end.strftime('%Y-%m-%d')} ({span_days:.0f} days)")
-    print(f"Total events detected: {total_events}")
+    print(f"Total events detected: {total_events} ({corroborated_events} corroborated, {total_events - corroborated_events} isolated)")
     print()
 
     for colony_id in sorted(events_by_colony):
@@ -63,15 +64,16 @@ def main() -> None:
         if not events:
             print("  —  no events detected")
         else:
-            print(f"  {'When':<22}  {'Kind':<12}  {'Delta':>10}  {'Pct':>7}  Before → After")
-            print(f"  {'-'*22}  {'-'*12}  {'-'*10}  {'-'*7}  {'-'*22}")
+            print(f"  {'When':<22}  {'Kind':<12}  {'Delta':>10}  {'Pct':>7}  {'Before → After':<24}  Confidence")
+            print(f"  {'-'*22}  {'-'*12}  {'-'*10}  {'-'*7}  {'-'*24}  {'-'*12}")
             for ev in events:
                 time_str = _fmt_time(ev.observed_at)
                 kind_str = ev.kind.ljust(12)
                 delta_str = f"{ev.delta_kg:+.3f} kg".rjust(10)
                 pct_str = f"{ev.pct_change:+.1f}%".rjust(7)
                 range_str = f"{ev.before_kg:.3f} → {ev.after_kg:.3f} kg"
-                print(f"  {time_str:<22}  {kind_str}  {delta_str}  {pct_str}  {range_str}")
+                confidence_str = "corroborated" if ev.corroborated else "isolated"
+                print(f"  {time_str:<22}  {kind_str}  {delta_str}  {pct_str}  {range_str:<24}  {confidence_str}")
         print()
 
 

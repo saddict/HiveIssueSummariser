@@ -181,4 +181,5 @@ def _format_weight_event_row(ev: dict) -> str:
     delta_str = f"{ev['delta_kg']:+.3f} kg".rjust(11)
     pct_str = f"({ev['pct_change']:+.1f}%)".rjust(8)
     range_str = f"{ev['before_kg']:.3f} → {ev['after_kg']:.3f} kg"
-    return f"     {time_str}  {kind_str}  {delta_str}  {pct_str}  {range_str}"
+    confidence_str = "[corroborated]" if ev.get("corroborated") else "[isolated]"
+    return f"     {time_str}  {kind_str}  {delta_str}  {pct_str}  {range_str}  {confidence_str}"

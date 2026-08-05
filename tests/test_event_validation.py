@@ -40,10 +40,13 @@ def audited(site="6LR", side="L", around=T0) -> AuditedRange:
 
 
 class BaseKindTests(unittest.TestCase):
-    def test_strips_corroboration_decorations(self) -> None:
+    def test_normalises_qualified_kinds(self) -> None:
+        # Corroboration is carried on the event's flag now, not in the kind
+        # string, so kinds are already bare; base_kind stays defensive against
+        # any trailing qualifier a kind might ever carry.
         self.assertEqual(base_kind("harvest"), "harvest")
-        self.assertEqual(base_kind("harvest (paired)"), "harvest")
-        self.assertEqual(base_kind("addition (sister-corroborated)"), "addition")
+        self.assertEqual(base_kind("addition"), "addition")
+        self.assertEqual(base_kind("harvest (qualified)"), "harvest")
 
 
 class MatchEventsTests(unittest.TestCase):
@@ -70,8 +73,8 @@ class MatchEventsTests(unittest.TestCase):
         self.assertEqual(result.confusion()["false_negative"], 1)
         self.assertEqual(result.confusion()["false_positive"], 1)
 
-    def test_decorated_kind_matches_base(self) -> None:
-        result = match_events({"6LR:L": [event("harvest (paired)", T0)]}, [record(["harvest"])], [audited()])
+    def test_qualified_kind_matches_base(self) -> None:
+        result = match_events({"6LR:L": [event("harvest (qualified)", T0)]}, [record(["harvest"])], [audited()])
         self.assertEqual(result.confusion()["true_positive"], 1)
 
     def test_ambiguous_record_matches_swarm(self) -> None:

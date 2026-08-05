@@ -92,8 +92,12 @@ class MatchResult:
 
 
 def base_kind(kind: str) -> str:
-    """Strip the corroboration decorations ("harvest (paired)",
-    "addition (sister-corroborated)") down to the base kind."""
+    """Return the base event kind ("harvest", "addition", "swarm").
+
+    Corroboration is now carried on the event's ``corroborated`` flag rather
+    than baked into the kind string, so this is a plain normaliser; the split
+    is retained defensively in case a kind ever carries a trailing qualifier.
+    """
     return kind.split(" ")[0]
 
 
