@@ -1,13 +1,13 @@
 {
   "metadata": {
-    "window_days": 7,
-    "start_at": "2026-07-17T14:00:00-04:00",
-    "end_at": "2026-07-24T14:00:00-04:00",
-    "sensor_reading_count": 1352,
-    "valid_sensor_reading_count": 1352,
+    "window_days": 30,
+    "start_at": "2026-07-06T15:00:00-04:00",
+    "end_at": "2026-08-05T15:00:00-04:00",
+    "sensor_reading_count": 5552,
+    "valid_sensor_reading_count": 5552,
     "excluded_sensor_reading_count": 0,
     "data_quality_issue_count": 0,
-    "weather_reading_count": 96,
+    "weather_reading_count": 360,
     "colony_count": 8,
     "region_count": 1,
     "region_ids": [
@@ -16,10 +16,10 @@
     "region_assignment_method": "coordinate_radius_connected_components_with_min_site_merge",
     "region_radius_miles": 10.0,
     "min_region_site_count": 2,
-    "min_colony_days_observed": 7.0,
-    "max_colony_days_observed": 7.0,
-    "weight_event_count": 2,
-    "colonies_with_weight_events": 2,
+    "min_colony_days_observed": 25.58,
+    "max_colony_days_observed": 29.96,
+    "weight_event_count": 11,
+    "colonies_with_weight_events": 4,
     "sister_site_count": 4
   },
   "sites": [
@@ -28,111 +28,111 @@
       "left_colony_id": "6LR:L",
       "right_colony_id": "6LR:R",
       "weaker_side": "R",
-      "status": "right colony notably weaker",
-      "left_sister_score": 4.3,
-      "right_sister_score": 19.4,
+      "status": "right colony mildly weaker",
+      "left_sister_score": 10.7,
+      "right_sister_score": 17.4,
       "metric_comparisons": [
-        {
-          "metric": "internal_temp_std_f",
-          "label": "temperature instability",
-          "unit": "F",
-          "left_value": 1.1022953411322967,
-          "right_value": 4.597923894760746,
-          "worse_side": "R",
-          "raw_gap": 3.4956285536284497,
-          "normalized_gap": 1.384478157443733,
-          "impact": 6.299375616368986
-        },
         {
           "metric": "thermal_efficiency_pi",
           "label": "thermal efficiency",
           "unit": "",
-          "left_value": 0.8709106695043477,
-          "right_value": 0.423192724315601,
+          "left_value": 0.8662762071250848,
+          "right_value": 0.4193370504034977,
           "worse_side": "R",
-          "raw_gap": 0.4477179451887467,
-          "normalized_gap": 1.6976894666473394,
-          "impact": 5.941913133265689
-        },
-        {
-          "metric": "latest_weight_kg",
-          "label": "current colony weight",
-          "unit": "kg",
-          "left_value": 56.8898,
-          "right_value": 50.758484,
-          "worse_side": "R",
-          "raw_gap": 6.131315999999998,
-          "normalized_gap": 0.36478920001976917,
-          "impact": 3.830286600207576
+          "raw_gap": 0.44693915672158707,
+          "normalized_gap": 1.7215634815233853,
+          "impact": 6.025472185331849
         },
         {
           "metric": "weight_pct_change",
           "label": "weight percent change",
           "unit": "%",
-          "left_value": -1.288391428908049,
-          "right_value": 1.2482046407810512,
+          "left_value": -6.6863712073120505,
+          "right_value": 6.710526937130594,
           "worse_side": "L",
-          "raw_gap": 2.5365960696891,
-          "normalized_gap": 0.42356275173088953,
-          "impact": 2.520198372798793
+          "raw_gap": 13.396898144442645,
+          "normalized_gap": 0.9935182721266225,
+          "impact": 5.911433719153404
         },
         {
-          "metric": "internal_humidity_std_pct",
-          "label": "humidity instability",
-          "unit": "%",
-          "left_value": 1.7510320474878336,
-          "right_value": 3.9697431509040624,
+          "metric": "internal_temp_std_f",
+          "label": "temperature instability",
+          "unit": "F",
+          "left_value": 1.9705775803048204,
+          "right_value": 4.681462271555758,
           "worse_side": "R",
-          "raw_gap": 2.218711103416229,
-          "normalized_gap": 1.3415900701731804,
-          "impact": 2.347782622803066
+          "raw_gap": 2.7108846912509375,
+          "normalized_gap": 1.2108238727420977,
+          "impact": 5.509248620976545
         },
         {
           "metric": "weight_slope_pct_per_day",
           "label": "weight percent trend",
           "unit": "%/day",
-          "left_value": -0.1740642078384325,
-          "right_value": 0.3361258245605289,
+          "left_value": -0.3045301914252108,
+          "right_value": 0.32673565584673364,
           "worse_side": "L",
-          "raw_gap": 0.5101900323989614,
-          "normalized_gap": 0.48821873001816357,
-          "impact": 1.5378889995572154
+          "raw_gap": 0.6312658472719445,
+          "normalized_gap": 1.1731676118286987,
+          "impact": 3.6954779772604005
         },
         {
-          "metric": "favorable_weather_weight_slope_pct_per_day",
-          "label": "favorable-weather weight percent trend",
-          "unit": "%/day",
-          "left_value": -0.4012509491724638,
-          "right_value": -1.0821742586719794,
+          "metric": "latest_weight_kg",
+          "label": "current colony weight",
+          "unit": "kg",
+          "left_value": 52.30325,
+          "right_value": 46.89975,
           "worse_side": "R",
-          "raw_gap": 0.6809233094995155,
-          "normalized_gap": 0.46982519223512326,
-          "impact": 0.9866329036937588
+          "raw_gap": 5.403500000000001,
+          "normalized_gap": 0.34113362925275603,
+          "impact": 3.5819031071539382
+        },
+        {
+          "metric": "internal_humidity_std_pct",
+          "label": "humidity instability",
+          "unit": "%",
+          "left_value": 3.8199324536720916,
+          "right_value": 5.951350505516053,
+          "worse_side": "R",
+          "raw_gap": 2.131418051843961,
+          "normalized_gap": 1.2724200413674918,
+          "impact": 2.2267350723931107
         },
         {
           "metric": "poor_weather_weight_loss_pct",
           "label": "poor-weather weight loss",
           "unit": "%",
-          "left_value": 0.1804391519140983,
-          "right_value": 0.07558686872969153,
+          "left_value": 0.5468252424219874,
+          "right_value": 0.38794741036944436,
           "worse_side": "L",
-          "raw_gap": 0.10485228318440676,
-          "normalized_gap": 0.20801418088749005,
-          "impact": 0.29121985324248606
+          "raw_gap": 0.15887783205254302,
+          "normalized_gap": 0.5253025079563279,
+          "impact": 0.7354235111388591
+        },
+        {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.3812716514560751,
+          "right_value": -0.24465657487756803,
+          "worse_side": "L",
+          "raw_gap": 0.13661507657850708,
+          "normalized_gap": 0.16469362569352097,
+          "impact": 0.34585661395639405
         },
         {
           "metric": "high_humidity_reading_pct",
           "label": "high-humidity exposure",
           "unit": "%",
           "left_value": 0.0,
-          "right_value": 0.0,
-          "worse_side": null,
-          "raw_gap": 0.0,
-          "normalized_gap": 0.0,
-          "impact": 0.0
+          "right_value": 0.9722222222222222,
+          "worse_side": "R",
+          "raw_gap": 0.9722222222222222,
+          "normalized_gap": 0.027293064850423727,
+          "impact": 0.05731543618588982
         }
       ],
-      "summary": "Current condition: the right colony is weaker overall at 6LR, mainly because of temperature instability and thermal efficiency. Sister scores: L 4.3 vs R 19.4."
+      "summary": "Current condition: the right colony is weaker overall at 6LR, mainly because of thermal efficiency. Trend concern: the left colony has significant negative weight movement on weight percent change -6.69 % vs right +6.71 %, so that decline should still be watched. Sister scores: L 10.7 vs R 17.4."
     },
     {
       "hive_id": "DR_WLKS",
@@ -140,96 +140,96 @@
       "right_colony_id": "DR_WLKS:R",
       "weaker_side": "R",
       "status": "right colony notably weaker",
-      "left_sister_score": 0.7,
-      "right_sister_score": 27.0,
+      "left_sister_score": 0.6,
+      "right_sister_score": 32.7,
       "metric_comparisons": [
         {
           "metric": "latest_weight_kg",
           "label": "current colony weight",
           "unit": "kg",
-          "left_value": 79.64436,
-          "right_value": 45.064255,
+          "left_value": 77.01625,
+          "right_value": 43.15927,
           "worse_side": "R",
-          "raw_gap": 34.580105,
-          "normalized_gap": 2.0573803143647504,
-          "impact": 21.602493300829877
-        },
-        {
-          "metric": "weight_pct_change",
-          "label": "weight percent change",
-          "unit": "%",
-          "left_value": -1.7753527720088762,
-          "right_value": -3.235496464972023,
-          "worse_side": "R",
-          "raw_gap": 1.4601436929631468,
-          "normalized_gap": 0.2438159105835782,
-          "impact": 1.4507046679722906
-        },
-        {
-          "metric": "thermal_efficiency_pi",
-          "label": "thermal efficiency",
-          "unit": "",
-          "left_value": 0.9955950702478169,
-          "right_value": 0.8943802926513562,
-          "worse_side": "R",
-          "raw_gap": 0.10121477759646069,
-          "normalized_gap": 0.38379355494032,
-          "impact": 1.3432774422911202
+          "raw_gap": 33.85698,
+          "normalized_gap": 2.1374580295989585,
+          "impact": 22.44330931078906
         },
         {
           "metric": "internal_temp_std_f",
           "label": "temperature instability",
           "unit": "F",
-          "left_value": 0.3791865564498265,
-          "right_value": 1.1157891376379672,
+          "left_value": 0.5537758981660817,
+          "right_value": 3.442938832924219,
           "worse_side": "R",
-          "raw_gap": 0.7366025811881407,
-          "normalized_gap": 0.29173871557751624,
-          "impact": 1.3274111558776989
+          "raw_gap": 2.8891629347581373,
+          "normalized_gap": 1.2904523253744509,
+          "impact": 5.8715580804537515
         },
         {
-          "metric": "weight_slope_pct_per_day",
-          "label": "weight percent trend",
-          "unit": "%/day",
-          "left_value": -0.23107630524120884,
-          "right_value": -0.49763252059841884,
+          "metric": "thermal_efficiency_pi",
+          "label": "thermal efficiency",
+          "unit": "",
+          "left_value": 0.9830488844666205,
+          "right_value": 0.7783904369704291,
           "worse_side": "R",
-          "raw_gap": 0.26655621535720997,
-          "normalized_gap": 0.25507698832967257,
-          "impact": 0.8034925132384686
-        },
-        {
-          "metric": "internal_humidity_std_pct",
-          "label": "humidity instability",
-          "unit": "%",
-          "left_value": 2.0107168842409986,
-          "right_value": 1.4472821211918176,
-          "worse_side": "L",
-          "raw_gap": 0.5634347630491809,
-          "normalized_gap": 0.3406926129919646,
-          "impact": 0.5962120727359381
+          "raw_gap": 0.20465844749619144,
+          "normalized_gap": 0.7883232070762457,
+          "impact": 2.7591312247668602
         },
         {
           "metric": "poor_weather_weight_loss_pct",
           "label": "poor-weather weight loss",
           "unit": "%",
-          "left_value": 0.15222859520974474,
-          "right_value": 0.3158200917265538,
+          "left_value": 0.36020062086207577,
+          "right_value": 0.49571023914922946,
           "worse_side": "R",
-          "raw_gap": 0.16359149651680904,
-          "normalized_gap": 0.3245456380597293,
-          "impact": 0.45436389328362103
+          "raw_gap": 0.1355096182871537,
+          "normalized_gap": 0.44803948681087974,
+          "impact": 0.6272552815352317
+        },
+        {
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.3125201290155797,
+          "right_value": -0.4013320311192028,
+          "worse_side": "R",
+          "raw_gap": 0.08881190210362311,
+          "normalized_gap": 0.16505129739418156,
+          "impact": 0.5199115867916719
+        },
+        {
+          "metric": "weight_pct_change",
+          "label": "weight percent change",
+          "unit": "%",
+          "left_value": -4.666328901830625,
+          "right_value": -5.761452699113195,
+          "worse_side": "R",
+          "raw_gap": 1.0951237972825698,
+          "normalized_gap": 0.08121473277694982,
+          "impact": 0.4832276600228515
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
           "label": "favorable-weather weight percent trend",
           "unit": "%/day",
-          "left_value": -0.3760079223476287,
-          "right_value": -0.32253741766694516,
+          "left_value": -0.06470757977263224,
+          "right_value": 0.09052216132197818,
           "worse_side": "L",
-          "raw_gap": 0.05347050468068354,
-          "normalized_gap": 0.036893714446309574,
-          "impact": 0.0774768003372501
+          "raw_gap": 0.1552297410946104,
+          "normalized_gap": 0.18713416935096897,
+          "impact": 0.3929817556370348
+        },
+        {
+          "metric": "internal_humidity_std_pct",
+          "label": "humidity instability",
+          "unit": "%",
+          "left_value": 3.0065199646059555,
+          "right_value": 2.7918083907780913,
+          "worse_side": "L",
+          "raw_gap": 0.2147115738278642,
+          "normalized_gap": 0.1281791291087982,
+          "impact": 0.22431347594039686
         },
         {
           "metric": "high_humidity_reading_pct",
@@ -243,229 +243,229 @@
           "impact": 0.0
         }
       ],
-      "summary": "Current condition: the right colony is weaker overall at DR_WLKS, mainly because of current colony weight and weight percent change. Sister scores: L 0.7 vs R 27.0."
+      "summary": "Current condition: the right colony is weaker overall at DR_WLKS, mainly because of current colony weight and temperature instability. Sister scores: L 0.6 vs R 32.7."
     },
     {
       "hive_id": "PRT_1",
       "left_colony_id": "PRT_1:L",
       "right_colony_id": "PRT_1:R",
-      "weaker_side": null,
-      "status": "similar",
-      "left_sister_score": 14.4,
-      "right_sister_score": 11.1,
+      "weaker_side": "R",
+      "status": "right colony notably weaker",
+      "left_sister_score": 10.7,
+      "right_sister_score": 31.7,
       "metric_comparisons": [
         {
           "metric": "weight_pct_change",
           "label": "weight percent change",
           "unit": "%",
-          "left_value": 11.456568497908485,
-          "right_value": 3.5782731494504385,
+          "left_value": 36.4058700648107,
+          "right_value": -6.371543378856703,
           "worse_side": "R",
-          "raw_gap": 7.878295348458046,
-          "normalized_gap": 1.3155237826850978,
-          "impact": 7.8273665069763325
-        },
-        {
-          "metric": "poor_weather_weight_loss_pct",
-          "label": "poor-weather weight loss",
-          "unit": "%",
-          "left_value": 1.6234398834738322,
-          "right_value": 0.17269091720003515,
-          "worse_side": "L",
-          "raw_gap": 1.450748966273797,
-          "normalized_gap": 2.878109553056407,
-          "impact": 4.02935337427897
-        },
-        {
-          "metric": "latest_weight_kg",
-          "label": "current colony weight",
-          "unit": "kg",
-          "left_value": 29.117323,
-          "right_value": 35.45583,
-          "worse_side": "L",
-          "raw_gap": 6.338507,
-          "normalized_gap": 0.37711625005948274,
-          "impact": 3.9597206256245685
-        },
-        {
-          "metric": "high_humidity_reading_pct",
-          "label": "high-humidity exposure",
-          "unit": "%",
-          "left_value": 60.946745562130175,
-          "right_value": 0.0,
-          "worse_side": "L",
-          "raw_gap": 60.946745562130175,
-          "normalized_gap": 1.4711307163757998,
-          "impact": 3.0893745043891796
-        },
-        {
-          "metric": "internal_humidity_std_pct",
-          "label": "humidity instability",
-          "unit": "%",
-          "left_value": 4.124946416836678,
-          "right_value": 2.5641633432335267,
-          "worse_side": "L",
-          "raw_gap": 1.560783073603151,
-          "normalized_gap": 0.943760127227138,
-          "impact": 1.6515802226474916
-        },
-        {
-          "metric": "thermal_efficiency_pi",
-          "label": "thermal efficiency",
-          "unit": "",
-          "left_value": 0.6610196642733744,
-          "right_value": 0.7833363049916471,
-          "worse_side": "L",
-          "raw_gap": 0.12231664071827264,
-          "normalized_gap": 0.46380913424311393,
-          "impact": 1.6233319698508988
+          "raw_gap": 42.7774134436674,
+          "normalized_gap": 3.172386729552666,
+          "impact": 18.875701040838365
         },
         {
           "metric": "weight_slope_pct_per_day",
           "label": "weight percent trend",
           "unit": "%/day",
-          "left_value": 0.7549452879750037,
-          "right_value": 0.27300448540055744,
+          "left_value": 1.345213349146926,
+          "right_value": -0.23362256305405324,
           "worse_side": "R",
-          "raw_gap": 0.48194080257444627,
-          "normalized_gap": 0.46118605153939035,
-          "impact": 1.4527360623490797
+          "raw_gap": 1.5788359122009792,
+          "normalized_gap": 2.9341665870104916,
+          "impact": 9.242624749083047
         },
         {
-          "metric": "favorable_weather_weight_slope_pct_per_day",
-          "label": "favorable-weather weight percent trend",
-          "unit": "%/day",
-          "left_value": 0.941128679161291,
-          "right_value": 0.01489448012751237,
-          "worse_side": "R",
-          "raw_gap": 0.9262341990337786,
-          "normalized_gap": 0.6390854220215236,
-          "impact": 1.3420793862451996
+          "metric": "poor_weather_weight_loss_pct",
+          "label": "poor-weather weight loss",
+          "unit": "%",
+          "left_value": 1.1678678443754145,
+          "right_value": 0.238184949536985,
+          "worse_side": "L",
+          "raw_gap": 0.9296828948384295,
+          "normalized_gap": 3.0738382438477467,
+          "impact": 4.303373541386845
+        },
+        {
+          "metric": "high_humidity_reading_pct",
+          "label": "high-humidity exposure",
+          "unit": "%",
+          "left_value": 54.166666666666664,
+          "right_value": 0.6944444444444444,
+          "worse_side": "L",
+          "raw_gap": 53.47222222222222,
+          "normalized_gap": 1.501118566773305,
+          "impact": 3.15234899022394
+        },
+        {
+          "metric": "thermal_efficiency_pi",
+          "label": "thermal efficiency",
+          "unit": "",
+          "left_value": 0.6833850216021797,
+          "right_value": 0.8711375550104238,
+          "worse_side": "L",
+          "raw_gap": 0.18775253340824405,
+          "normalized_gap": 0.723203371685067,
+          "impact": 2.5312118008977347
         },
         {
           "metric": "internal_temp_std_f",
           "label": "temperature instability",
           "unit": "F",
-          "left_value": 3.4764033672512342,
-          "right_value": 3.715965390252615,
+          "left_value": 3.6119765278168683,
+          "right_value": 4.513946610229235,
           "worse_side": "R",
-          "raw_gap": 0.23956202300138063,
-          "normalized_gap": 0.0948809014201964,
-          "impact": 0.4317081014618936
+          "raw_gap": 0.9019700824123666,
+          "normalized_gap": 0.40286734135493196,
+          "impact": 1.8330464031649403
+        },
+        {
+          "metric": "internal_humidity_std_pct",
+          "label": "humidity instability",
+          "unit": "%",
+          "left_value": 5.175671185674591,
+          "right_value": 6.806659206145928,
+          "worse_side": "R",
+          "raw_gap": 1.630988020471337,
+          "normalized_gap": 0.9736718907314353,
+          "impact": 1.703925808780012
+        },
+        {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "unit": "%/day",
+          "left_value": -1.2642526702880645,
+          "right_value": -1.1154948217394567,
+          "worse_side": "L",
+          "raw_gap": 0.14875784854860785,
+          "normalized_gap": 0.17933210624640733,
+          "impact": 0.37659742311745537
+        },
+        {
+          "metric": "latest_weight_kg",
+          "label": "current colony weight",
+          "unit": "kg",
+          "left_value": 31.032217,
+          "right_value": 31.553991,
+          "worse_side": "L",
+          "raw_gap": 0.5217740000000006,
+          "normalized_gap": 0.03294062334963037,
+          "impact": 0.3458765451711189
         }
       ],
-      "summary": "Current condition: the two colonies at PRT_1 look broadly similar on the measured scoring features. Trend concern: the left colony has significant negative weight movement on poor-weather weight loss +1.62 % vs right +0.17 %, so that decline should still be watched."
+      "summary": "Current condition: the right colony is weaker overall at PRT_1, mainly because of weight percent change and weight percent trend. Trend concern: the left colony has significant negative weight movement on poor-weather weight loss +1.17 % vs right +0.24 %, so that decline should still be watched. Sister scores: L 10.7 vs R 31.7."
     },
     {
       "hive_id": "WTG_HSCHL",
       "left_colony_id": "WTG_HSCHL:L",
       "right_colony_id": "WTG_HSCHL:R",
-      "weaker_side": "L",
-      "status": "left colony notably weaker",
-      "left_sister_score": 40.6,
-      "right_sister_score": 5.6,
+      "weaker_side": null,
+      "status": "similar",
+      "left_sister_score": 10.9,
+      "right_sister_score": 9.6,
       "metric_comparisons": [
+        {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.17151895446101925,
+          "right_value": -2.543384466331873,
+          "worse_side": "R",
+          "raw_gap": 2.371865511870854,
+          "normalized_gap": 2.8593559407255484,
+          "impact": 6.004647475523652
+        },
         {
           "metric": "internal_temp_std_f",
           "label": "temperature instability",
           "unit": "F",
-          "left_value": 8.001120004929726,
-          "right_value": 0.0,
+          "left_value": 8.419002567574898,
+          "right_value": 5.879489878414301,
           "worse_side": "L",
-          "raw_gap": 8.001120004929726,
-          "normalized_gap": 3.1689224733025547,
-          "impact": 14.418597253526626
-        },
-        {
-          "metric": "weight_pct_change",
-          "label": "weight percent change",
-          "unit": "%",
-          "left_value": 5.175544445619947,
-          "right_value": 14.451055710073268,
-          "worse_side": "L",
-          "raw_gap": 9.275511264453321,
-          "normalized_gap": 1.5488319649427837,
-          "impact": 9.215550191409562
-        },
-        {
-          "metric": "weight_slope_pct_per_day",
-          "label": "weight percent trend",
-          "unit": "%/day",
-          "left_value": 0.8741949024306401,
-          "right_value": 3.0469645128703693,
-          "worse_side": "L",
-          "raw_gap": 2.172769610439729,
-          "normalized_gap": 2.079199420739416,
-          "impact": 6.5494781753291615
-        },
-        {
-          "metric": "internal_humidity_std_pct",
-          "label": "humidity instability",
-          "unit": "%",
-          "left_value": 5.526549927870771,
-          "right_value": 0.0,
-          "worse_side": "L",
-          "raw_gap": 5.526549927870771,
-          "normalized_gap": 3.341743994579362,
-          "impact": 5.848051990513884
+          "raw_gap": 2.5395126891605972,
+          "normalized_gap": 1.1342801112459784,
+          "impact": 5.160974506169201
         },
         {
           "metric": "thermal_efficiency_pi",
           "label": "thermal efficiency",
           "unit": "",
-          "left_value": 0.16024003748014182,
-          "right_value": 0.5072463768115942,
+          "left_value": 0.18741283321033295,
+          "right_value": 0.4312533266955427,
           "worse_side": "L",
-          "raw_gap": 0.3470063393314524,
-          "normalized_gap": 1.3158038749027705,
-          "impact": 4.605313562159697
+          "raw_gap": 0.24384049348520978,
+          "normalized_gap": 0.9392484023553054,
+          "impact": 3.287369408243569
         },
         {
-          "metric": "favorable_weather_weight_slope_pct_per_day",
-          "label": "favorable-weather weight percent trend",
-          "unit": "%/day",
-          "left_value": -1.3219372624362071,
-          "right_value": -4.294879787244618,
-          "worse_side": "R",
-          "raw_gap": 2.9729425248084107,
-          "normalized_gap": 2.051278424069103,
-          "impact": 4.307684690545116
+          "metric": "weight_pct_change",
+          "label": "weight percent change",
+          "unit": "%",
+          "left_value": 1.4587159795862643,
+          "right_value": 5.480592888561695,
+          "worse_side": "L",
+          "raw_gap": 4.021876908975431,
+          "normalized_gap": 0.29826368419235827,
+          "impact": 1.7746689209445319
         },
         {
           "metric": "latest_weight_kg",
           "label": "current colony weight",
           "unit": "kg",
-          "left_value": 29.02092,
-          "right_value": 27.933786,
+          "left_value": 28.391506,
+          "right_value": 26.667517,
           "worse_side": "R",
-          "raw_gap": 1.087133999999999,
-          "normalized_gap": 0.06468019951577955,
-          "impact": 0.6791420949156852
-        },
-        {
-          "metric": "high_humidity_reading_pct",
-          "label": "high-humidity exposure",
-          "unit": "%",
-          "left_value": 88.16568047337277,
-          "right_value": 100.0,
-          "worse_side": "R",
-          "raw_gap": 11.834319526627226,
-          "normalized_gap": 0.2856564497817089,
-          "impact": 0.5998785445415887
+          "raw_gap": 1.7239889999999995,
+          "normalized_gap": 0.10883883119493463,
+          "impact": 1.1428077275468136
         },
         {
           "metric": "poor_weather_weight_loss_pct",
           "label": "poor-weather weight loss",
           "unit": "%",
-          "left_value": 0.0,
-          "right_value": 0.0,
-          "worse_side": null,
-          "raw_gap": 0.0,
-          "normalized_gap": 0.0,
-          "impact": 0.0
+          "left_value": 0.7528400328231247,
+          "right_value": 0.9752860445443716,
+          "worse_side": "R",
+          "raw_gap": 0.2224460117212469,
+          "normalized_gap": 0.73547987363907,
+          "impact": 1.029671823094698
+        },
+        {
+          "metric": "high_humidity_reading_pct",
+          "label": "high-humidity exposure",
+          "unit": "%",
+          "left_value": 74.20249653259361,
+          "right_value": 87.23994452149792,
+          "worse_side": "R",
+          "raw_gap": 13.037447988904304,
+          "normalized_gap": 0.36599853954362566,
+          "impact": 0.7685969330416139
+        },
+        {
+          "metric": "internal_humidity_std_pct",
+          "label": "humidity instability",
+          "unit": "%",
+          "left_value": 7.319885344140771,
+          "right_value": 6.71384342454958,
+          "worse_side": "L",
+          "raw_gap": 0.606041919591191,
+          "normalized_gap": 0.36179663756226443,
+          "impact": 0.6331441157339628
+        },
+        {
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "unit": "%/day",
+          "left_value": 0.013741070340319612,
+          "right_value": -0.09136523144861389,
+          "worse_side": "R",
+          "raw_gap": 0.1051063017889335,
+          "normalized_gap": 0.19533340761384443,
+          "impact": 0.6153002339836099
         }
       ],
-      "summary": "Current condition: the left colony is weaker overall at WTG_HSCHL, mainly because of temperature instability and weight percent change. Trend concern: the right colony has significant negative weight movement on favorable-weather weight percent trend -4.29 %/day vs left -1.32 %/day, so that decline should still be watched. Sister scores: L 40.6 vs R 5.6."
+      "summary": "Current condition: the two colonies at WTG_HSCHL look broadly similar on the measured scoring features. Trend concern: the right colony has significant negative weight movement on favorable-weather weight percent trend -2.54 %/day vs left -0.17 %/day, so that decline should still be watched."
     }
   ]
 }
