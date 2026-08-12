@@ -13,6 +13,12 @@ from beemon_scoring.data_loader import DEFAULT_TIMEZONE, load_hive_config
 
 
 API_URL = "https://api.open-meteo.com/v1/forecast"
+ARCHIVE_API_URL = "https://archive-api.open-meteo.com/v1/archive"
+# The forecast endpoint rejects start dates more than ~90 days back; older
+# ranges must come from the archive endpoint, which in turn lags a few days
+# behind the present.
+FORECAST_MAX_PAST_DAYS = 85
+ARCHIVE_LAG_DAYS = 7
 CSV_FIELDS = [
     "hive_id",
     "latitude",
@@ -89,6 +95,25 @@ def main() -> None:
 
 
 def fetch_hourly_weather(latitude: float, longitude: float, start_date: str, end_date: str, timezone: str) -> dict:
+    start = datetime.strptime(start_date, "%Y-%m-%d").date()
+    end = datetime.strptime(end_date, "%Y-%m-%d").date()
+    today = datetime.now(ZoneInfo(timezone)).date()
+
+    forecast_floor = today - timedelta(days=FORECAST_MAX_PAST_DAYS)
+    if start >= forecast_floor:
+        return request_hourly(API_URL, latitude, longitude, start_date, end_date, timezone)
+
+    # Split: archive endpoint for the old portion, forecast endpoint for the
+    # recent days the archive has not ingested yet.
+    split = today - timedelta(days=ARCHIVE_LAG_DAYS)
+    if end < split:
+        return request_hourly(ARCHIVE_API_URL, latitude, longitude, start_date, end_date, timezone)
+    archive = request_hourly(ARCHIVE_API_URL, latitude, longitude, start_date, (split - timedelta(days=1)).isoformat(), timezone)
+    recent = request_hourly(API_URL, latitude, longitude, split.isoformat(), end_date, timezone)
+    return {key: archive[key] + recent[key] for key in archive}
+
+
+def request_hourly(api_url: str, latitude: float, longitude: float, start_date: str, end_date: str, timezone: str) -> dict:
     params = {
         "latitude": latitude,
         "longitude": longitude,
@@ -98,7 +123,7 @@ def fetch_hourly_weather(latitude: float, longitude: float, start_date: str, end
         "temperature_unit": "fahrenheit",
         "timezone": timezone,
     }
-    url = f"{API_URL}?{urlencode(params)}"
+    url = f"{api_url}?{urlencode(params)}"
     with urlopen(url, timeout=30) as response:
         if response.status != 200:
             raise RuntimeError(f"Open-Meteo returned HTTP {response.status} for {url}")
