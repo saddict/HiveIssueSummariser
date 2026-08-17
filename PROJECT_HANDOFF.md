@@ -920,3 +920,49 @@ colony-level hard-floor detection + **apiary-level co-occurrence as a confidence
 signal**, plus the honest ablation finding that physical thresholds match the
 paired-colony machinery against ground truth while the extra layers added only
 unvalidated sub-kg detections. See `docs/METHODS.md`.
+
+## 24. Removal of Temperature & Humidity Scoring Metrics — Weight-Only Scoring (2026-08-17)
+
+Scoring is now **weight-only**: the four temperature/humidity metrics
+(`internal_temp_std_f` 0.13, `thermal_efficiency_pi` 0.10,
+`high_humidity_reading_pct` 0.06, `internal_humidity_std_pct` 0.05) were
+removed and the five surviving weight metrics renormalised proportionally to
+sum 1.00 (current weight 0.45, weight % change 0.26, weight % trend 0.14,
+favorable-weather trend 0.09, poor-weather loss 0.06 — relative weighting
+unchanged up to rounding, so the sensitivity result in §20 still applies in
+spirit; re-run `spike_weight_sensitivity.py` output committed alongside).
+
+### Why
+The thermal-efficiency direction was evaluated against Arias-Calluari, Colin,
+Latty, Myerscough & Altmann (2026), *Assessing honeybee colony health using
+temperature time series*, J. R. Soc. Interface (doi:10.1098/rsif.2025.0505) —
+the paper the code's "Kovac & Stabentheiner" comment actually referred to.
+Re-estimating Π = −log₁₀(m) with the paper's Method 2 (lagged
+cross-correlation slope) put **every estimable colony below the paper's
+Π < 1.5 collapse floor** (Π 0.07–1.33) at 7-day and 30-day windows and on a
+5-minute interpolated grid, while weight-based scoring and inspections showed
+the colonies are not uniformly collapsing. The thresholds do not transfer to
+this deployment (climate, hive type, sensor placement), and shipping unvalidated
+climate metrics is a reviewer liability. Rather than locally recalibrate,
+scope was reduced to the weight signals validated against ground truth (§21).
+
+### What internal climate data still does
+- `quality.py` bounds and jump checks (empirically grounded, §22) still gate
+  readings — a garbage temp/humidity value drops the whole reading.
+- `events.py:_classify` still uses internal temp/humidity swings (≥ 5 °F /
+  ≥ 10 pp) to separate swarm from harvest. Event detection is untouched.
+- Raw `tE`/`hE`/`tL`/`hL` remain in `SensorReading` and the CSV cache.
+
+### Changes
+- Deleted: `beemon_scoring/thermal.py`, `tests/test_thermal_efficiency.py`,
+  `spike_thermal_efficiency.py`.
+- `metrics.py`: 9 → 5 metrics; `models.py`: 12 temp/humidity feature fields
+  removed from `ColonyFeatures`; `features.py`: their computation removed.
+- Docs updated: `README.md`, `docs/METHODS.md`, `docs/ARCHITECTURE.md`.
+- Outputs regenerated; temp/humidity keys disappear from `output/*.json`.
+
+### Behavioural notes
+- Max possible performance flags is now 5 (was 9), so the "≥ 3 performance
+  flags" underperforming path is harder to hit; score thresholds unchanged.
+- Sister-comparison impact sums shrink (fewer metrics), so more sites may read
+  "similar" under the unchanged `_sister_status` gaps.

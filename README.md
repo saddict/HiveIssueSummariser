@@ -302,49 +302,7 @@ Current weight is a primary strength signal. A heavier colony is generally doing
 
 A colony losing a larger percentage of its starting weight than peers during the same regional window is still treated as more concerning, especially when current weight is also weak.
 
-### Temperature Instability
-
-Temperature instability is measured as standard deviation of the colony's internal temperature readings.
-
-```text
-low standard deviation  = stable internal temperature
-high standard deviation = unstable internal temperature
-```
-
-The system does not judge instability in isolation. It compares that value against all peer colonies. A colony is flagged only when its variation is worse than the peer group.
-
-### Thermal Efficiency
-
-Thermal efficiency measures how actively a colony is generating its own internal heat, rather than simply tracking outdoor temperature. It is based on the linear thermal model from Kovac & Stabentheiner (*Royal Society Interface*, 2026).
-
-The scorer fits a regression over all paired internal/external temperature readings in the window:
-
-```text
-T_H = m · T_E + ΔT
-```
-
-Where `T_H` is the colony's internal temperature, `T_E` is the on-device external temperature, `m` is the weather-tracking coefficient, and `ΔT` is the metabolic temperature lift — the warmth the bees themselves are adding. A colony with `m` near 0 is well-insulated and thermoregulating actively; a colony with `m` near 1 is passively following outdoor temperature with little active regulation.
-
-The efficiency indicator `Pi` normalises the metabolic lift:
-
-```text
-Pi = ΔT / 34.5°C
-```
-
-Higher `Pi` is better. A colony that holds a strong, stable brood-zone temperature regardless of outdoor conditions will have a high `Pi`. A struggling or weather-tracking colony will have a low one.
-
-This replaces the previous "possible brood-temperature variation" metric, which measured average absolute distance from a 94.5°F reference. That metric could not distinguish weather-driven drift from poor thermoregulation: a healthy colony in a cold week would be penalised equally alongside a genuinely struggling one.
-
-### Humidity Features
-
-The scorer measures:
-
-- average internal humidity
-- humidity standard deviation
-- percent of readings above 70% internal humidity
-- percent of readings below 40% internal humidity
-
-High-humidity exposure and unstable humidity are treated as concerning only when they are worse than peers.
+Scoring is intentionally weight-only. Internal temperature and humidity readings are still collected and used for data-quality screening and weight-event classification (a weight drop paired with a sharp internal-climate disturbance reads as a swarm rather than a harvest), but they no longer contribute scored metrics: thermoregulation and humidity thresholds from the literature did not transfer cleanly to this apiary's sensors, so peer comparison rests on the weight signals that have been validated against ground-truth events.
 
 ### Data Quality Checks
 
@@ -391,7 +349,7 @@ badness z-score = how much worse this colony is than the peer average
 
 For metrics where higher is better, such as current colony weight or weight percent change, lower values are worse.
 
-For metrics where lower is better, such as instability or high-humidity exposure, higher values are worse.
+For metrics where lower is better, such as poor-weather weight loss, higher values are worse.
 
 Positive badness means the colony is worse than peers. Larger positive values are more concerning.
 
@@ -402,15 +360,11 @@ The scoring engine combines weighted metric badness into an underperformance sco
 Current weighted drivers:
 
 ```text
-30%  current colony weight
-17%  weight percent change
-9%   weight percent trend
-6%   favorable-weather weight percent trend
-4%   poor-weather weight loss
-13%  temperature instability
-10%  thermal efficiency
-6%   high-humidity exposure
-5%   humidity instability
+45%  current colony weight
+26%  weight percent change
+14%  weight percent trend
+9%   favorable-weather weight percent trend
+6%   poor-weather weight loss
 ```
 
 Statuses are:
@@ -461,7 +415,7 @@ The JSON output contains `metadata`, `regions`, and `colonies` sections for use 
 This MVP is intentionally explainable and conservative, but it has limits:
 
 - It does not diagnose disease, queenlessness, mite pressure, or brood status.
-- Thermal efficiency measures thermoregulatory behaviour, not brood presence or health directly. It cannot know sensor placement, colony state, or queen status.
+- Scoring is weight-only: internal temperature and humidity are used for data-quality screening and event classification but carry no scored metrics, so purely thermoregulatory problems will not surface unless they also move weight.
 - Region assignment uses connected components of the `REGION_RADIUS_MILES` distance graph, so long chains of nearby sites can create a region whose end-to-end span is greater than 10 miles.
 - The `MIN_REGION_SITE_COUNT` merge step can pull an isolated site into a region well beyond `REGION_RADIUS_MILES` (DR_WLKS today, at ~12.6 miles from its nearest neighbor). This trades strict geographic locality for a peer-comparison group large enough that z-scores carry real magnitude information instead of always landing at exactly +-1 standard deviation.
 - Data-quality thresholds are conservative heuristics and should be tuned with field validation.
