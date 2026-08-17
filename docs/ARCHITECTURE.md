@@ -34,7 +34,7 @@ local_data/dynamodb/*.csv  local_data/openmeteo/*.csv
         3. quality.filter_quality_issues()  ← consumes the event list
         4. weather.weather_day_types()      (favorable / poor / neutral days)
         5. features.build_features()        (per-colony feature vector,
-               │                             segmented trends, thermal Π)
+               │                             segmented weight trends)
                ▼
      scoring._score_features()   (peer-relative badness z-scores per region)
                │
@@ -86,37 +86,28 @@ the per-metric confidence labels exist.
 
 ### The metrics (`metrics.py`)
 
-Nine metrics, expert-elicited weights (robustness to ±20% perturbation is
-validated in `spike_weight_sensitivity.py`; rankings shift ≤ 1–2 adjacent
-positions, Kendall τ ≥ 0.93):
+Five weight metrics, expert-elicited weights (robustness to ±20% perturbation
+is validated in `spike_weight_sensitivity.py`; rankings shift ≤ 1–2 adjacent
+positions, Kendall τ ≥ 0.93). Scoring is deliberately weight-only: internal
+temperature and humidity feed data quality and event classification but carry
+no scored metrics.
 
 | Metric | Weight | Direction |
 |---|---|---|
-| Current colony weight | 0.30 | higher better |
-| Weight % change (segmented, §3) | 0.17 | higher better |
-| Temperature instability (internal temp σ) | 0.13 | lower better |
-| Thermal efficiency Π | 0.10 | higher better |
-| Weight % trend (segmented slope) | 0.09 | higher better |
-| High-humidity exposure (share of readings > 70% RH) | 0.06 | lower better |
-| Favorable-weather weight trend | 0.06 | higher better |
-| Humidity instability (internal RH σ) | 0.05 | lower better |
-| Poor-weather weight loss | 0.04 | lower better |
+| Current colony weight | 0.45 | higher better |
+| Weight % change (segmented, §3) | 0.26 | higher better |
+| Weight % trend (segmented slope) | 0.14 | higher better |
+| Favorable-weather weight trend | 0.09 | higher better |
+| Poor-weather weight loss | 0.06 | lower better |
 
 Weather-conditioned metrics only compare colonies that actually observed at
-least one day of that weather type (`min_sample_attr` gating), and thermal
-efficiency requires ≥ 10 paired internal/external readings. When gating
+least one day of that weather type (`min_sample_attr` gating). When gating
 shrinks a metric's peer pool to the degenerate case, the comparison is kept
 but labelled `confidence: low` — a small pool is a property of the region, not
 a colony fault, so it is surfaced rather than reweighted.
 
-Two metrics deserve a note:
+One metric family deserves a note:
 
-- **Thermal efficiency** (`thermal.py`): OLS fit of internal vs external
-  temperature, `T_H = m·T_E + ΔT`. The slope `m` measures passive
-  weather-tracking (0 = perfect insulation, 1 = no thermoregulation); the
-  intercept `ΔT` is the colony's metabolic lift; `Π = ΔT / 34.5 °C`
-  normalises it. This separates "colony can hold brood temperature" from
-  "the weather happened to be mild."
 - **Weather-conditioned trends** (`weather.py`): each hive-day is classified
   favorable / poor / neutral from Open-Meteo (rain codes, temperature band,
   cloud cover), and intraday weight changes are averaged separately per type.

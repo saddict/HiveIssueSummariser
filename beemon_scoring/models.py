@@ -70,15 +70,6 @@ class ColonyFeatures:
     poor_weather_window_count: int
     favorable_weather_weight_slope_pct_per_day: float
     poor_weather_weight_loss_pct: float
-    avg_internal_temp_f: float
-    internal_temp_std_f: float
-    avg_brood_temp_deviation_f: float
-    avg_internal_humidity_pct: float
-    internal_humidity_std_pct: float
-    high_humidity_reading_pct: float
-    low_humidity_reading_pct: float
-    avg_external_temp_f: float | None
-    avg_external_humidity_pct: float | None
     avg_weather_temp_f: float | None
     avg_weather_humidity_pct: float | None
     rainy_weather_reading_pct: float | None
@@ -88,9 +79,6 @@ class ColonyFeatures:
     weight_event_descriptions: list[str] = field(default_factory=list)
     weight_events: list[dict] = field(default_factory=list)
     segment_count: int = 1
-    thermal_efficiency_pi: float = 0.0
-    thermal_efficiency_m: float = 0.0
-    thermal_paired_count: int = 0
 
 
 @dataclass

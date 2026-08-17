@@ -6,12 +6,7 @@ from datetime import date
 
 from .events import WeightEvent, WeightSegment, detect_site_events, segment_readings
 from .models import ColonyFeatures, SensorReading, WeatherReading
-from .thermal import thermal_efficiency
 from .weather import RAINY_WEATHER_CODES
-
-BROOD_TARGET_TEMP_F = 94.5
-HIGH_HUMIDITY_PCT = 70.0
-LOW_HUMIDITY_PCT = 40.0
 
 
 def build_features(
@@ -38,10 +33,6 @@ def build_features(
         first = readings[0]
         last = readings[-1]
         elapsed_days = max((last.observed_at - first.observed_at).total_seconds() / 86400, 1 / 24)
-        temps = [reading.internal_temp_f for reading in readings]
-        humidities = [reading.internal_humidity_pct for reading in readings]
-        external_temps = [reading.external_temp_f for reading in readings if reading.external_temp_f is not None]
-        external_humidities = [reading.external_humidity_pct for reading in readings if reading.external_humidity_pct is not None]
         weather = weather_by_hive.get(first.hive_id, [])
         day_types = weather_day_types.get(first.hive_id, {})
 
@@ -53,11 +44,6 @@ def build_features(
 
         favorable_daily_changes = daily_weight_pct_changes(readings, day_types, "favorable", event_dates)
         poor_daily_changes = daily_weight_pct_changes(readings, day_types, "poor", event_dates)
-
-        te_result = thermal_efficiency(readings)
-        te_pi = te_result["Pi"] if te_result else 0.0
-        te_m = te_result["m"] if te_result else 0.0
-        te_count = te_result["n"] if te_result else 0
 
         features.append(
             ColonyFeatures(
@@ -84,15 +70,6 @@ def build_features(
                 poor_weather_weight_loss_pct=statistics.fmean(abs(min(0.0, change)) for change in poor_daily_changes)
                 if poor_daily_changes
                 else 0.0,
-                avg_internal_temp_f=statistics.fmean(temps),
-                internal_temp_std_f=stddev(temps),
-                avg_brood_temp_deviation_f=statistics.fmean(abs(value - BROOD_TARGET_TEMP_F) for value in temps),
-                avg_internal_humidity_pct=statistics.fmean(humidities),
-                internal_humidity_std_pct=stddev(humidities),
-                high_humidity_reading_pct=_share_pct(value > HIGH_HUMIDITY_PCT for value in humidities),
-                low_humidity_reading_pct=_share_pct(value < LOW_HUMIDITY_PCT for value in humidities),
-                avg_external_temp_f=statistics.fmean(external_temps) if external_temps else None,
-                avg_external_humidity_pct=statistics.fmean(external_humidities) if external_humidities else None,
                 avg_weather_temp_f=_weather_average(weather, "temperature_f"),
                 avg_weather_humidity_pct=_weather_average(weather, "humidity_pct"),
                 rainy_weather_reading_pct=_share_pct(
@@ -125,9 +102,6 @@ def build_features(
                     reverse=True,
                 ),
                 segment_count=len(segments),
-                thermal_efficiency_pi=te_pi,
-                thermal_efficiency_m=te_m,
-                thermal_paired_count=te_count,
             )
         )
     return features
