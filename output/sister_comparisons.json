@@ -1,8 +1,8 @@
 {
   "metadata": {
     "window_days": 7,
-    "start_at": "2026-08-08T13:00:00-04:00",
-    "end_at": "2026-08-15T13:00:00-04:00",
+    "start_at": "2026-08-10T11:00:00-04:00",
+    "end_at": "2026-08-17T11:00:00-04:00",
     "sensor_reading_count": 1014,
     "valid_sensor_reading_count": 1014,
     "excluded_sensor_reading_count": 0,
@@ -18,7 +18,7 @@
     "min_region_site_count": 2,
     "min_colony_days_observed": 7.0,
     "max_colony_days_observed": 7.0,
-    "weight_event_count": 2,
+    "weight_event_count": 1,
     "colonies_with_weight_events": 1,
     "sister_site_count": 3
   },
@@ -27,68 +27,68 @@
       "hive_id": "6LR",
       "left_colony_id": "6LR:L",
       "right_colony_id": "6LR:R",
-      "weaker_side": null,
-      "status": "similar",
-      "left_sister_score": 3.7,
-      "right_sister_score": 7.1,
+      "weaker_side": "L",
+      "status": "left colony mildly weaker",
+      "left_sister_score": 13.7,
+      "right_sister_score": 5.2,
       "metric_comparisons": [
-        {
-          "metric": "latest_weight_kg",
-          "label": "current colony weight",
-          "unit": "kg",
-          "left_value": 50.023617,
-          "right_value": 45.709442,
-          "worse_side": "R",
-          "raw_gap": 4.314174999999999,
-          "normalized_gap": 0.40780899248553454,
-          "impact": 6.422991631647169
-        },
         {
           "metric": "weight_pct_change",
           "label": "weight percent change",
           "unit": "%",
-          "left_value": -2.741577353001468,
-          "right_value": -1.883324389817266,
+          "left_value": -4.191461821886098,
+          "right_value": -1.3216333636334798,
           "worse_side": "L",
-          "raw_gap": 0.858252963184202,
-          "normalized_gap": 0.22175283346661173,
-          "impact": 2.0179507845461666
+          "raw_gap": 2.869828458252618,
+          "normalized_gap": 1.0043064608410768,
+          "impact": 9.139188793653798
         },
         {
-          "metric": "weight_slope_pct_per_day",
-          "label": "weight percent trend",
-          "unit": "%/day",
-          "left_value": -0.6683173489752144,
-          "right_value": -0.49300481857816125,
-          "worse_side": "L",
-          "raw_gap": 0.1753125303970532,
-          "normalized_gap": 0.33737762101557334,
-          "impact": 1.6531503429763095
-        },
-        {
-          "metric": "favorable_weather_weight_slope_pct_per_day",
-          "label": "favorable-weather weight percent trend",
-          "unit": "%/day",
-          "left_value": -0.5090193045349343,
-          "right_value": -0.5813591774792936,
+          "metric": "latest_weight_kg",
+          "label": "current colony weight",
+          "unit": "kg",
+          "left_value": 49.20807,
+          "right_value": 46.07139,
           "worse_side": "R",
-          "raw_gap": 0.07233987294435928,
-          "normalized_gap": 0.20890683997598428,
-          "impact": 0.6580565459243505
+          "raw_gap": 3.1366799999999984,
+          "normalized_gap": 0.2917363700578082,
+          "impact": 4.59484782841048
         },
         {
           "metric": "poor_weather_weight_loss_pct",
           "label": "poor-weather weight loss",
           "unit": "%",
-          "left_value": 0.0,
+          "left_value": 0.24123673281594635,
           "right_value": 0.0,
-          "worse_side": null,
-          "raw_gap": 0.0,
-          "normalized_gap": 0.0,
-          "impact": 0.0
+          "worse_side": "L",
+          "raw_gap": 0.24123673281594635,
+          "normalized_gap": 2.0,
+          "impact": 4.2
+        },
+        {
+          "metric": "favorable_weather_weight_slope_pct_per_day",
+          "label": "favorable-weather weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.5131323063184511,
+          "right_value": -0.5806668247041085,
+          "worse_side": "R",
+          "raw_gap": 0.06753451838565738,
+          "normalized_gap": 0.1940581219641712,
+          "impact": 0.6112830841871392
+        },
+        {
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.32110912919566886,
+          "right_value": -0.2874037060447054,
+          "worse_side": "L",
+          "raw_gap": 0.033705423150963476,
+          "normalized_gap": 0.06897046571309903,
+          "impact": 0.3379552819941853
         }
       ],
-      "summary": "Current condition: the two colonies at 6LR look broadly similar on the measured scoring features."
+      "summary": "Current condition: the left colony is weaker overall at 6LR, mainly because of weight percent change. Sister scores: L 13.7 vs R 5.2."
     },
     {
       "hive_id": "PRT_1",
@@ -96,133 +96,111 @@
       "right_colony_id": "PRT_1:R",
       "weaker_side": "L",
       "status": "left colony notably weaker",
-      "left_sister_score": 35.7,
+      "left_sister_score": 42.5,
       "right_sister_score": 0,
       "metric_comparisons": [
         {
           "metric": "weight_pct_change",
           "label": "weight percent change",
           "unit": "%",
-          "left_value": -9.776066426748416,
-          "right_value": -4.449638792744186,
+          "left_value": -10.759086787182884,
+          "right_value": -4.133281468253266,
           "worse_side": "L",
-          "raw_gap": 5.32642763400423,
-          "normalized_gap": 1.3762264399450668,
-          "impact": 12.523660603500108
+          "raw_gap": 6.625805318929618,
+          "normalized_gap": 2.3187236404115534,
+          "impact": 21.100385127745138
         },
         {
           "metric": "weight_slope_pct_per_day",
           "label": "weight percent trend",
           "unit": "%/day",
-          "left_value": -1.7603296740697705,
-          "right_value": -0.5569282747755819,
+          "left_value": -1.3816825297290691,
+          "right_value": -0.6488227749795962,
           "worse_side": "L",
-          "raw_gap": 1.2034013992941885,
-          "normalized_gap": 2.3158681259186813,
-          "impact": 11.34775381700154
-        },
-        {
-          "metric": "latest_weight_kg",
-          "label": "current colony weight",
-          "unit": "kg",
-          "left_value": 22.845715,
-          "right_value": 26.98106,
-          "worse_side": "L",
-          "raw_gap": 4.135345000000001,
-          "normalized_gap": 0.3909046058702054,
-          "impact": 6.156747542455736
-        },
-        {
-          "metric": "poor_weather_weight_loss_pct",
-          "label": "poor-weather weight loss",
-          "unit": "%",
-          "left_value": 7.5812838753515255,
-          "right_value": 0.6693265651961017,
-          "worse_side": "L",
-          "raw_gap": 6.911957310155424,
-          "normalized_gap": 2.5963114895104913,
-          "impact": 5.452254127972031
+          "raw_gap": 0.732859754749473,
+          "normalized_gap": 1.4996304411034767,
+          "impact": 7.348189161407036
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
           "label": "favorable-weather weight percent trend",
           "unit": "%/day",
-          "left_value": -0.5809550753523991,
-          "right_value": -0.5521616175584801,
+          "left_value": -1.3817658363522625,
+          "right_value": -0.5805090833213191,
           "worse_side": "L",
-          "raw_gap": 0.028793457793918953,
-          "normalized_gap": 0.08315124197599957,
-          "impact": 0.26192641222439866
+          "raw_gap": 0.8012567530309433,
+          "normalized_gap": 2.3023837945561896,
+          "impact": 7.252508952851997
+        },
+        {
+          "metric": "latest_weight_kg",
+          "label": "current colony weight",
+          "unit": "kg",
+          "left_value": 22.490818,
+          "right_value": 27.10967,
+          "worse_side": "L",
+          "raw_gap": 4.618852,
+          "normalized_gap": 0.4295902407367817,
+          "impact": 6.766046291604312
         }
       ],
-      "summary": "Current condition: the left colony is weaker overall at PRT_1, mainly because of weight percent change and weight percent trend. Sister scores: L 35.7 vs R 0.0."
+      "summary": "Current condition: the left colony is weaker overall at PRT_1, mainly because of weight percent change and weight percent trend. Sister scores: L 42.5 vs R 0.0."
     },
     {
       "hive_id": "WTG_HSCHL",
       "left_colony_id": "WTG_HSCHL:L",
       "right_colony_id": "WTG_HSCHL:R",
-      "weaker_side": "L",
-      "status": "left colony mildly weaker",
-      "left_sister_score": 13.5,
-      "right_sister_score": 5.5,
+      "weaker_side": "R",
+      "status": "right colony notably weaker",
+      "left_sister_score": 0,
+      "right_sister_score": 26.8,
       "metric_comparisons": [
         {
-          "metric": "weight_pct_change",
-          "label": "weight percent change",
-          "unit": "%",
-          "left_value": -1.1309208160034132,
-          "right_value": 3.10428705856562,
-          "worse_side": "L",
-          "raw_gap": 4.235207874569033,
-          "normalized_gap": 1.0942803425010963,
-          "impact": 9.957951116759977
+          "metric": "weight_slope_pct_per_day",
+          "label": "weight percent trend",
+          "unit": "%/day",
+          "left_value": -0.1633130707800777,
+          "right_value": -1.3043531285098335,
+          "worse_side": "R",
+          "raw_gap": 1.141040057729756,
+          "normalized_gap": 2.334878391125408,
+          "impact": 11.4409041165145
         },
         {
           "metric": "favorable_weather_weight_slope_pct_per_day",
           "label": "favorable-weather weight percent trend",
           "unit": "%/day",
-          "left_value": -0.059003291676578015,
-          "right_value": 0.33226596396797464,
-          "worse_side": "L",
-          "raw_gap": 0.39126925564455267,
-          "normalized_gap": 1.1299276657470636,
-          "impact": 3.55927214710325
+          "left_value": -0.5723172741868149,
+          "right_value": -1.1973874551642656,
+          "worse_side": "R",
+          "raw_gap": 0.6250701809774507,
+          "normalized_gap": 1.7961177234374075,
+          "impact": 5.657770828827833
         },
         {
           "metric": "latest_weight_kg",
           "label": "current colony weight",
           "unit": "kg",
-          "left_value": 27.931028,
-          "right_value": 25.563578,
+          "left_value": 27.562208,
+          "right_value": 23.73251,
           "worse_side": "R",
-          "raw_gap": 2.3674500000000016,
-          "normalized_gap": 0.22378957720998327,
-          "impact": 3.5246858410572366
+          "raw_gap": 3.829697999999997,
+          "normalized_gap": 0.3561925962921457,
+          "impact": 5.610033391601295
         },
         {
-          "metric": "weight_slope_pct_per_day",
-          "label": "weight percent trend",
-          "unit": "%/day",
-          "left_value": -0.17631972099900053,
-          "right_value": -0.2900053049970159,
-          "worse_side": "R",
-          "raw_gap": 0.11368558399801534,
-          "normalized_gap": 0.2187805502900964,
-          "impact": 1.0720246964214724
-        },
-        {
-          "metric": "poor_weather_weight_loss_pct",
-          "label": "poor-weather weight loss",
+          "metric": "weight_pct_change",
+          "label": "weight percent change",
           "unit": "%",
-          "left_value": 0.6411820673235141,
-          "right_value": 1.8316856477948447,
+          "left_value": -4.770172620639644,
+          "right_value": -6.041248306975004,
           "worse_side": "R",
-          "raw_gap": 1.1905035804713306,
-          "normalized_gap": 0.4471842034874475,
-          "impact": 0.9390868273236397
+          "raw_gap": 1.2710756863353598,
+          "normalized_gap": 0.44481736193454346,
+          "impact": 4.047837993604346
         }
       ],
-      "summary": "Current condition: the left colony is weaker overall at WTG_HSCHL, mainly because of weight percent change and favorable-weather weight percent trend. Sister scores: L 13.5 vs R 5.5."
+      "summary": "Current condition: the right colony is weaker overall at WTG_HSCHL, mainly because of weight percent trend and favorable-weather weight percent trend. Sister scores: L 0.0 vs R 26.8."
     }
   ]
 }

@@ -9,7 +9,7 @@
     "false_negative": 0,
     "false_positive": 0,
     "true_negative": 1,
-    "unaudited_detection": 21
+    "unaudited_detection": 26
   },
   "true_positives": [
     {
@@ -102,7 +102,7 @@
     },
     {
       "colony_id": "6LR:R",
-      "detected_kind": "harvest (paired)",
+      "detected_kind": "harvest",
       "detected_at": "2026-05-28T20:00:00-04:00",
       "detected_delta_kg": -1.152
     },
@@ -125,6 +125,12 @@
       "detected_delta_kg": -1.597
     },
     {
+      "colony_id": "6LR:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-07-30T20:00:00-04:00",
+      "detected_delta_kg": -1.477
+    },
+    {
       "colony_id": "DR_WLKS:L",
       "detected_kind": "addition",
       "detected_at": "2026-05-29T15:00:00-04:00",
@@ -137,22 +143,10 @@
       "detected_delta_kg": -25.428
     },
     {
-      "colony_id": "DR_WLKS:L",
-      "detected_kind": "addition",
-      "detected_at": "2026-06-29T16:00:00-04:00",
-      "detected_delta_kg": 4.236
-    },
-    {
-      "colony_id": "DR_WLKS:R",
-      "detected_kind": "addition (sister-corroborated)",
-      "detected_at": "2026-06-29T16:00:00-04:00",
-      "detected_delta_kg": 0.355
-    },
-    {
       "colony_id": "PRT_1:L",
       "detected_kind": "harvest",
       "detected_at": "2026-05-27T18:00:44-04:00",
-      "detected_delta_kg": -13.23
+      "detected_delta_kg": -13.809
     },
     {
       "colony_id": "PRT_1:L",
@@ -174,12 +168,6 @@
     },
     {
       "colony_id": "PRT_1:L",
-      "detected_kind": "harvest (paired)",
-      "detected_at": "2026-07-01T10:00:00-04:00",
-      "detected_delta_kg": -0.857
-    },
-    {
-      "colony_id": "PRT_1:L",
       "detected_kind": "harvest",
       "detected_at": "2026-07-07T18:00:00-04:00",
       "detected_delta_kg": -3.646
@@ -197,16 +185,34 @@
       "detected_delta_kg": 3.379
     },
     {
-      "colony_id": "PRT_1:R",
+      "colony_id": "PRT_1:L",
       "detected_kind": "harvest",
-      "detected_at": "2026-05-27T18:00:44-04:00",
-      "detected_delta_kg": -15.996
+      "detected_at": "2026-08-04T13:00:00-04:00",
+      "detected_delta_kg": -1.683
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "detected_kind": "addition",
+      "detected_at": "2026-08-05T13:00:00-04:00",
+      "detected_delta_kg": 7.992
+    },
+    {
+      "colony_id": "PRT_1:L",
+      "detected_kind": "harvest",
+      "detected_at": "2026-08-07T11:00:00-04:00",
+      "detected_delta_kg": -4.152
+    },
+    {
+      "colony_id": "PRT_1:R",
+      "detected_kind": "addition",
+      "detected_at": "2026-05-20T16:13:35-04:00",
+      "detected_delta_kg": 7.769
     },
     {
       "colony_id": "PRT_1:R",
       "detected_kind": "harvest",
-      "detected_at": "2026-05-28T16:00:00-04:00",
-      "detected_delta_kg": -1.491
+      "detected_at": "2026-05-27T18:00:44-04:00",
+      "detected_delta_kg": -15.3
     },
     {
       "colony_id": "PRT_1:R",
@@ -218,7 +224,31 @@
       "colony_id": "PRT_1:R",
       "detected_kind": "harvest",
       "detected_at": "2026-06-23T18:00:00-04:00",
-      "detected_delta_kg": -12.764
+      "detected_delta_kg": -15.359
+    },
+    {
+      "colony_id": "PRT_1:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-08-07T12:00:00-04:00",
+      "detected_delta_kg": -4.554
+    },
+    {
+      "colony_id": "PRT_1:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-08-08T12:00:00-04:00",
+      "detected_delta_kg": -1.239
+    },
+    {
+      "colony_id": "WTG_HSCHL:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-08-08T17:00:00-04:00",
+      "detected_delta_kg": -1.092
+    },
+    {
+      "colony_id": "WTG_HSCHL:R",
+      "detected_kind": "harvest",
+      "detected_at": "2026-08-11T17:00:00-04:00",
+      "detected_delta_kg": -1.093
     }
   ]
 }
