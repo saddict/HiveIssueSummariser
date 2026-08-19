@@ -79,6 +79,13 @@ will expect it, and it may pre-empt a novelty challenge.
   purely thermoregulatory decline will not surface unless it also moves weight.
 - **Metric weights are expert-elicited, not learned** — mitigated, not eliminated,
   by the sensitivity analysis.
+- **Sensor silence is detected relatively, not absolutely.** A colony is "not
+  reporting" when its last reading trails the newest reading in the cache by more
+  than `MAX_REPORTING_GAP_DAYS`; the system clock is never read, so an
+  apiary-wide outage leaves every colony equally stale and none of them flagged.
+  It surfaces as a stale window end in the report header instead. A colony
+  flagged this way is reported but not scored — it has no metrics for the window,
+  and its absence from the peer pool slightly shrinks the comparison group.
 
 Most of these already appear in `README.md` ("Current Limitations") and can be
 lifted and sharpened.

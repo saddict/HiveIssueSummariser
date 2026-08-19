@@ -31,6 +31,7 @@ def load_hive_config(config_path: Path) -> tuple[dict[str, HiveConfig], tuple[st
         "quality_issue_day_share_threshold": float(
             getattr(module, "QUALITY_ISSUE_DAY_SHARE_THRESHOLD", 0.30)
         ),
+        "max_reporting_gap_days": float(getattr(module, "MAX_REPORTING_GAP_DAYS", 1.0)),
         "min_region_site_count": int(getattr(module, "MIN_REGION_SITE_COUNT", 2)),
     }
 

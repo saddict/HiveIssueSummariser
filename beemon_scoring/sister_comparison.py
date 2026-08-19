@@ -24,6 +24,12 @@ WEIGHT_TREND_METRICS = {
 def build_sister_comparisons(scores: list[ColonyScore]) -> list[SisterSiteComparison]:
     by_site: dict[str, list[ColonyScore]] = defaultdict(list)
     for score in scores:
+        # Colonies with no readings in the window carry placeholder zero features
+        # (scoring._not_reporting_score); comparing against those would read as a
+        # 100% deficit for the silent side. Skipping them leaves the site
+        # "incomplete", which is what it is.
+        if score.feature.sample_count == 0:
+            continue
         by_site[score.hive_id].append(score)
 
     comparisons: list[SisterSiteComparison] = []

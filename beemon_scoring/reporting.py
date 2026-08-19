@@ -70,6 +70,17 @@ def build_text_report(scores: list[ColonyScore], metadata: dict[str, object]) ->
         "",
     ]
 
+    not_reporting = sorted(
+        [score for score in scores if score.reporting_gap_days is not None],
+        key=lambda score: (-(score.reporting_gap_days or 0.0), score.colony_id),
+    )
+    if not_reporting:
+        lines.insert(
+            len(lines) - 1,
+            "NOT REPORTING: "
+            + ", ".join(f"{score.colony_id} ({score.reporting_gap_days:.1f} days silent)" for score in not_reporting),
+        )
+
     if not scores:
         return "\n".join(lines + ["No colony scores available."])
 
@@ -94,11 +105,16 @@ def build_text_report(scores: list[ColonyScore], metadata: dict[str, object]) ->
         lines.append(f"{region_id}:")
         for index, score in enumerate(sorted(region_scores, key=lambda item: (-item.score, item.colony_id)), start=1):
             feature = score.feature
-            lines.append(
-                f"{index}. {score.colony_id} - {score.status} "
-                f"(underperformance score {score.score:.1f}/100, "
-                f"weight {feature.weight_delta_kg:+.2f} kg ({feature.weight_pct_change:+.1f}%) over {feature.days_observed:.1f} days)"
-            )
+            if feature.sample_count == 0:
+                # No readings in the window: there is no score or weight movement
+                # to report, only the silence itself.
+                lines.append(f"{index}. {score.colony_id} - not reporting (no sensor readings in this window)")
+            else:
+                lines.append(
+                    f"{index}. {score.colony_id} - {score.status} "
+                    f"(underperformance score {score.score:.1f}/100, "
+                    f"weight {feature.weight_delta_kg:+.2f} kg ({feature.weight_pct_change:+.1f}%) over {feature.days_observed:.1f} days)"
+                )
             for comparison in _top_drivers(score.comparisons, limit=3):
                 confidence_note = (
                     f" [low confidence: n={comparison.peer_count} peers]"

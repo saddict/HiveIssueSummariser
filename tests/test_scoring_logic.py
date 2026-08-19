@@ -1,20 +1,31 @@
 from __future__ import annotations
 
 import unittest
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from beemon_scoring.data_loader import _coordinate_region_ids
 from beemon_scoring.features import daily_weight_pct_changes
 from beemon_scoring.metrics import Metric
-from beemon_scoring.models import ColonyFeatures, ColonyScore, MetricComparison, SensorReading
+from beemon_scoring.models import ColonyFeatures, ColonyScore, HiveConfig, MetricComparison, SensorReading
 from beemon_scoring.reporting import build_region_summaries
 from beemon_scoring.quality import issue_dates
-from beemon_scoring.scoring import _eligible_metric_peers, _quality_issue_days_material, _score_features
+from beemon_scoring.scoring import (
+    _apply_reporting_gaps,
+    _eligible_metric_peers,
+    _quality_issue_days_material,
+    _reporting_gaps,
+    _score_features,
+)
 from beemon_scoring.sister_comparison import build_sister_comparisons
 
 
 TZ = ZoneInfo("America/New_York")
+
+HIVES = {
+    "A": HiveConfig(hive_id="A", region_id="region_a", device_uid="1", latitude=36.2, longitude=-81.7),
+    "B": HiveConfig(hive_id="B", region_id="region_a", device_uid="2", latitude=36.3, longitude=-81.6),
+}
 
 
 def reading(hive_id: str, side: str, timestamp: int, weight: float, observed_at: datetime, region_id: str = "region_a") -> SensorReading:
@@ -340,6 +351,98 @@ class ScoringLogicTests(unittest.TestCase):
             issue_dates(flags),
             {date(2026, 6, 12), date(2026, 6, 13), date(2026, 6, 15)},
         )
+
+    def test_reporting_gaps_flag_only_colonies_behind_the_newest_reading(self) -> None:
+        newest = datetime(2026, 6, 18, 12, tzinfo=TZ)
+        readings = [
+            reading("A", "L", 1, 30.0, newest),
+            reading("A", "R", 2, 30.0, newest - timedelta(hours=20)),
+            reading("B", "L", 3, 30.0, newest - timedelta(days=3)),
+        ]
+
+        gaps = _reporting_gaps(readings, HIVES, ("L", "R"), newest, max_gap_days=1.0)
+        by_colony = {gap["colony_id"]: gap for gap in gaps}
+
+        # A:L is current and A:R is 20 hours behind -- inside the 1-day allowance.
+        self.assertNotIn("A:L", by_colony)
+        self.assertNotIn("A:R", by_colony)
+        self.assertAlmostEqual(by_colony["B:L"]["gap_days"], 3.0)
+        self.assertEqual(by_colony["B:L"]["last_reading_at"], (newest - timedelta(days=3)).isoformat())
+        # B:R is configured but has never sent a reading at all.
+        self.assertIn("B:R", by_colony)
+        self.assertIsNone(by_colony["B:R"]["last_reading_at"])
+        self.assertIsNone(by_colony["B:R"]["gap_days"])
+
+    def test_a_scored_colony_that_falls_behind_is_marked_underperforming(self) -> None:
+        settings = {"zscore_badness_threshold": 1.0, "weight_drop_pct_threshold": 5.0}
+        features = [
+            feature("A:L", favorable_windows=1, poor_windows=1),
+            feature("B:L", favorable_windows=1, poor_windows=1),
+            feature("C:L", favorable_windows=1, poor_windows=1),
+        ]
+        scores = _score_features(features, settings)
+        gaps = [
+            {
+                "colony_id": "A:L",
+                "hive_id": "A",
+                "colony_side": "L",
+                "region_id": "region_a",
+                "last_reading_at": "2026-06-16T12:00:00-04:00",
+                "gap_days": 2.0,
+            }
+        ]
+
+        _apply_reporting_gaps(scores, gaps, "2026-06-11T00:00:00-04:00", "2026-06-18T12:00:00-04:00")
+        stale = next(score for score in scores if score.colony_id == "A:L")
+        healthy = next(score for score in scores if score.colony_id == "B:L")
+
+        self.assertEqual(stale.status, "underperforming")
+        self.assertEqual(stale.reporting_gap_days, 2.0)
+        self.assertTrue(stale.flags[0].startswith("Not reporting:"))
+        self.assertEqual(healthy.status, "normal")
+        self.assertIsNone(healthy.reporting_gap_days)
+
+    def test_a_silent_colony_gets_a_score_entry_instead_of_disappearing(self) -> None:
+        settings = {"zscore_badness_threshold": 1.0, "weight_drop_pct_threshold": 5.0}
+        scores = _score_features(
+            [
+                feature("A:L", favorable_windows=1, poor_windows=1),
+                feature("B:L", favorable_windows=1, poor_windows=1),
+            ],
+            settings,
+        )
+        gaps = [
+            {
+                "colony_id": "A:R",
+                "hive_id": "A",
+                "colony_side": "R",
+                "region_id": "region_a",
+                "last_reading_at": "2026-06-02T06:00:00-04:00",
+                "gap_days": 16.2,
+            }
+        ]
+
+        _apply_reporting_gaps(scores, gaps, "2026-06-11T00:00:00-04:00", "2026-06-18T12:00:00-04:00")
+        silent = next(score for score in scores if score.colony_id == "A:R")
+
+        self.assertEqual(silent.status, "underperforming")
+        self.assertEqual(silent.score, 0.0)
+        self.assertEqual(silent.feature.sample_count, 0)
+        self.assertEqual(silent.comparisons, [])
+        self.assertIn("16.2 days", silent.flags[0])
+        # It must reach the report's underperforming list, not just the raw scores.
+        summary = build_region_summaries(scores)[0]
+        self.assertIn("A:R", [item.colony_id for item in summary.underperforming_colonies])
+
+    def test_silent_colonies_are_excluded_from_sister_comparison(self) -> None:
+        silent = colony_score("SITE:R", "R", 0.0, latest_weight_kg=0.0)
+        silent.feature.sample_count = 0
+        comparisons = build_sister_comparisons([colony_score("SITE:L", "L", -2.0), silent])
+
+        self.assertEqual(len(comparisons), 1)
+        self.assertEqual(comparisons[0].status, "incomplete")
+        self.assertIsNone(comparisons[0].weaker_side)
+        self.assertEqual(comparisons[0].metric_comparisons, [])
 
     def test_region_summaries_surface_strong_and_weak_colonies(self) -> None:
         summaries = build_region_summaries([

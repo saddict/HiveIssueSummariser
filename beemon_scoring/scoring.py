@@ -3,14 +3,15 @@ from __future__ import annotations
 import math
 import statistics
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
+from typing import cast
 
 from .data_loader import load_hive_config, load_sensor_readings, load_weather_readings
 from .events import detect_site_events
 from .features import build_features, stddev
 from .metrics import BADNESS_Z_SCORE_SCALE, METRICS, Metric
-from .models import ColonyFeatures, ColonyScore, MetricComparison
+from .models import ColonyFeatures, ColonyScore, HiveConfig, MetricComparison, SensorReading
 from .quality import filter_quality_issues
 from .weather import weather_by_hive, weather_day_types
 
@@ -67,7 +68,13 @@ def prepare_features(
     features = build_features(
         filtered_readings, hive_weather, hive_weather_day_types, quality_by_colony, events_by_colony=events_by_colony
     )
+    # Measured over the FULL history, not the window: a colony that fell silent
+    # before the window opens has no windowed readings to be late in.
+    not_reporting = _reporting_gaps(
+        sensor_readings, hives, colony_sides, end_at, settings["max_reporting_gap_days"]
+    )
     prep_metadata = {
+        "not_reporting": not_reporting,
         "window_days": window_days,
         "start_at": start_at.isoformat(),
         "end_at": end_at.isoformat(),
@@ -90,6 +97,11 @@ def build_scores(
 ) -> tuple[list[ColonyScore], dict[str, object]]:
     features, settings, prep = prepare_features(project_root, window_days, sensor_dir, weather_dir)
     scores = _score_features(features, settings)
+    not_reporting = cast(list[dict], prep["not_reporting"])
+    scores = _apply_reporting_gaps(
+        scores, not_reporting, cast(str, prep["start_at"]), cast(str, prep["end_at"])
+    )
+    reporting = [score for score in scores if score.feature.sample_count]
     metadata = {
         "window_days": prep["window_days"],
         "start_at": prep["start_at"],
@@ -99,16 +111,21 @@ def build_scores(
         "excluded_sensor_reading_count": prep["excluded_sensor_reading_count"],
         "data_quality_issue_count": prep["data_quality_issue_count"],
         "weather_reading_count": prep["weather_reading_count"],
-        "colony_count": len(scores),
+        # Counts describe the colonies actually compared; colonies that are not
+        # reporting are listed separately so they never inflate coverage stats.
+        "colony_count": len(reporting),
         "region_count": len({score.region_id for score in scores}),
         "region_ids": sorted({score.region_id for score in scores}),
         "region_assignment_method": "coordinate_radius_connected_components_with_min_site_merge",
         "region_radius_miles": prep["region_radius_miles"],
         "min_region_site_count": prep["min_region_site_count"],
-        "min_colony_days_observed": round(min(score.feature.days_observed for score in scores), 2) if scores else 0,
-        "max_colony_days_observed": round(max(score.feature.days_observed for score in scores), 2) if scores else 0,
+        "min_colony_days_observed": round(min(score.feature.days_observed for score in reporting), 2) if reporting else 0,
+        "max_colony_days_observed": round(max(score.feature.days_observed for score in reporting), 2) if reporting else 0,
         "weight_event_count": sum(score.feature.weight_event_count for score in scores),
         "colonies_with_weight_events": sum(1 for score in scores if score.feature.weight_event_count),
+        "max_reporting_gap_days": settings["max_reporting_gap_days"],
+        "not_reporting_colony_count": len(not_reporting),
+        "not_reporting_colonies": not_reporting,
     }
     return sorted(scores, key=lambda score: (score.region_id, -score.score, score.colony_id)), metadata
 
@@ -116,6 +133,139 @@ def build_scores(
 def _require_data_dir(path: Path, label: str) -> None:
     if not path.exists():
         raise RuntimeError(f"Missing {label} data directory: {path}")
+
+
+def _reporting_gaps(
+    sensor_readings: list[SensorReading],
+    hives: dict[str, HiveConfig],
+    colony_sides: tuple[str, ...],
+    reference_at: datetime,
+    max_gap_days: float,
+) -> list[dict]:
+    """Configured colonies whose last reading is more than ``max_gap_days`` old.
+
+    "Old" is measured against ``reference_at`` -- the newest reading anywhere in
+    the cache -- because the system clock is deliberately never consulted (see
+    the timestamp invariant). The consequence is that an apiary-wide outage
+    cannot be detected this way: every colony is equally stale, so no colony is
+    late relative to the others. That case surfaces as a stale window end in the
+    report header instead.
+
+    A colony with no readings at all is included with ``last_reading_at: None``:
+    a hive that never appears is exactly as invisible as one that went quiet.
+    """
+    last_by_colony: dict[str, SensorReading] = {}
+    for reading in sensor_readings:
+        current = last_by_colony.get(reading.colony_id)
+        if current is None or reading.observed_at > current.observed_at:
+            last_by_colony[reading.colony_id] = reading
+
+    gaps: list[dict] = []
+    for hive_id, hive in sorted(hives.items()):
+        for colony_side in colony_sides:
+            colony_id = f"{hive_id}:{colony_side}"
+            last = last_by_colony.get(colony_id)
+            gap_days = None if last is None else (reference_at - last.observed_at).total_seconds() / 86400
+            if gap_days is not None and gap_days <= max_gap_days:
+                continue
+            gaps.append(
+                {
+                    "colony_id": colony_id,
+                    "hive_id": hive_id,
+                    "colony_side": colony_side,
+                    "region_id": hive.region_id,
+                    "last_reading_at": last.observed_at.isoformat() if last else None,
+                    "gap_days": round(gap_days, 2) if gap_days is not None else None,
+                }
+            )
+    return gaps
+
+
+def _not_reporting_flag(gap: dict) -> str:
+    if gap["last_reading_at"] is None:
+        return "Not reporting: no sensor readings at all in the cached history."
+    return (
+        f"Not reporting: no sensor readings for {gap['gap_days']:.1f} days "
+        f"(last reading {gap['last_reading_at']})."
+    )
+
+
+def _apply_reporting_gaps(
+    scores: list[ColonyScore],
+    gaps: list[dict],
+    window_start: str,
+    window_end: str,
+) -> list[ColonyScore]:
+    """Mark scored colonies that have fallen behind, and materialise a score for
+    colonies with no readings in the window at all.
+
+    Without the second half a silent hive simply disappears from the report --
+    the most dangerous failure mode there is, because an absent colony looks
+    exactly like a healthy one that was never mentioned. Silent colonies carry
+    ``sample_count == 0`` so peer statistics, coverage metadata, and sister
+    comparisons can all exclude them; they were never in the peer pool, since
+    the feature builder only sees colonies with readings in the window.
+    """
+    by_colony = {gap["colony_id"]: gap for gap in gaps}
+    scored_ids = {score.colony_id for score in scores}
+
+    for score in scores:
+        gap = by_colony.get(score.colony_id)
+        if gap is None:
+            continue
+        score.reporting_gap_days = gap["gap_days"]
+        score.flags.insert(0, _not_reporting_flag(gap))
+        score.status = "underperforming"
+
+    for colony_id, gap in sorted(by_colony.items()):
+        if colony_id in scored_ids:
+            continue
+        scores.append(_not_reporting_score(gap, window_start, window_end))
+    return scores
+
+
+def _not_reporting_score(gap: dict, window_start: str, window_end: str) -> ColonyScore:
+    last_at = datetime.fromisoformat(gap["last_reading_at"]) if gap["last_reading_at"] else None
+    feature = ColonyFeatures(
+        colony_id=gap["colony_id"],
+        region_id=gap["region_id"],
+        hive_id=gap["hive_id"],
+        colony_side=gap["colony_side"],
+        sample_count=0,
+        excluded_reading_count=0,
+        data_quality_flags=[],
+        start_at=last_at or datetime.fromisoformat(window_start),
+        end_at=last_at or datetime.fromisoformat(window_end),
+        days_observed=0.0,
+        latest_weight_kg=0.0,
+        weight_delta_kg=0.0,
+        weight_pct_change=0.0,
+        weight_slope_kg_per_day=0.0,
+        weight_slope_pct_per_day=0.0,
+        favorable_weather_window_count=0,
+        poor_weather_window_count=0,
+        favorable_weather_weight_slope_pct_per_day=0.0,
+        poor_weather_weight_loss_pct=0.0,
+        avg_weather_temp_f=None,
+        avg_weather_humidity_pct=None,
+        rainy_weather_reading_pct=None,
+        cloudy_weather_reading_pct=None,
+        dominant_weather_overview=None,
+    )
+    return ColonyScore(
+        colony_id=gap["colony_id"],
+        region_id=gap["region_id"],
+        hive_id=gap["hive_id"],
+        colony_side=gap["colony_side"],
+        # Not a peer-relative judgement -- there is nothing to compare. The zero
+        # says "unscored"; the status and flag carry the meaning.
+        score=0.0,
+        status="underperforming",
+        comparisons=[],
+        feature=feature,
+        flags=[_not_reporting_flag(gap)],
+        reporting_gap_days=gap["gap_days"],
+    )
 
 
 def _score_features(
@@ -292,10 +442,16 @@ def _status(score: float, flags: list[str], quality_flags_material: bool = True)
     # A small peer pool is a property of the region, not a colony problem, so
     # low-confidence flags drive neither the underperforming nor the watch cut.
     confidence_flags = [flag for flag in flags if flag.startswith("Low confidence:")]
+    # "Not reporting" is a hardware fact, not a peer-relative performance signal;
+    # _apply_reporting_gaps sets the status for those colonies directly.
+    reporting_flags = [flag for flag in flags if flag.startswith("Not reporting:")]
     performance_flags = [
         flag
         for flag in flags
-        if flag not in quality_flags and flag not in event_flags and flag not in confidence_flags
+        if flag not in quality_flags
+        and flag not in event_flags
+        and flag not in confidence_flags
+        and flag not in reporting_flags
     ]
     # Quality flags are always reported, but only drive the watch cut when the
     # underlying issues span a meaningful share of the window; they are never a

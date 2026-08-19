@@ -375,6 +375,17 @@ watch           = one or more weaker signals
 underperforming = stronger or multiple concerning signals
 ```
 
+A colony whose sensor has gone quiet for more than `MAX_REPORTING_GAP_DAYS`
+(default 1 day) is flagged `Not reporting` and listed with the underperforming
+colonies, including a `NOT REPORTING` line in the report header. This covers the
+case that matters most: a hive with **no** readings in the window at all used to
+vanish from the report entirely, which looks identical to a hive that is fine.
+Such a colony now appears with score 0, `sample_count` 0, and the date of its
+last reading — it is excluded from peer statistics, coverage counts, and sister
+comparison, because there is nothing to compare. Staleness is measured against
+the newest reading in the cache, never the system clock, so an apiary-wide
+outage shows up as a stale window end rather than as flagged colonies.
+
 Data-quality problems are reported for every colony but only push one to `watch`
 when they persist: the affected days must exceed
 `QUALITY_ISSUE_DAY_SHARE_THRESHOLD` (default 30%) of the scoring window — more

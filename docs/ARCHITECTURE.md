@@ -123,6 +123,22 @@ underperforming cut — event flags ("Likely harvest…"), data-quality flags, a
 low-confidence flags are informational, so a colony is never marked
 underperforming just because its beekeeper harvested it or its sensor glitched.
 
+Ahead of both cuts, `_apply_reporting_gaps()` forces `underperforming` on any
+colony whose last reading is more than `MAX_REPORTING_GAP_DAYS` (default 1) older
+than the newest reading in the cache. Two cases are handled: a colony with
+readings in the window but a stale tail is annotated in place, while a colony
+with no readings in the window at all is *materialised* by
+`_not_reporting_score()` as a placeholder `ColonyScore` (score 0, empty
+comparisons, `sample_count == 0`). The second case is the important one — the
+feature builder only sees colonies with readings, so a silent hive would
+otherwise be missing from the report rather than flagged in it, and absence
+reads as health. `sample_count == 0` is the marker downstream consumers use to
+exclude placeholders: sister comparison skips them, and `build_scores` computes
+coverage metadata over reporting colonies only. `"Not reporting:"` flags are not
+performance flags, so they never contribute to the ≥ 3-flag cut. Because
+staleness is measured against the newest cached reading rather than the system
+clock (a repo-wide invariant), an apiary-wide outage is invisible to this check.
+
 Data-quality flags reach the watch cut only when the issues span more than
 `QUALITY_ISSUE_DAY_SHARE_THRESHOLD` (default 0.30) of the scoring window — more
 than 2 distinct days out of 7, or more than 9 out of 30. The affected-day count

@@ -19,21 +19,42 @@
     "min_colony_days_observed": 7.0,
     "max_colony_days_observed": 7.0,
     "weight_event_count": 1,
-    "colonies_with_weight_events": 1
+    "colonies_with_weight_events": 1,
+    "max_reporting_gap_days": 1.0,
+    "not_reporting_colony_count": 2,
+    "not_reporting_colonies": [
+      {
+        "colony_id": "DR_WLKS:L",
+        "hive_id": "DR_WLKS",
+        "colony_side": "L",
+        "region_id": "geo_region_01",
+        "last_reading_at": "2026-08-01T06:00:00-04:00",
+        "gap_days": 16.21
+      },
+      {
+        "colony_id": "DR_WLKS:R",
+        "hive_id": "DR_WLKS",
+        "colony_side": "R",
+        "region_id": "geo_region_01",
+        "last_reading_at": "2026-08-01T06:00:00-04:00",
+        "gap_days": 16.21
+      }
+    ]
   },
   "regions": [
     {
       "region_id": "geo_region_01",
       "site_ids": [
         "6LR",
+        "DR_WLKS",
         "PRT_1",
         "WTG_HSCHL"
       ],
-      "site_count": 3,
-      "colony_count": 6,
+      "site_count": 4,
+      "colony_count": 8,
       "normal_count": 3,
       "watch_count": 1,
-      "underperforming_count": 2,
+      "underperforming_count": 4,
       "performing_well_colonies": [
         {
           "colony_id": "6LR:R",
@@ -64,6 +85,20 @@
           "colony_side": "R",
           "score": 27.2,
           "status": "underperforming"
+        },
+        {
+          "colony_id": "DR_WLKS:L",
+          "hive_id": "DR_WLKS",
+          "colony_side": "L",
+          "score": 0.0,
+          "status": "underperforming"
+        },
+        {
+          "colony_id": "DR_WLKS:R",
+          "hive_id": "DR_WLKS",
+          "colony_side": "R",
+          "score": 0.0,
+          "status": "underperforming"
         }
       ],
       "watch_colonies": [
@@ -75,7 +110,7 @@
           "status": "watch"
         }
       ],
-      "summary": "In region geo_region_01, the strongest colonies are 6LR:R, WTG_HSCHL:L. The main underperformers are PRT_1:L, WTG_HSCHL:R."
+      "summary": "In region geo_region_01, the strongest colonies are 6LR:R, WTG_HSCHL:L. The main underperformers are PRT_1:L, WTG_HSCHL:R, DR_WLKS:L, DR_WLKS:R."
     }
   ],
   "colonies": [
@@ -177,7 +212,8 @@
         "weight percent trend is 1.4 standard deviations worse than peers.",
         "favorable-weather weight percent trend is 1.7 standard deviations worse than peers."
       ],
-      "weight_events": []
+      "weight_events": [],
+      "reporting_gap_days": null
     },
     {
       "colony_id": "WTG_HSCHL:R",
@@ -299,7 +335,8 @@
           "after_kg": 25.321,
           "corroborated": false
         }
-      ]
+      ],
+      "reporting_gap_days": null
     },
     {
       "colony_id": "PRT_1:R",
@@ -394,7 +431,8 @@
         "data_quality_issue_days": 0
       },
       "flags": [],
-      "weight_events": []
+      "weight_events": [],
+      "reporting_gap_days": null
     },
     {
       "colony_id": "WTG_HSCHL:L",
@@ -489,7 +527,8 @@
         "data_quality_issue_days": 0
       },
       "flags": [],
-      "weight_events": []
+      "weight_events": [],
+      "reporting_gap_days": null
     },
     {
       "colony_id": "6LR:L",
@@ -600,7 +639,8 @@
         "poor-weather weight loss is 1.0 standard deviations worse than peers.",
         "Low confidence: poor-weather weight loss compared against only 2 eligible peers (z-score bounded at \u00b11.0)."
       ],
-      "weight_events": []
+      "weight_events": [],
+      "reporting_gap_days": null
     },
     {
       "colony_id": "6LR:R",
@@ -710,7 +750,98 @@
       "flags": [
         "Low confidence: poor-weather weight loss compared against only 2 eligible peers (z-score bounded at \u00b11.0)."
       ],
-      "weight_events": []
+      "weight_events": [],
+      "reporting_gap_days": null
+    },
+    {
+      "colony_id": "DR_WLKS:L",
+      "region_id": "geo_region_01",
+      "hive_id": "DR_WLKS",
+      "colony_side": "L",
+      "score": 0.0,
+      "status": "underperforming",
+      "comparisons": [],
+      "feature": {
+        "colony_id": "DR_WLKS:L",
+        "region_id": "geo_region_01",
+        "hive_id": "DR_WLKS",
+        "colony_side": "L",
+        "sample_count": 0,
+        "excluded_reading_count": 0,
+        "data_quality_flags": [],
+        "start_at": "2026-08-01 06:00:00-04:00",
+        "end_at": "2026-08-01 06:00:00-04:00",
+        "days_observed": 0.0,
+        "latest_weight_kg": 0.0,
+        "weight_delta_kg": 0.0,
+        "weight_pct_change": 0.0,
+        "weight_slope_kg_per_day": 0.0,
+        "weight_slope_pct_per_day": 0.0,
+        "favorable_weather_window_count": 0,
+        "poor_weather_window_count": 0,
+        "favorable_weather_weight_slope_pct_per_day": 0.0,
+        "poor_weather_weight_loss_pct": 0.0,
+        "avg_weather_temp_f": null,
+        "avg_weather_humidity_pct": null,
+        "rainy_weather_reading_pct": null,
+        "cloudy_weather_reading_pct": null,
+        "dominant_weather_overview": null,
+        "weight_event_count": 0,
+        "weight_event_descriptions": [],
+        "weight_events": [],
+        "segment_count": 1,
+        "data_quality_issue_days": 0
+      },
+      "flags": [
+        "Not reporting: no sensor readings for 16.2 days (last reading 2026-08-01T06:00:00-04:00)."
+      ],
+      "weight_events": [],
+      "reporting_gap_days": 16.21
+    },
+    {
+      "colony_id": "DR_WLKS:R",
+      "region_id": "geo_region_01",
+      "hive_id": "DR_WLKS",
+      "colony_side": "R",
+      "score": 0.0,
+      "status": "underperforming",
+      "comparisons": [],
+      "feature": {
+        "colony_id": "DR_WLKS:R",
+        "region_id": "geo_region_01",
+        "hive_id": "DR_WLKS",
+        "colony_side": "R",
+        "sample_count": 0,
+        "excluded_reading_count": 0,
+        "data_quality_flags": [],
+        "start_at": "2026-08-01 06:00:00-04:00",
+        "end_at": "2026-08-01 06:00:00-04:00",
+        "days_observed": 0.0,
+        "latest_weight_kg": 0.0,
+        "weight_delta_kg": 0.0,
+        "weight_pct_change": 0.0,
+        "weight_slope_kg_per_day": 0.0,
+        "weight_slope_pct_per_day": 0.0,
+        "favorable_weather_window_count": 0,
+        "poor_weather_window_count": 0,
+        "favorable_weather_weight_slope_pct_per_day": 0.0,
+        "poor_weather_weight_loss_pct": 0.0,
+        "avg_weather_temp_f": null,
+        "avg_weather_humidity_pct": null,
+        "rainy_weather_reading_pct": null,
+        "cloudy_weather_reading_pct": null,
+        "dominant_weather_overview": null,
+        "weight_event_count": 0,
+        "weight_event_descriptions": [],
+        "weight_events": [],
+        "segment_count": 1,
+        "data_quality_issue_days": 0
+      },
+      "flags": [
+        "Not reporting: no sensor readings for 16.2 days (last reading 2026-08-01T06:00:00-04:00)."
+      ],
+      "weight_events": [],
+      "reporting_gap_days": 16.21
     }
   ]
 }

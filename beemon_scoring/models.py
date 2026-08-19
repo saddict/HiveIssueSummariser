@@ -117,6 +117,12 @@ class ColonyScore:
     feature: ColonyFeatures
     flags: list[str] = field(default_factory=list)
     weight_events: list[dict] = field(default_factory=list)
+    # Days between this colony's last reading and the newest reading anywhere in
+    # the cache, set only when that gap exceeds MAX_REPORTING_GAP_DAYS. None means
+    # the colony is reporting normally. A colony with no readings in the scoring
+    # window at all still gets a ColonyScore (score 0, sample_count 0) so a silent
+    # hive cannot vanish from the report. See scoring._apply_reporting_gaps.
+    reporting_gap_days: float | None = None
 
 
 @dataclass

@@ -20,6 +20,26 @@
     "max_colony_days_observed": 7.0,
     "weight_event_count": 1,
     "colonies_with_weight_events": 1,
+    "max_reporting_gap_days": 1.0,
+    "not_reporting_colony_count": 2,
+    "not_reporting_colonies": [
+      {
+        "colony_id": "DR_WLKS:L",
+        "hive_id": "DR_WLKS",
+        "colony_side": "L",
+        "region_id": "geo_region_01",
+        "last_reading_at": "2026-08-01T06:00:00-04:00",
+        "gap_days": 16.21
+      },
+      {
+        "colony_id": "DR_WLKS:R",
+        "hive_id": "DR_WLKS",
+        "colony_side": "R",
+        "region_id": "geo_region_01",
+        "last_reading_at": "2026-08-01T06:00:00-04:00",
+        "gap_days": 16.21
+      }
+    ],
     "sister_site_count": 3
   },
   "sites": [

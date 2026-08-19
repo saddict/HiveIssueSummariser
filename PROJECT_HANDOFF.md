@@ -1012,3 +1012,65 @@ Four added in `tests/test_scoring_logic.py`: isolated issues stay `normal` while
 the flags still print, widespread issues reach `watch`, the share scales with the
 window (2/7 no, 3/7 yes, 9/30 no, 10/30 yes), and `issue_dates` counts distinct
 days across all three flag wordings. Suite: 51 tests, all passing.
+
+---
+
+## 26. Not-Reporting Colonies Surfaced with the Underperformers (2026-08-19)
+
+### Why
+A colony with no readings in the scoring window was simply absent from the
+report: `build_features` only produces features for colonies that have readings,
+so DR_WLKS:L and DR_WLKS:R (silent since 2026-08-01) disappeared from the 7-day
+run entirely. An absent colony is indistinguishable from one that was healthy and
+unremarkable — the worst possible failure mode for a triage tool.
+
+### What changed
+- `MAX_REPORTING_GAP_DAYS = 1.0` in `hive_config.py`, loaded as
+  `max_reporting_gap_days`.
+- `scoring._reporting_gaps()` — walks the **full** history (not the window) and
+  returns every configured colony (`hives` × `COLONY_SIDES`) whose last reading
+  trails the newest reading anywhere in the cache by more than the threshold.
+  Colonies with no readings at all are included with `last_reading_at: None`.
+  The reference is the newest cached reading, never the system clock, per the
+  repo-wide timestamp invariant.
+- `scoring._apply_reporting_gaps()` — annotates scored-but-stale colonies in
+  place (flag + `reporting_gap_days` + forced `underperforming`) and
+  materialises a placeholder `ColonyScore` via `_not_reporting_score()` for
+  colonies absent from the window: score 0.0, `comparisons: []`,
+  `sample_count: 0`, status `underperforming`.
+- `ColonyScore.reporting_gap_days: float | None` (new) — set only when flagged.
+- `"Not reporting:"` flags are excluded from `performance_flags` in `_status()`,
+  so they never contribute to the ≥ 3-flag underperforming cut (the status is
+  set directly instead).
+- `sister_comparison.build_sister_comparisons()` skips `sample_count == 0`
+  colonies — comparing against a zero-filled placeholder would read as a 100%
+  deficit for the silent side. The site falls back to the existing `incomplete`
+  verdict.
+- `reporting.build_text_report()` prints a `NOT REPORTING: <colony> (N days
+  silent)` line in the header block and renders placeholder colonies as
+  "not reporting (no sensor readings in this window)" instead of a fabricated
+  0.0/100 score line.
+- `build_scores` metadata: `colony_count` and the coverage min/max now count
+  **reporting** colonies only; new keys `max_reporting_gap_days`,
+  `not_reporting_colony_count`, `not_reporting_colonies`.
+
+### Design note
+Placeholders never enter the peer pool: `_score_features` runs before
+`_apply_reporting_gaps`, and the feature builder never saw the silent colony in
+the first place. `sample_count == 0` is the marker any new consumer should use to
+exclude them. The score of 0.0 means "unscored", not "perfect" — the status and
+flag carry the meaning, and no peer-relative number is fabricated.
+
+### Effect on current data
+7-day window: DR_WLKS:L and DR_WLKS:R now appear as underperforming with
+"no sensor readings for 16.2 days (last reading 2026-08-01T06:00:00-04:00)";
+6 colonies still compared. 30-day window: DR_WLKS has 13.79 days of real data, is
+scored normally, and is additionally flagged and forced to underperforming.
+Sister comparisons unchanged (3 sites).
+
+### Tests
+Four added in `tests/test_scoring_logic.py`: gap detection respects the 1-day
+allowance and reports never-seen colonies, a scored colony that falls behind is
+flagged and forced underperforming while its peers are untouched, a silent colony
+gets a score entry that reaches the region summary's underperforming list, and
+sister comparison excludes placeholders. Suite: 55 tests, all passing.
