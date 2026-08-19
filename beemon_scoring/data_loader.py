@@ -28,6 +28,9 @@ def load_hive_config(config_path: Path) -> tuple[dict[str, HiveConfig], tuple[st
         "rolling_window_days": float(getattr(module, "ROLLING_WINDOW_DAYS", 7)),
         "zscore_badness_threshold": float(getattr(module, "ZSCORE_BADNESS_THRESHOLD", 1.0)),
         "weight_drop_pct_threshold": float(getattr(module, "WEIGHT_DROP_PCT_THRESHOLD", 5.0)),
+        "quality_issue_day_share_threshold": float(
+            getattr(module, "QUALITY_ISSUE_DAY_SHARE_THRESHOLD", 0.30)
+        ),
         "min_region_site_count": int(getattr(module, "MIN_REGION_SITE_COUNT", 2)),
     }
 

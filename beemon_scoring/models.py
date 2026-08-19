@@ -79,6 +79,10 @@ class ColonyFeatures:
     weight_event_descriptions: list[str] = field(default_factory=list)
     weight_events: list[dict] = field(default_factory=list)
     segment_count: int = 1
+    # Distinct calendar days on which any data-quality issue was recorded. A
+    # fault that spans a large share of the window is a colony-level problem;
+    # an isolated bad reading is not. See scoring._quality_issue_days_material.
+    data_quality_issue_days: int = 0
 
 
 @dataclass

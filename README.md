@@ -375,6 +375,13 @@ watch           = one or more weaker signals
 underperforming = stronger or multiple concerning signals
 ```
 
+Data-quality problems are reported for every colony but only push one to `watch`
+when they persist: the affected days must exceed
+`QUALITY_ISSUE_DAY_SHARE_THRESHOLD` (default 30%) of the scoring window — more
+than 2 days out of 7. A single bad reading is normal sensor behaviour; a fault
+spanning a third of the window means the hardware needs attention and the
+colony's metrics rest on thinner data than its peers'.
+
 ## Outputs
 
 Regional text report:

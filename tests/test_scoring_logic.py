@@ -9,7 +9,8 @@ from beemon_scoring.features import daily_weight_pct_changes
 from beemon_scoring.metrics import Metric
 from beemon_scoring.models import ColonyFeatures, ColonyScore, MetricComparison, SensorReading
 from beemon_scoring.reporting import build_region_summaries
-from beemon_scoring.scoring import _eligible_metric_peers, _score_features
+from beemon_scoring.quality import issue_dates
+from beemon_scoring.scoring import _eligible_metric_peers, _quality_issue_days_material, _score_features
 from beemon_scoring.sister_comparison import build_sister_comparisons
 
 
@@ -39,6 +40,9 @@ def feature(
     region_id: str = "region_a",
     latest_weight_kg: float = 10.0,
     weight_pct_change: float = 0.0,
+    excluded_reading_count: int = 0,
+    data_quality_flags: list[str] | None = None,
+    data_quality_issue_days: int = 0,
 ) -> ColonyFeatures:
     return ColonyFeatures(
         colony_id=colony_id,
@@ -46,8 +50,9 @@ def feature(
         hive_id=colony_id.split(":")[0],
         colony_side=colony_id.split(":")[1],
         sample_count=10,
-        excluded_reading_count=0,
-        data_quality_flags=[],
+        excluded_reading_count=excluded_reading_count,
+        data_quality_flags=data_quality_flags or [],
+        data_quality_issue_days=data_quality_issue_days,
         start_at=datetime(2026, 6, 11, tzinfo=TZ),
         end_at=datetime(2026, 6, 18, tzinfo=TZ),
         days_observed=7.0,
@@ -261,6 +266,80 @@ class ScoringLogicTests(unittest.TestCase):
 
         self.assertAlmostEqual(north_weight.peer_mean, 15.0)
         self.assertAlmostEqual(south_weight.peer_mean, 105.0)
+
+    def test_isolated_quality_issues_do_not_put_a_colony_on_watch(self) -> None:
+        settings = {
+            "zscore_badness_threshold": 1.0,
+            "weight_drop_pct_threshold": 5.0,
+            "rolling_window_days": 7.0,
+            "quality_issue_day_share_threshold": 0.30,
+        }
+        features = [
+            feature(
+                "A:L",
+                favorable_windows=1,
+                poor_windows=1,
+                excluded_reading_count=4,
+                data_quality_issue_days=2,
+                data_quality_flags=["Excluded reading at 2026-06-12T04:00:00-04:00 because weight 0.10 kg."],
+            ),
+            feature("B:L", favorable_windows=1, poor_windows=1),
+            feature("C:L", favorable_windows=1, poor_windows=1),
+        ]
+
+        scores = _score_features(features, settings)
+        flagged = next(score for score in scores if score.colony_id == "A:L")
+
+        self.assertEqual(flagged.status, "normal")
+        # Still reported -- the gate governs status only, not visibility.
+        self.assertTrue(any(flag.startswith("Excluded ") for flag in flagged.flags))
+
+    def test_widespread_quality_issues_put_a_colony_on_watch(self) -> None:
+        settings = {
+            "zscore_badness_threshold": 1.0,
+            "weight_drop_pct_threshold": 5.0,
+            "rolling_window_days": 7.0,
+            "quality_issue_day_share_threshold": 0.30,
+        }
+        features = [
+            feature(
+                "A:L",
+                favorable_windows=1,
+                poor_windows=1,
+                excluded_reading_count=4,
+                data_quality_issue_days=3,
+                data_quality_flags=["Excluded reading at 2026-06-12T04:00:00-04:00 because weight 0.10 kg."],
+            ),
+            feature("B:L", favorable_windows=1, poor_windows=1),
+            feature("C:L", favorable_windows=1, poor_windows=1),
+        ]
+
+        scores = _score_features(features, settings)
+        flagged = next(score for score in scores if score.colony_id == "A:L")
+
+        self.assertEqual(flagged.status, "watch")
+
+    def test_quality_issue_day_share_scales_with_the_window(self) -> None:
+        self.assertFalse(_quality_issue_days_material(2, 7.0, 0.30))
+        self.assertTrue(_quality_issue_days_material(3, 7.0, 0.30))
+        # A 30-day window tolerates proportionally more: 0.30 * 30 = 9 days.
+        self.assertFalse(_quality_issue_days_material(9, 30.0, 0.30))
+        self.assertTrue(_quality_issue_days_material(10, 30.0, 0.30))
+        self.assertFalse(_quality_issue_days_material(5, 0.0, 0.30))
+
+    def test_quality_issue_dates_counts_distinct_days_across_flag_kinds(self) -> None:
+        flags = [
+            "Excluded reading at 2026-06-12T04:00:00-04:00 because weight 0.10 kg is outside 0.45-136.08 kg.",
+            "Excluded reading at 2026-06-12T05:00:00-04:00 because weight 0.10 kg is outside 0.45-136.08 kg.",
+            "External sensor anomaly at 2026-06-13T09:00:00-04:00: external humidity 140.0% is outside 0-100%.",
+            "Possible missed event: sustained level shift of 4.20 kg near 2026-06-15T11:00:00-04:00 "
+            "accepted after 3 consistent readings.",
+        ]
+
+        self.assertEqual(
+            issue_dates(flags),
+            {date(2026, 6, 12), date(2026, 6, 13), date(2026, 6, 15)},
+        )
 
     def test_region_summaries_surface_strong_and_weak_colonies(self) -> None:
         summaries = build_region_summaries([

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import re
 from collections import defaultdict
-from datetime import timedelta
+from datetime import date, timedelta
 
 from .events import WeightEvent, detect_weight_events
 from .models import SensorReading
@@ -155,6 +156,22 @@ def filter_quality_issues(
         "excluded_sensor_reading_count": excluded_count,
         "data_quality_issue_count": issue_count,
     }
+
+
+_FLAG_DATE_PATTERN = re.compile(r"(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}")
+
+
+def issue_dates(flags: list[str]) -> set[date]:
+    """Calendar dates touched by the quality flags emitted above. Every flag
+    embeds the ISO timestamp of the reading it describes, so how long a fault
+    lasted can be recovered without changing the flag payload the reports print.
+    Used by scoring to separate a one-off glitch from a persistent sensor fault.
+    """
+    dates: set[date] = set()
+    for flag in flags:
+        for match in _FLAG_DATE_PATTERN.finditer(flag):
+            dates.add(date.fromisoformat(match.group(1)))
+    return dates
 
 
 def _impossible_reading_reasons(reading: SensorReading) -> list[str]:

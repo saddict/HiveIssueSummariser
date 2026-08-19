@@ -6,6 +6,7 @@ from datetime import date
 
 from .events import WeightEvent, WeightSegment, detect_site_events, segment_readings
 from .models import ColonyFeatures, SensorReading, WeatherReading
+from .quality import issue_dates
 from .weather import RAINY_WEATHER_CODES
 
 
@@ -54,6 +55,9 @@ def build_features(
                 sample_count=len(readings),
                 excluded_reading_count=_excluded_count(quality_by_colony.get(colony_id, [])),
                 data_quality_flags=quality_by_colony.get(colony_id, [])[:8],
+                # Counted over the untruncated flag list -- data_quality_flags is
+                # capped at 8 for reporting, which would understate a long fault.
+                data_quality_issue_days=len(issue_dates(quality_by_colony.get(colony_id, []))),
                 start_at=first.observed_at,
                 end_at=last.observed_at,
                 days_observed=elapsed_days,

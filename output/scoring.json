@@ -168,7 +168,8 @@
         "weight_event_count": 0,
         "weight_event_descriptions": [],
         "weight_events": [],
-        "segment_count": 1
+        "segment_count": 1,
+        "data_quality_issue_days": 0
       },
       "flags": [
         "Weight dropped 10.8% during the window.",
@@ -279,7 +280,8 @@
             "corroborated": false
           }
         ],
-        "segment_count": 2
+        "segment_count": 2,
+        "data_quality_issue_days": 0
       },
       "flags": [
         "Likely harvest: weight dropped 1.1 kg (-4.1%) around 2026-08-11T17:00:00-04:00.",
@@ -388,7 +390,8 @@
         "weight_event_count": 0,
         "weight_event_descriptions": [],
         "weight_events": [],
-        "segment_count": 1
+        "segment_count": 1,
+        "data_quality_issue_days": 0
       },
       "flags": [],
       "weight_events": []
@@ -482,7 +485,8 @@
         "weight_event_count": 0,
         "weight_event_descriptions": [],
         "weight_events": [],
-        "segment_count": 1
+        "segment_count": 1,
+        "data_quality_issue_days": 0
       },
       "flags": [],
       "weight_events": []
@@ -589,7 +593,8 @@
         "weight_event_count": 0,
         "weight_event_descriptions": [],
         "weight_events": [],
-        "segment_count": 1
+        "segment_count": 1,
+        "data_quality_issue_days": 0
       },
       "flags": [
         "poor-weather weight loss is 1.0 standard deviations worse than peers.",
@@ -699,7 +704,8 @@
         "weight_event_count": 0,
         "weight_event_descriptions": [],
         "weight_events": [],
-        "segment_count": 1
+        "segment_count": 1,
+        "data_quality_issue_days": 0
       },
       "flags": [
         "Low confidence: poor-weather weight loss compared against only 2 eligible peers (z-score bounded at \u00b11.0)."

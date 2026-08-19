@@ -41,6 +41,9 @@ def prepare_features(
         raise RuntimeError("No sensor readings found.")
 
     window_days = int(window_days or settings["rolling_window_days"])
+    # Report back the window actually used, not the configured default: scoring
+    # measures data-quality coverage against it.
+    settings = {**settings, "rolling_window_days": float(window_days)}
     end_at = max(reading.observed_at for reading in sensor_readings)
     start_at = end_at - timedelta(days=window_days)
 
@@ -139,6 +142,10 @@ def _score_region_features(
     scores: list[ColonyScore] = []
     threshold = settings["zscore_badness_threshold"]
     drop_threshold = settings["weight_drop_pct_threshold"]
+    # Defaults mirror data_loader.load_hive_config so callers that hand-build a
+    # settings dict (spikes, tests) keep working.
+    window_days = float(settings.get("rolling_window_days", 7.0))
+    quality_day_share = float(settings.get("quality_issue_day_share_threshold", 0.30))
 
     for feature in features:
         comparisons: list[MetricComparison] = []
@@ -183,7 +190,13 @@ def _score_region_features(
 
         score = round(min(100.0, (raw_score / max(total_weight, 0.001)) * BADNESS_Z_SCORE_SCALE), 1)
         flags = _flags(feature, comparisons, threshold, drop_threshold)
-        status = _status(score, flags)
+        status = _status(
+            score,
+            flags,
+            quality_flags_material=_quality_issue_days_material(
+                feature.data_quality_issue_days, window_days, quality_day_share
+            ),
+        )
         scores.append(
             ColonyScore(
                 colony_id=feature.colony_id,
@@ -258,7 +271,22 @@ def _flags(
     return flags
 
 
-def _status(score: float, flags: list[str]) -> str:
+def _quality_issue_days_material(issue_days: int, window_days: float, day_share: float) -> bool:
+    """Whether a colony's data-quality problems are widespread enough to matter.
+
+    Every deployment produces occasional bad readings; one glitch says nothing
+    about the colony and should not put it on the inspection list. A fault that
+    recurs across more than ``day_share`` of the scoring window is a different
+    thing -- the sensor (or the hive) needs attention, and the colony's metrics
+    are built on thinner data than its peers'. The default 30% share means more
+    than 2 affected days in a 7-day window.
+    """
+    if window_days <= 0:
+        return False
+    return issue_days > day_share * window_days
+
+
+def _status(score: float, flags: list[str], quality_flags_material: bool = True) -> str:
     quality_flags = [flag for flag in flags if flag.startswith("Data quality:") or flag.startswith("Excluded ")]
     event_flags = [flag for flag in flags if flag.startswith("Likely ")]
     # A small peer pool is a property of the region, not a colony problem, so
@@ -269,9 +297,13 @@ def _status(score: float, flags: list[str]) -> str:
         for flag in flags
         if flag not in quality_flags and flag not in event_flags and flag not in confidence_flags
     ]
+    # Quality flags are always reported, but only drive the watch cut when the
+    # underlying issues span a meaningful share of the window; they are never a
+    # performance flag either way.
+    watch_quality_flags = quality_flags if quality_flags_material else []
     if score >= 55 or len(performance_flags) >= 3:
         return "underperforming"
-    if score >= 30 or performance_flags or quality_flags:
+    if score >= 30 or performance_flags or watch_quality_flags:
         return "watch"
     return "normal"
 

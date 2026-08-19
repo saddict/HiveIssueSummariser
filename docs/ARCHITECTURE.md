@@ -117,11 +117,21 @@ One metric family deserves a note:
 ### Status assignment
 
 `_status()` maps score + flags to `underperforming` (score ≥ 55 or ≥ 3
-performance flags), `watch` (score ≥ 30, or any performance/quality flag), or
-`normal`. Only *performance* flags drive the cuts — event flags ("Likely
-harvest…"), data-quality flags, and low-confidence flags are informational, so
-a colony is never marked underperforming just because its beekeeper harvested
-it or its sensor glitched.
+performance flags), `watch` (score ≥ 30, any performance flag, or a *persistent*
+data-quality problem), or `normal`. Only *performance* flags drive the
+underperforming cut — event flags ("Likely harvest…"), data-quality flags, and
+low-confidence flags are informational, so a colony is never marked
+underperforming just because its beekeeper harvested it or its sensor glitched.
+
+Data-quality flags reach the watch cut only when the issues span more than
+`QUALITY_ISSUE_DAY_SHARE_THRESHOLD` (default 0.30) of the scoring window — more
+than 2 distinct days out of 7, or more than 9 out of 30. The affected-day count
+comes from `ColonyFeatures.data_quality_issue_days`, which `features.py` derives
+via `quality.issue_dates()` over the colony's *untruncated* flag list. Isolated
+bad readings occur in every deployment and say nothing about the colony; a fault
+recurring across a large share of the window means the sensor needs attention
+and the colony's metrics rest on thinner data than its peers'. The flags are
+still printed in both cases — the gate governs status, not visibility.
 
 ### Sister comparison (`sister_comparison.py`)
 

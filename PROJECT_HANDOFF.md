@@ -966,3 +966,49 @@ scope was reduced to the weight signals validated against ground truth (§21).
   flags" underperforming path is harder to hit; score thresholds unchanged.
 - Sister-comparison impact sums shrink (fewer metrics), so more sites may read
   "similar" under the unchanged `_sister_status` gaps.
+
+---
+
+## 25. Data-Quality Flags Gated by Duration for the Watch Cut (2026-08-19)
+
+### Why
+`_status()` previously sent a colony to `watch` on *any* data-quality flag, so a
+single excluded reading — an isolated dropout, one out-of-range value — was
+enough to put a healthy colony on the inspection list. Every deployment produces
+occasional bad readings; what actually matters is whether the fault persists,
+because a recurring fault means the hardware needs attention *and* the colony's
+metrics rest on fewer readings than its peers'.
+
+### What changed
+- `quality.issue_dates(flags)` (new) recovers the calendar dates a colony's
+  quality flags refer to by parsing the ISO timestamp each flag already embeds.
+  No change to the flag payload the reports print, and no signature change to
+  `filter_quality_issues`.
+- `ColonyFeatures.data_quality_issue_days` (new, default 0) — distinct affected
+  days, counted by `features.py` over the **untruncated** flag list
+  (`data_quality_flags` is capped at 8 for reporting and would understate a long
+  fault).
+- `scoring._quality_issue_days_material(issue_days, window_days, day_share)`
+  (new) — `issue_days > day_share * window_days`. `_status()` takes a
+  `quality_flags_material: bool = True` parameter; when False the quality flags
+  are excluded from the watch cut (they are still *not* performance flags, so
+  they never reach the underperforming cut either).
+- `QUALITY_ISSUE_DAY_SHARE_THRESHOLD = 0.30` in `hive_config.py`, loaded by
+  `data_loader` as `quality_issue_day_share_threshold`. 30% of a 7-day window
+  means more than 2 affected days.
+- `prepare_features` now returns `settings` with `rolling_window_days` set to the
+  window actually used, so a `--days` override feeds the day-share denominator
+  instead of the configured default.
+
+### Effect on current data
+No change in the 7-day window (no colony currently has quality issues there).
+Over a 90-day window the gate demotes PRT_1:R (9 affected days, 3 excluded
+readings out of ~2000) and DR_WLKS:R (1 day) from `watch` to `normal`;
+underperforming colonies are unaffected. Flags remain visible in every report —
+the gate governs status only.
+
+### Tests
+Four added in `tests/test_scoring_logic.py`: isolated issues stay `normal` while
+the flags still print, widespread issues reach `watch`, the share scales with the
+window (2/7 no, 3/7 yes, 9/30 no, 10/30 yes), and `issue_dates` counts distinct
+days across all three flag wordings. Suite: 51 tests, all passing.

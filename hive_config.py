@@ -50,3 +50,9 @@ REGION_RADIUS_MILES = 10
 # this are merged into their nearest neighboring region so peer comparisons
 # never degrade to "a colony compared only against its own L/R sister."
 MIN_REGION_SITE_COUNT = 2
+
+# Share of the scoring window that data-quality issues must span before they put
+# a colony on watch. Isolated bad readings happen everywhere and say nothing
+# about the colony; a fault recurring across more than this share of the window
+# does. At 0.30 a 7-day window needs issues on more than 2 distinct days.
+QUALITY_ISSUE_DAY_SHARE_THRESHOLD = 0.30
