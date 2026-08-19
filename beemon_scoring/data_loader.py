@@ -9,10 +9,25 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from .models import HiveConfig, SensorReading, WeatherReading
+from .thresholds import THRESHOLDS_PATH, integer, number, text
 
 
-DEFAULT_TIMEZONE = "America/New_York"
-EARTH_RADIUS_MILES = 3958.7613
+DEFAULT_TIMEZONE = text("data.default_timezone")
+EARTH_RADIUS_MILES = number("regions.earth_radius_miles")
+
+# Tunables that used to live in hive_config.py. They moved to thresholds.toml so
+# every threshold sits in one file; hive_config.py is now the site inventory
+# only. Leaving a stale copy behind would silently do nothing, so loading fails
+# loudly if one is still defined.
+_MOVED_SETTINGS = {
+    "REGION_RADIUS_MILES": "regions.region_radius_miles",
+    "MIN_REGION_SITE_COUNT": "regions.min_region_site_count",
+    "ROLLING_WINDOW_DAYS": "window.rolling_window_days",
+    "ZSCORE_BADNESS_THRESHOLD": "status.zscore_badness_threshold",
+    "WEIGHT_DROP_PCT_THRESHOLD": "status.weight_drop_pct_threshold",
+    "QUALITY_ISSUE_DAY_SHARE_THRESHOLD": "status.quality_issue_day_share_threshold",
+    "MAX_REPORTING_GAP_DAYS": "status.max_reporting_gap_days",
+}
 
 
 def load_hive_config(config_path: Path) -> tuple[dict[str, HiveConfig], tuple[str, ...], dict[str, float]]:
@@ -23,16 +38,15 @@ def load_hive_config(config_path: Path) -> tuple[dict[str, HiveConfig], tuple[st
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
+    _reject_moved_settings(module)
     settings = {
-        "region_radius_miles": float(getattr(module, "REGION_RADIUS_MILES", 10)),
-        "rolling_window_days": float(getattr(module, "ROLLING_WINDOW_DAYS", 7)),
-        "zscore_badness_threshold": float(getattr(module, "ZSCORE_BADNESS_THRESHOLD", 1.0)),
-        "weight_drop_pct_threshold": float(getattr(module, "WEIGHT_DROP_PCT_THRESHOLD", 5.0)),
-        "quality_issue_day_share_threshold": float(
-            getattr(module, "QUALITY_ISSUE_DAY_SHARE_THRESHOLD", 0.30)
-        ),
-        "max_reporting_gap_days": float(getattr(module, "MAX_REPORTING_GAP_DAYS", 1.0)),
-        "min_region_site_count": int(getattr(module, "MIN_REGION_SITE_COUNT", 2)),
+        "region_radius_miles": number("regions.region_radius_miles"),
+        "rolling_window_days": number("window.rolling_window_days"),
+        "zscore_badness_threshold": number("status.zscore_badness_threshold"),
+        "weight_drop_pct_threshold": number("status.weight_drop_pct_threshold"),
+        "quality_issue_day_share_threshold": number("status.quality_issue_day_share_threshold"),
+        "max_reporting_gap_days": number("status.max_reporting_gap_days"),
+        "min_region_site_count": integer("regions.min_region_site_count"),
     }
 
     hive_rows = {hive_id: values for hive_id, values in module.HIVES.items()}
@@ -54,6 +68,18 @@ def load_hive_config(config_path: Path) -> tuple[dict[str, HiveConfig], tuple[st
         for hive_id, values in hive_rows.items()
     }
     return hives, tuple(getattr(module, "COLONY_SIDES", ("L", "R"))), settings
+
+
+def _reject_moved_settings(module) -> None:
+    stale = [name for name in _MOVED_SETTINGS if hasattr(module, name)]
+    if not stale:
+        return
+    moved = "; ".join(f"{name} -> {_MOVED_SETTINGS[name]}" for name in sorted(stale))
+    raise RuntimeError(
+        f"hive_config.py still defines settings that moved to {THRESHOLDS_PATH} "
+        f"and would now be ignored: {moved}. Remove them from hive_config.py "
+        f"(it holds the site inventory only) and set the values there instead."
+    )
 
 
 def load_sensor_readings(

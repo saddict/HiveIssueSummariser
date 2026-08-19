@@ -6,8 +6,9 @@ that is easiest to get wrong — how the system tells a *real hive event* apart
 from *anomalous sensor data*, given that both look like sudden jumps in the
 same signal.
 
-All constants referenced below live in the code (`beemon_scoring/`), and the
-empirical grounding for thresholds is documented in `docs/METHODS.md`.
+Every tunable constant referenced below lives in `thresholds.toml` at the repo
+root (see §1, Configuration); the empirical grounding for each is documented in
+`docs/METHODS.md`.
 
 ---
 
@@ -25,7 +26,9 @@ local_data/dynamodb/*.csv  local_data/openmeteo/*.csv
       │                        │
       └────────┬───────────────┘
                ▼
-     data_loader.py   ── hive_config.py (sites, coords, settings)
+     data_loader.py   ── hive_config.py  (site inventory: which hives, where)
+               │       └── thresholds.toml (every tunable value, via
+               │           │                beemon_scoring/thresholds.py)
                │           └─ coordinate-radius region assignment
                ▼
      scoring.prepare_features()
@@ -53,12 +56,34 @@ the library modules — which is what makes the validation harness
 (`validate_events.py` against `ground_truth/events.json`) and the sensitivity
 spikes cheap to run.
 
+### Configuration (`thresholds.toml`, `beemon_scoring/thresholds.py`)
+
+Every tunable number — window size, status cuts, event floors, quality bounds
+and jump limits, weather cutoffs, region radius, metric weights — lives in
+`thresholds.toml` at the repo root, grouped into sections with the grounding of
+each value in a comment beside it. Modules still expose their familiar constants
+(`events.ADDITION_FLOOR_KG`, `quality.MAX_WEIGHT_JUMP_KG`, …) but read them from
+that file at import; **no module defines a fallback default**, so a missing key
+raises instead of silently substituting a number nobody wrote down. That is the
+property worth protecting: one file to change, one file for a reviewer to audit,
+and no second copy of a threshold to drift out of sync.
+
+`hive_config.py` is now purely the site inventory. The settings that used to live
+there moved, and `data_loader._reject_moved_settings()` raises if one is left
+behind rather than letting an edit there quietly do nothing.
+
+Two override hatches, both read at import: `BEEMON_THRESHOLDS=/path/to.toml`
+swaps the whole file (a sweep, or a second deployment), and `BEEMON_<DOTTED_KEY>`
+overrides a single value (`BEEMON_STATUS_WATCH_SCORE=25`), coerced to the type
+used in the file. They are for experiments — anything worth keeping belongs in
+the file, under version control.
+
 ### Region assignment (`data_loader.py`)
 
 Sites are grouped into peer regions by geography, not by hand: two sites join
-the same region when their coordinates are within `REGION_RADIUS_MILES`
-(default 10), regions are the connected components of that graph, and any
-region with fewer than `MIN_REGION_SITE_COUNT` sites is merged into its nearest
+the same region when their coordinates are within `region_radius_miles`
+(`thresholds.toml`, default 10), regions are the connected components of that graph, and any
+region with fewer than `min_region_site_count` sites is merged into its nearest
 neighbour. The floor exists because scoring is peer-relative: a single-site
 region (n = 2 colonies) makes z-scores degenerate (§2). With the current four
 Watauga County sites this yields one region, `geo_region_01`.
@@ -124,7 +149,7 @@ low-confidence flags are informational, so a colony is never marked
 underperforming just because its beekeeper harvested it or its sensor glitched.
 
 Ahead of both cuts, `_apply_reporting_gaps()` forces `underperforming` on any
-colony whose last reading is more than `MAX_REPORTING_GAP_DAYS` (default 1) older
+colony whose last reading is more than `status.max_reporting_gap_days` (default 1) older
 than the newest reading in the cache. Two cases are handled: a colony with
 readings in the window but a stale tail is annotated in place, while a colony
 with no readings in the window at all is *materialised* by
@@ -140,7 +165,7 @@ staleness is measured against the newest cached reading rather than the system
 clock (a repo-wide invariant), an apiary-wide outage is invisible to this check.
 
 Data-quality flags reach the watch cut only when the issues span more than
-`QUALITY_ISSUE_DAY_SHARE_THRESHOLD` (default 0.30) of the scoring window — more
+`status.quality_issue_day_share_threshold` (default 0.30) of the scoring window — more
 than 2 distinct days out of 7, or more than 9 out of 30. The affected-day count
 comes from `ColonyFeatures.data_quality_issue_days`, which `features.py` derives
 via `quality.issue_dates()` over the colony's *untruncated* flag list. Isolated

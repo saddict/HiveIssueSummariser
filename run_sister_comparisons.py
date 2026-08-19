@@ -13,7 +13,7 @@ from beemon_scoring.sister_comparison import (
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Compare left/right sister colonies at each BeeMon site.")
-    parser.add_argument("--window-days", type=int, default=None, help="Rolling window size. Defaults to hive_config.py.")
+    parser.add_argument("--window-days", type=int, default=None, help="Rolling window size. Defaults to thresholds.toml.")
     parser.add_argument("--format", choices=("text", "json"), default="text", help="Output format.")
     parser.add_argument("--output", type=Path, default=None, help="Optional output file.")
     parser.add_argument(

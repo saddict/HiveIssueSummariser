@@ -5,16 +5,20 @@ from collections import defaultdict
 from datetime import date
 
 from .models import WeatherReading
+from .thresholds import number
 
+# WMO weather codes that mean precipitation. A code list is a vocabulary, not a
+# tunable, so it stays in code; the day-classification cutoffs below live in
+# thresholds.toml ([weather]).
 RAINY_WEATHER_CODES = {51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 71, 73, 75, 77, 80, 81, 82, 85, 86, 95, 96, 99}
 
-POOR_WEATHER_LOW_TEMP_F = 50.0
-POOR_WEATHER_HIGH_TEMP_F = 95.0
-POOR_WEATHER_CLOUDINESS_PCT = 85.0
-FAVORABLE_WEATHER_LOW_TEMP_F = 55.0
-FAVORABLE_WEATHER_HIGH_TEMP_F = 90.0
-FAVORABLE_WEATHER_CLOUDINESS_PCT = 75.0
-FAVORABLE_WEATHER_HUMIDITY_PCT = 90.0
+POOR_WEATHER_LOW_TEMP_F = number("weather.poor_low_temp_f")
+POOR_WEATHER_HIGH_TEMP_F = number("weather.poor_high_temp_f")
+POOR_WEATHER_CLOUDINESS_PCT = number("weather.poor_cloudiness_pct")
+FAVORABLE_WEATHER_LOW_TEMP_F = number("weather.favorable_low_temp_f")
+FAVORABLE_WEATHER_HIGH_TEMP_F = number("weather.favorable_high_temp_f")
+FAVORABLE_WEATHER_CLOUDINESS_PCT = number("weather.favorable_cloudiness_pct")
+FAVORABLE_WEATHER_HUMIDITY_PCT = number("weather.favorable_humidity_pct")
 
 
 def weather_by_hive(

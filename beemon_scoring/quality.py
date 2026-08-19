@@ -6,43 +6,26 @@ from datetime import date, timedelta
 
 from .events import WeightEvent, detect_weight_events
 from .models import SensorReading
+from .thresholds import integer, number
 
-MIN_WEIGHT_KG = 0.45
-MAX_WEIGHT_KG = 136.08
-MIN_INTERNAL_TEMP_F = 32.0
-MAX_INTERNAL_TEMP_F = 120.0
-MIN_EXTERNAL_TEMP_F = -40.0
-MAX_EXTERNAL_TEMP_F = 130.0
-MIN_HUMIDITY_PCT = 0.0
-MAX_HUMIDITY_PCT = 100.0
-# Sudden-jump thresholds: a short-interval move larger than these is treated as a
-# sensor artifact and the reading is excluded. Grounded against the real
-# inter-reading movement distribution via spike_quality_thresholds.py (2026-07-27,
-# full raw history, 11,400 normal pairs with event-adjacent pairs excluded).
-# Decision rule: keep a value if it sits >= p99.9 of normal movement so it clips
-# only genuine outliers; genuine harvests/supering are exempt anyway (detected
-# first). All four thresholds clear that bar with margin, so none were nudged:
-#   weight kg  3.63 -> 99.96th pct (p99.9 = 1.23 kg, max normal 5.99 kg)
-#   weight %   12.0 -> 99.98th pct (p99.9 = 4.05 %)   [applied jointly with kg]
-#   temp F     25.0 -> 99.95th pct (p99.9 = 11.3 F)
-#   humidity   45.0 -> 99.99th pct (p99.9 = 18.4 pp)
-MAX_WEIGHT_JUMP_PCT = 12.0
-MAX_WEIGHT_JUMP_KG = 3.63
-MAX_TEMP_JUMP_F = 25.0
-MAX_HUMIDITY_JUMP_PCT = 45.0
-MAX_JUMP_INTERVAL_HOURS = 6.0
-
-# A management visit disturbs the sensors (temperature, humidity, sometimes
-# weight) for a while, not just for the single reading at the event's exact
-# timestamp. Readings within this window AFTER a confirmed event are exempt
-# from the jump checks (all three types); impossible-range checks still apply.
-EVENT_SETTLE_WINDOW_HOURS = 3.0
-
-# If this many consecutive readings are each excluded as a "jump" versus the
-# stale previous_kept anchor, but are mutually consistent with one another
-# (each one a small step from the last), treat them as a real sustained level
-# shift the detector missed rather than sensor noise, and re-admit the run.
-CONSISTENT_RUN_TO_ACCEPT = 3
+# Values and their grounding live in thresholds.toml ([quality.bounds],
+# [quality.jumps]); the names below are kept so callers and tests can import
+# them as before.
+MIN_WEIGHT_KG = number("quality.bounds.min_weight_kg")
+MAX_WEIGHT_KG = number("quality.bounds.max_weight_kg")
+MIN_INTERNAL_TEMP_F = number("quality.bounds.min_internal_temp_f")
+MAX_INTERNAL_TEMP_F = number("quality.bounds.max_internal_temp_f")
+MIN_EXTERNAL_TEMP_F = number("quality.bounds.min_external_temp_f")
+MAX_EXTERNAL_TEMP_F = number("quality.bounds.max_external_temp_f")
+MIN_HUMIDITY_PCT = number("quality.bounds.min_humidity_pct")
+MAX_HUMIDITY_PCT = number("quality.bounds.max_humidity_pct")
+MAX_WEIGHT_JUMP_PCT = number("quality.jumps.max_weight_jump_pct")
+MAX_WEIGHT_JUMP_KG = number("quality.jumps.max_weight_jump_kg")
+MAX_TEMP_JUMP_F = number("quality.jumps.max_temp_jump_f")
+MAX_HUMIDITY_JUMP_PCT = number("quality.jumps.max_humidity_jump_pct")
+MAX_JUMP_INTERVAL_HOURS = number("quality.jumps.max_jump_interval_hours")
+EVENT_SETTLE_WINDOW_HOURS = number("quality.jumps.event_settle_window_hours")
+CONSISTENT_RUN_TO_ACCEPT = integer("quality.jumps.consistent_run_to_accept")
 
 
 def filter_quality_issues(

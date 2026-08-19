@@ -6,13 +6,18 @@ from dataclasses import asdict
 
 from .metrics import BADNESS_Z_SCORE_SCALE, METRICS
 from .models import ColonyScore, SisterMetricComparison, SisterSiteComparison
+from .thresholds import number
 
 
 SAME_SIDE_LABELS = {"L": "left", "R": "right"}
 # "Weaker overall" (weaker_side/status) reflects current standing; a separate
 # "trend concern" can flag the *other* side if it has a significant negative
 # weight movement worth watching even though it currently scores better.
-SIGNIFICANT_WEIGHT_TREND_IMPACT = 4.0
+SIGNIFICANT_WEIGHT_TREND_IMPACT = number("sister.significant_weight_trend_impact")
+# Verdict cuts on the L-vs-R impact gap; see thresholds.toml [sister].
+SIMILAR_GAP = number("sister.similar_gap")
+NOTABLE_GAP = number("sister.notable_gap")
+NOTABLE_SCORE = number("sister.notable_score")
 WEIGHT_TREND_METRICS = {
     "weight_pct_change",
     "weight_slope_pct_per_day",
@@ -162,10 +167,10 @@ def _mean_positive_std(left_std: float, right_std: float) -> float:
 
 def _sister_status(left_score: float, right_score: float) -> tuple[str | None, str]:
     gap = abs(left_score - right_score)
-    if gap < 5:
+    if gap < SIMILAR_GAP:
         return None, "similar"
     weaker_side = "L" if left_score > right_score else "R"
-    if max(left_score, right_score) >= 25 or gap >= 15:
+    if max(left_score, right_score) >= NOTABLE_SCORE or gap >= NOTABLE_GAP:
         return weaker_side, f"{SAME_SIDE_LABELS[weaker_side]} colony notably weaker"
     return weaker_side, f"{SAME_SIDE_LABELS[weaker_side]} colony mildly weaker"
 

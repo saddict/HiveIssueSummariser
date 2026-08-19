@@ -5,13 +5,20 @@ import subprocess
 import sys
 from pathlib import Path
 
+from beemon_scoring.thresholds import integer
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Refresh BeeMon data caches and run colony scoring.")
-    parser.add_argument("--days", type=int, default=7, help="Number of recent days to fetch and score.")
+    parser.add_argument(
+        "--days",
+        type=int,
+        default=integer("data.refresh_days"),
+        help="Number of recent days to fetch and score. Defaults to thresholds.toml.",
+    )
     parser.add_argument("--skip-fetch", action="store_true", help="Only score cached local data; do not call live services.")
     parser.add_argument("--json-output", type=Path, default=Path("output/scoring.json"), help="Regional JSON output path.")
     parser.add_argument(

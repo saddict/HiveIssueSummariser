@@ -7,7 +7,10 @@ from datetime import date
 from .events import WeightEvent, WeightSegment, detect_site_events, segment_readings
 from .models import ColonyFeatures, SensorReading, WeatherReading
 from .quality import issue_dates
+from .thresholds import number
 from .weather import RAINY_WEATHER_CODES
+
+CLOUDY_READING_PCT = number("weather.cloudy_reading_pct")
 
 
 def build_features(
@@ -82,7 +85,8 @@ def build_features(
                 if weather
                 else None,
                 cloudy_weather_reading_pct=_share_pct(
-                    reading.cloudiness_pct is not None and reading.cloudiness_pct >= 70 for reading in weather
+                    reading.cloudiness_pct is not None and reading.cloudiness_pct >= CLOUDY_READING_PCT
+                    for reading in weather
                 )
                 if weather
                 else None,

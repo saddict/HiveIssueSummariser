@@ -39,42 +39,51 @@ from dataclasses import dataclass, replace
 from datetime import datetime
 
 from .models import SensorReading
+from .thresholds import number
+
+# All values come from thresholds.toml ([events]); the notes below explain what
+# each one is for, the file records how it was grounded.
 
 # Physical hard floors. A step is only an event when it clears these, so
 # ordinary foraging returns and sensor drift are excluded by magnitude alone.
 # Additions: foraging returns rarely exceed 2-3 kg in a single hour even on a
 # strong flow day, while a real super or feeder adds 3 kg or more.
-ADDITION_FLOOR_KG = 3.0
+ADDITION_FLOOR_KG = number("events.addition_floor_kg")
 # Harvests: sensor drift and minor calibration shifts are typically < 1-2 %;
 # real harvests remove at least 3-4 % of colony weight (6LR:R lost 4.0 % in the
 # 2026-07-07 harvest, the smallest confirmed harvest in the dataset). The kg
 # guard stops a small colony's ordinary noise from clearing the percentage.
-HARVEST_FLOOR_PCT = 3.0
-HARVEST_FLOOR_KG = 1.0
+HARVEST_FLOOR_PCT = number("events.harvest_floor_pct")
+HARVEST_FLOOR_KG = number("events.harvest_floor_kg")
 
 # How quickly the shift has to happen. A harvest or a swarm departure moves the
 # scale within an hour or two; seasonal nectar flow does not. Anything slower
 # than this stays inside a single segment and is scored as an ordinary trend.
-MAX_EVENT_INTERVAL_HOURS = 8.0
+MAX_EVENT_INTERVAL_HOURS = number("events.max_event_interval_hours")
 
 # Sister corroboration window. Two floor-clearing events on the two colonies of
 # one site within this many hours are treated as one apiary visit and both are
 # tagged ``corroborated`` (direction-agnostic: joint management or equalisation).
-CORROBORATION_WINDOW_HOURS = 8.0
+CORROBORATION_WINDOW_HOURS = number("events.corroboration_window_hours")
 
 # After a candidate step we look a short way ahead and require the new level to
 # persist. This rejects one-off spikes and dropouts (a single 0.0 reading, a
 # transient overload) that revert immediately, while accepting a true baseline
 # change that holds.
-CONFIRMATION_WINDOW_HOURS = 12.0
+CONFIRMATION_WINDOW_HOURS = number("events.confirmation_window_hours")
 # Fraction of the original step that must still be present at the end of the
 # confirmation window for the shift to be treated as a real, persistent event.
-CONFIRMATION_RETENTION = 0.5
+CONFIRMATION_RETENTION = number("events.confirmation_retention")
 
 # Segments shorter than this are not scored on their own -- there is not enough
 # post-event data yet to fit a meaningful trend, so the short tail is folded
 # into the neighbouring segment for trend purposes (the event is still flagged).
-MIN_SEGMENT_HOURS = 12.0
+MIN_SEGMENT_HOURS = number("events.min_segment_hours")
+
+# A drop with a brood-nest climate disturbance this large reads as a swarm
+# rather than a harvest. Probabilistic -- sensors cannot confirm the cause.
+SWARM_TEMP_SWING_F = number("events.swarm.temp_swing_f")
+SWARM_HUMIDITY_SWING_PCT = number("events.swarm.humidity_swing_pct")
 
 
 @dataclass(frozen=True)
@@ -344,7 +353,7 @@ def _classify(previous: SensorReading, current: SensorReading, delta_kg: float) 
 
     temp_swing = abs(current.internal_temp_f - previous.internal_temp_f)
     humidity_swing = abs(current.internal_humidity_pct - previous.internal_humidity_pct)
-    if temp_swing >= 5.0 or humidity_swing >= 10.0:
+    if temp_swing >= SWARM_TEMP_SWING_F or humidity_swing >= SWARM_HUMIDITY_SWING_PCT:
         return "swarm"
     return "harvest"
 

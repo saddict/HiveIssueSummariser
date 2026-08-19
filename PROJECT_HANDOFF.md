@@ -1074,3 +1074,66 @@ allowance and reports never-seen colonies, a scored colony that falls behind is
 flagged and forced underperforming while its peers are untouched, a silent colony
 gets a score entry that reaches the region summary's underperforming list, and
 sister comparison excludes placeholders. Suite: 55 tests, all passing.
+
+---
+
+## 27. Central Threshold Configuration: `thresholds.toml` (2026-08-19)
+
+### Why
+Tunable values were spread across seven modules plus `hive_config.py`: event
+floors in `events.py`, bounds and jump limits in `quality.py`, weather cutoffs in
+`weather.py`, metric weights in `metrics.py`, status cuts as bare literals inside
+`scoring._status()`, sister verdict gaps as literals inside `_sister_status()`.
+Changing behaviour meant knowing which module owned which number, and a reviewer
+auditing the tuning had to read all of them. For a paper whose defensibility
+rests on "every threshold is grounded", the numbers needed one address.
+
+### What changed
+- **`thresholds.toml`** (new, repo root) — every tunable value, in sections:
+  `[window] [status] [scoring] [metric_weights] [regions] [data]
+  [quality.bounds] [quality.jumps] [events] [events.swarm] [weather] [sister]`.
+  Each carries its grounding in a comment (spike script or handoff section).
+- **`beemon_scoring/thresholds.py`** (new) — `tomllib` loader with
+  `value/number/integer/text/section`. No fallback defaults anywhere: a missing
+  key raises with the file path and the key name. `BEEMON_THRESHOLDS` swaps the
+  whole file; `BEEMON_<DOTTED_KEY>` overrides one value, coerced to the type used
+  in the file. Both are read at import.
+- Modules keep their public constant names (`ADDITION_FLOOR_KG`,
+  `MAX_WEIGHT_JUMP_KG`, `BADNESS_Z_SCORE_SCALE`, …) and now source them from the
+  file, so every existing import and test keeps working.
+- Literals promoted to named, configurable constants: `scoring.UNDERPERFORMING_SCORE`
+  (55), `WATCH_SCORE` (30), `UNDERPERFORMING_FLAG_COUNT` (3), `MIN_PEER_COUNT`
+  (2); `events.SWARM_TEMP_SWING_F` (5.0), `SWARM_HUMIDITY_SWING_PCT` (10.0);
+  `sister_comparison.SIMILAR_GAP` (5), `NOTABLE_GAP` (15), `NOTABLE_SCORE` (25);
+  `features.CLOUDY_READING_PCT` (70).
+- `metrics.py` reads only the *weights* from the file — the catalog (which
+  features are scored, direction, labels) stays in code. Loading fails if a
+  catalog metric has no weight, or if the file has a weight for a metric that no
+  longer exists (the silent way a "tuned" weight ends up doing nothing).
+- `hive_config.py` is now the site inventory only.
+  `data_loader._reject_moved_settings()` raises if any moved name is still
+  defined there, so an edit that would no longer take effect fails loudly.
+- CLI defaults follow: `refresh_and_score.py --days` reads `data.refresh_days`;
+  `--window-days` help text points at `thresholds.toml`.
+
+### Verification that nothing changed
+Constant values were snapshotted before the refactor and compared after: every
+pre-existing constant is identical, and the only additions are the newly named
+constants above, each equal to the literal it replaced. `output/scoring.json`,
+`output/sister_comparisons.json`, and `output/event_validation.json` regenerate
+**byte-identical**. `spike_weight_sensitivity.py` and `spike_quality_thresholds.py`
+reproduce their previous numbers.
+
+### Tests
+`tests/test_thresholds.py` (new, 14 tests): the default file is the repo one, a
+missing key raises rather than defaulting, `section()` covers exactly the metric
+catalog and sums to 1.0, every module constant equals the key it claims to read,
+env-name derivation and type coercion, single-value and whole-file overrides
+(each in a fresh interpreter), a missing file's error message, and that a setting
+left in `hive_config.py` is rejected. Suite: 69 tests, all passing.
+
+### Adding a threshold later
+Put the value in the right section of `thresholds.toml` with a comment saying how
+it was chosen, read it in the module via `number("section.key")`, and assert the
+wiring in `test_every_module_constant_matches_the_file`. Do not add a default in
+code — that reintroduces exactly the drift this section removed.

@@ -13,7 +13,14 @@ from .features import build_features, stddev
 from .metrics import BADNESS_Z_SCORE_SCALE, METRICS, Metric
 from .models import ColonyFeatures, ColonyScore, HiveConfig, MetricComparison, SensorReading
 from .quality import filter_quality_issues
+from .thresholds import integer, number
 from .weather import weather_by_hive, weather_day_types
+
+# Status cuts and the peer-pool floor; see thresholds.toml [status], [scoring].
+UNDERPERFORMING_SCORE = number("status.underperforming_score")
+WATCH_SCORE = number("status.watch_score")
+UNDERPERFORMING_FLAG_COUNT = integer("status.underperforming_flag_count")
+MIN_PEER_COUNT = integer("scoring.min_peer_count")
 
 
 def prepare_features(
@@ -304,7 +311,7 @@ def _score_region_features(
 
         for metric in metrics:
             eligible_peers = _eligible_metric_peers(features, metric)
-            if feature not in eligible_peers or len(eligible_peers) < 2:
+            if feature not in eligible_peers or len(eligible_peers) < MIN_PEER_COUNT:
                 continue
             values = [float(getattr(peer, metric.name)) for peer in eligible_peers]
             peer_mean = statistics.fmean(values)
@@ -457,9 +464,9 @@ def _status(score: float, flags: list[str], quality_flags_material: bool = True)
     # underlying issues span a meaningful share of the window; they are never a
     # performance flag either way.
     watch_quality_flags = quality_flags if quality_flags_material else []
-    if score >= 55 or len(performance_flags) >= 3:
+    if score >= UNDERPERFORMING_SCORE or len(performance_flags) >= UNDERPERFORMING_FLAG_COUNT:
         return "underperforming"
-    if score >= 30 or performance_flags or watch_quality_flags:
+    if score >= WATCH_SCORE or performance_flags or watch_quality_flags:
         return "watch"
     return "normal"
 

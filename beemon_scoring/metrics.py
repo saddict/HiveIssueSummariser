@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .thresholds import number, section
+
 
 @dataclass(frozen=True)
 class Metric:
@@ -19,44 +21,57 @@ class Metric:
 # and std are computed over the region's own colonies, including the colony
 # being scored, so by Samuelson's inequality any single metric's z-score is
 # bounded by sqrt(n-1) for a region of n colonies -- 2.86 needs a region of
-# at least 10 colonies. MIN_REGION_SITE_COUNT (hive_config.py) keeps regions
+# at least 10 colonies. min_region_site_count (thresholds.toml) keeps regions
 # from shrinking to a single site (n=2), where that bound collapses to
 # exactly 1.0 and z-scores stop carrying any real magnitude information.
-BADNESS_Z_SCORE_SCALE = 35.0
+BADNESS_Z_SCORE_SCALE = number("scoring.badness_z_score_scale")
 
-# The per-metric weights below are expert-elicited, not learned. Their
-# robustness is validated in spike_weight_sensitivity.py: colony status
-# assignments are invariant to +-20% weight perturbation and within-region
-# rankings shift by at most 1-2 adjacent positions (Kendall tau >= 0.93), so the
-# ordering is not fragile to the exact values. Weights are relative (the score
-# divides by their sum), so scaling all of them equally is a no-op.
+# The catalog below is the system's *structure* -- which features are scored,
+# which direction is bad, how they are labelled -- and stays in code. Only the
+# weights are tunable, so they come from thresholds.toml ([metric_weights]).
+# They are expert-elicited, not learned; robustness is validated in
+# spike_weight_sensitivity.py (statuses invariant to +-20% perturbation,
+# Kendall tau >= 0.93). Weights are relative -- the score divides by their sum,
+# so scaling all of them equally is a no-op.
+_WEIGHTS = section("metric_weights")
+
+
+def _weight(name: str) -> float:
+    if name not in _WEIGHTS:
+        raise RuntimeError(
+            f"No weight for metric '{name}' in thresholds.toml [metric_weights]. "
+            f"Every metric in the catalog needs one."
+        )
+    return float(_WEIGHTS[name])
+
+
 METRICS = [
     Metric(
         name="latest_weight_kg",
         label="current colony weight",
         direction="higher_is_better",
-        weight=0.45,
+        weight=_weight("latest_weight_kg"),
         unit="kg",
     ),
     Metric(
         name="weight_pct_change",
         label="weight percent change",
         direction="higher_is_better",
-        weight=0.26,
+        weight=_weight("weight_pct_change"),
         unit="%",
     ),
     Metric(
         name="weight_slope_pct_per_day",
         label="weight percent trend",
         direction="higher_is_better",
-        weight=0.14,
+        weight=_weight("weight_slope_pct_per_day"),
         unit="%/day",
     ),
     Metric(
         name="favorable_weather_weight_slope_pct_per_day",
         label="favorable-weather weight percent trend",
         direction="higher_is_better",
-        weight=0.09,
+        weight=_weight("favorable_weather_weight_slope_pct_per_day"),
         unit="%/day",
         min_sample_attr="favorable_weather_window_count",
         min_sample_count=1,
@@ -65,9 +80,18 @@ METRICS = [
         name="poor_weather_weight_loss_pct",
         label="poor-weather weight loss",
         direction="lower_is_better",
-        weight=0.06,
+        weight=_weight("poor_weather_weight_loss_pct"),
         unit="%",
         min_sample_attr="poor_weather_window_count",
         min_sample_count=1,
     ),
 ]
+
+_UNUSED_WEIGHTS = sorted(set(_WEIGHTS) - {metric.name for metric in METRICS})
+if _UNUSED_WEIGHTS:
+    # A weight for a metric that no longer exists is silently ignored otherwise,
+    # which is exactly how a "tuned" weight ends up having no effect.
+    raise RuntimeError(
+        f"thresholds.toml [metric_weights] has entries for metrics that are not "
+        f"in the catalog: {', '.join(_UNUSED_WEIGHTS)}."
+    )

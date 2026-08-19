@@ -1,0 +1,183 @@
+# BeeMon scoring thresholds
+# =========================
+# Every tunable number in the system lives here. Code reads these values through
+# beemon_scoring/thresholds.py; no module defines its own default, so this file
+# is the single place to change behaviour and the single place a reviewer has to
+# audit. `hive_config.py` is now only the site inventory (which hives exist and
+# where they are) -- nothing tunable belongs there.
+#
+# Each value is either *empirical* (derived from this deployment's data by the
+# named spike script) or a *design decision* (recorded in PROJECT_HANDOFF.md).
+# Keep that note when you change a value, and update docs/METHODS.md if the
+# grounding changes -- it is what makes the numbers defensible in the paper.
+#
+# Overrides, without editing this file:
+#   BEEMON_THRESHOLDS=/path/to/other.toml   use a different file entirely
+#   BEEMON_STATUS_WATCH_SCORE=25            override one value (BEEMON_ + the
+#                                           dotted key, uppercased, dots -> _)
+# Environment overrides are read when the package is imported, so set them
+# before running a script. They are meant for experiments; anything you want to
+# keep belongs in this file, where it is version-controlled and reviewable.
+
+
+[window]
+# Default rolling window for scoring, in days. CLI --window-days overrides it.
+rolling_window_days = 7
+
+
+[status]
+# Cuts applied by scoring._status(). Grounded in PROJECT_HANDOFF.md; robustness
+# of the score itself is shown by spike_weight_sensitivity.py.
+underperforming_score = 55.0
+watch_score = 30.0
+# Number of separate performance flags that means "underperforming" regardless
+# of score. Note the ceiling is the metric count (5), so this is deliberately
+# harder to reach than it was under the old 9-metric catalog (§24).
+underperforming_flag_count = 3
+# A metric this many standard deviations worse than peers raises a flag.
+zscore_badness_threshold = 1.0
+# Window weight loss (percent) that raises a flag on its own.
+weight_drop_pct_threshold = 5.0
+# Share of the window that data-quality issues must span before they can push a
+# colony to watch -- 0.30 of 7 days means more than 2 affected days (§25).
+quality_issue_day_share_threshold = 0.30
+# A colony silent for longer than this (days, measured against the newest
+# reading in the cache, never the system clock) is flagged "Not reporting" and
+# listed with the underperformers (§26).
+max_reporting_gap_days = 1.0
+
+
+[scoring]
+# Multiplier turning the weighted mean badness z-score into the 0-100 score.
+# 35.0 puts a colony ~1.6 SD worse than peers on every metric at the
+# underperforming cut. Self-inclusion bounds any single z at sqrt(n-1)
+# (Samuelson), which is why min_peer_count exists -- see metrics.py.
+badness_z_score_scale = 35.0
+# A metric is skipped entirely for a colony when fewer than this many peers are
+# eligible for it: below 2 there is no spread to compare against.
+min_peer_count = 2
+
+
+[metric_weights]
+# Expert-elicited, not learned. Relative -- the score divides by their sum, so
+# scaling all of them equally is a no-op. Robustness validated by
+# spike_weight_sensitivity.py: statuses invariant to +-20% perturbation.
+# Every metric in metrics.METRICS must appear here or loading fails.
+latest_weight_kg = 0.45
+weight_pct_change = 0.26
+weight_slope_pct_per_day = 0.14
+favorable_weather_weight_slope_pct_per_day = 0.09
+poor_weather_weight_loss_pct = 0.06
+
+
+[regions]
+# Sites within this many miles form one peer region (connected components).
+region_radius_miles = 10
+# Regions with fewer sites than this are merged into their nearest neighbour, so
+# a colony is never compared only against its own L/R sister.
+min_region_site_count = 2
+earth_radius_miles = 3958.7613
+
+
+[data]
+# All timestamps are interpreted in this zone. The system clock is never read.
+default_timezone = "America/New_York"
+# Default span for refresh_and_score.py --days (fetch *and* score window).
+refresh_days = 7
+
+
+[quality.bounds]
+# Physically impossible readings: justified as impossible, not statistical.
+min_weight_kg = 0.45
+max_weight_kg = 136.08
+min_internal_temp_f = 32.0
+max_internal_temp_f = 120.0
+min_external_temp_f = -40.0
+max_external_temp_f = 130.0
+min_humidity_pct = 0.0
+max_humidity_pct = 100.0
+
+
+[quality.jumps]
+# Sudden-jump thresholds: a short-interval move larger than these is treated as
+# a sensor artifact and the reading is excluded. Every one sits at or above
+# p99.9 of real inter-reading movement, measured over the full raw history with
+# event-adjacent pairs excluded (spike_quality_thresholds.py, §22):
+#   weight kg  3.63 -> 99.96th pct (p99.9 = 1.23 kg, max normal 5.99 kg)
+#   weight %   12.0 -> 99.98th pct (p99.9 = 4.05 %)   [applied jointly with kg]
+#   temp F     25.0 -> 99.95th pct (p99.9 = 11.3 F)
+#   humidity   45.0 -> 99.99th pct (p99.9 = 18.4 pp)
+max_weight_jump_pct = 12.0
+max_weight_jump_kg = 3.63
+max_temp_jump_f = 25.0
+max_humidity_jump_pct = 45.0
+# Jump checks only apply to readings this close together.
+max_jump_interval_hours = 6.0
+# A management visit disturbs the sensors for a while, not just at the event
+# timestamp. Readings this soon after a confirmed event are exempt from the jump
+# checks (impossible-range checks still apply).
+event_settle_window_hours = 3.0
+# This many consecutive "jump" readings that are mutually consistent are
+# re-admitted as a real level shift the detector missed.
+consistent_run_to_accept = 3
+
+
+[events]
+# Hard physical floors for weight-event detection (§23). Chosen above the
+# observed foraging-burst maximum (2.7 kg at WTG_HSCHL) so ordinary movement is
+# excluded by magnitude alone. Validated against ground_truth/events.json by
+# validate_events.py at precision/recall/F1 = 1.000.
+# A gain of at least this much is an addition (a super or feeder is an object of
+# known mass).
+addition_floor_kg = 3.0
+# A drop must clear BOTH of these to be a harvest/swarm. The smallest confirmed
+# harvest in the dataset is -4.0%.
+harvest_floor_pct = 3.0
+harvest_floor_kg = 1.0
+# Two readings further apart than this are never treated as one step.
+max_event_interval_hours = 8.0
+# Sister corroboration window. Direction-agnostic: joint harvest, joint
+# supering, and equalisation all count. Confidence only -- never detection.
+corroboration_window_hours = 8.0
+# A step must retain at least `confirmation_retention` of its magnitude this
+# many hours later to be confirmed, which is what separates a real level shift
+# from a transient spike.
+confirmation_window_hours = 12.0
+confirmation_retention = 0.5
+# Segments shorter than this are merged into their neighbour.
+min_segment_hours = 12.0
+
+
+[events.swarm]
+# A drop accompanied by a brood-nest climate disturbance this large is
+# classified "swarm" rather than "harvest". Probabilistic: sensors cannot
+# confirm the cause.
+temp_swing_f = 5.0
+humidity_swing_pct = 10.0
+
+
+[weather]
+# Whole-day favorable / poor / neutral classification from ~3 Open-Meteo samples
+# per day. Coarse by design -- no nectar-flow or forage model.
+poor_low_temp_f = 50.0
+poor_high_temp_f = 95.0
+poor_cloudiness_pct = 85.0
+favorable_low_temp_f = 55.0
+favorable_high_temp_f = 90.0
+favorable_cloudiness_pct = 75.0
+favorable_humidity_pct = 90.0
+# Cloud cover at or above this counts a reading as cloudy in the reported
+# weather context (features.cloudy_weather_reading_pct).
+cloudy_reading_pct = 70.0
+
+
+[sister]
+# L-vs-R comparison verdicts. These gaps are impact sums, so they scale with the
+# metric count -- they were calibrated against the 9-metric catalog and are
+# looser in effect since the move to 5 weight metrics (§24).
+similar_gap = 5.0
+notable_gap = 15.0
+notable_score = 25.0
+# A sister whose weight-trend impact reaches this is called out as a trend
+# concern even when it is the stronger side overall.
+significant_weight_trend_impact = 4.0

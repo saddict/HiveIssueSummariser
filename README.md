@@ -113,6 +113,32 @@ python3 list_events.py
 python3 list_events.py --site 6LR
 ```
 
+## Configuration
+
+Every tunable value in the system lives in one file, `thresholds.toml` at the repo root: window size, status cuts, event-detection floors, data-quality bounds and jump limits, weather cutoffs, region radius, and the metric weights. Each section carries a comment recording where the value came from — the spike script that grounded it empirically, or the handoff section that records the design decision.
+
+```toml
+[status]
+underperforming_score = 55.0
+watch_score = 30.0
+max_reporting_gap_days = 1.0
+
+[events]
+addition_floor_kg = 3.0
+harvest_floor_pct = 3.0
+```
+
+Modules read these at import through `beemon_scoring/thresholds.py` and still expose the familiar constant names (`events.ADDITION_FLOOR_KG`, `quality.MAX_WEIGHT_JUMP_KG`). No module keeps a fallback default, so a missing key raises a clear error rather than quietly substituting a number that appears nowhere in the file. `hive_config.py` is now only the site inventory — which hives exist and where they are; loading fails loudly if a setting is left behind there, since editing it would otherwise have no effect.
+
+To try a value without editing the file:
+
+```bash
+BEEMON_STATUS_WATCH_SCORE=25 python3 run_scoring.py      # one value
+BEEMON_THRESHOLDS=experiments/loose.toml python3 run_scoring.py   # a whole file
+```
+
+Both are read at import, so set them before the command. They exist for experiments; anything worth keeping belongs in `thresholds.toml`, where it is version-controlled and reviewable.
+
 ## Local Data Cache
 
 Scoring uses local CSV files by default. This is intentional so tests and normal scoring runs do not call DynamoDB or Open-Meteo every time.
@@ -270,7 +296,7 @@ Weather fields include outside temperature, pressure, cloud cover, humidity, WMO
 
 ## How Scoring Works
 
-The scorer compares colonies, not sites. Regions are assigned automatically from site coordinates in two steps. First, sites within `REGION_RADIUS_MILES` of each other are connected into components, one component per region. Second, any region with fewer than `MIN_REGION_SITE_COUNT` sites is merged into its nearest neighboring region by distance, even if that distance exceeds `REGION_RADIUS_MILES`, repeating until every region meets that floor or only one region remains. This second step exists because comparing a colony's metrics against too few peers produces statistically meaningless results: with only one other peer, a z-score is always exactly +-1 standard deviation regardless of how big or small the real gap is, since it carries no information beyond which side is higher (see `BADNESS_Z_SCORE_SCALE` in `beemon_scoring/metrics.py` for the math). A site's own L/R colonies are excluded from counting toward this floor, since comparing a colony only against its own sister is already the dedicated job of the [sister-colony report](#sister-colony-comparison) below.
+The scorer compares colonies, not sites. Regions are assigned automatically from site coordinates in two steps. First, sites within `region_radius_miles` (`thresholds.toml`) of each other are connected into components, one component per region. Second, any region with fewer than `min_region_site_count` sites is merged into its nearest neighboring region by distance, even if that distance exceeds the radius, repeating until every region meets that floor or only one region remains. This second step exists because comparing a colony's metrics against too few peers produces statistically meaningless results: with only one other peer, a z-score is always exactly +-1 standard deviation regardless of how big or small the real gap is, since it carries no information beyond which side is higher (see `BADNESS_Z_SCORE_SCALE` in `beemon_scoring/metrics.py` for the math). A site's own L/R colonies are excluded from counting toward this floor, since comparing a colony only against its own sister is already the dedicated job of the [sister-colony report](#sister-colony-comparison) below.
 
 With the current `10` mile radius and a `2`-site floor, `DR_WLKS` sits alone past the radius (its nearest neighbor, `6LR`, is about 12.6 miles away) but is still merged into the `6LR, PRT_1, WTG_HSCHL` cluster to keep its peer comparisons meaningful, so the live grouping is one region, `geo_region_01 = 6LR, DR_WLKS, PRT_1, WTG_HSCHL`, and a complete run scores eight colonies:
 
@@ -375,7 +401,7 @@ watch           = one or more weaker signals
 underperforming = stronger or multiple concerning signals
 ```
 
-A colony whose sensor has gone quiet for more than `MAX_REPORTING_GAP_DAYS`
+A colony whose sensor has gone quiet for more than `max_reporting_gap_days`
 (default 1 day) is flagged `Not reporting` and listed with the underperforming
 colonies, including a `NOT REPORTING` line in the report header. This covers the
 case that matters most: a hive with **no** readings in the window at all used to
@@ -388,7 +414,7 @@ outage shows up as a stale window end rather than as flagged colonies.
 
 Data-quality problems are reported for every colony but only push one to `watch`
 when they persist: the affected days must exceed
-`QUALITY_ISSUE_DAY_SHARE_THRESHOLD` (default 30%) of the scoring window — more
+`quality_issue_day_share_threshold` (default 30%) of the scoring window — more
 than 2 days out of 7. A single bad reading is normal sensor behaviour; a fault
 spanning a third of the window means the hardware needs attention and the
 colony's metrics rest on thinner data than its peers'.
@@ -434,8 +460,8 @@ This MVP is intentionally explainable and conservative, but it has limits:
 
 - It does not diagnose disease, queenlessness, mite pressure, or brood status.
 - Scoring is weight-only: internal temperature and humidity are used for data-quality screening and event classification but carry no scored metrics, so purely thermoregulatory problems will not surface unless they also move weight.
-- Region assignment uses connected components of the `REGION_RADIUS_MILES` distance graph, so long chains of nearby sites can create a region whose end-to-end span is greater than 10 miles.
-- The `MIN_REGION_SITE_COUNT` merge step can pull an isolated site into a region well beyond `REGION_RADIUS_MILES` (DR_WLKS today, at ~12.6 miles from its nearest neighbor). This trades strict geographic locality for a peer-comparison group large enough that z-scores carry real magnitude information instead of always landing at exactly +-1 standard deviation.
+- Region assignment uses connected components of the `region_radius_miles` distance graph, so long chains of nearby sites can create a region whose end-to-end span is greater than 10 miles.
+- The `min_region_site_count` merge step can pull an isolated site into a region well beyond `region_radius_miles` (DR_WLKS today, at ~12.6 miles from its nearest neighbor). This trades strict geographic locality for a peer-comparison group large enough that z-scores carry real magnitude information instead of always landing at exactly +-1 standard deviation.
 - Data-quality thresholds are conservative heuristics and should be tuned with field validation.
 - Weather adjustment is still simple day-level logic, not a full nectar-flow or forage model.
 

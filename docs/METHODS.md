@@ -34,11 +34,26 @@ will expect it, and it may pre-empt a novelty challenge.
 |---|---|---|
 | Hard-floor event detection (`events.py`, `ADDITION_FLOOR_KG`, `HARVEST_FLOOR_PCT`, `HARVEST_FLOOR_KG`) | A weight step is an event when it clears a fixed physical magnitude within `MAX_EVENT_INTERVAL_HOURS` and then persists (`_shift_persists`): additions ≥ 3 kg (a super/feeder is an object of known mass), harvests ≥ 3% of colony weight and ≥ 1 kg. Physical thresholds rather than statistical outlier scores — simpler and directly defensible; the floors sit above the observed foraging-burst maximum (≈2.7 kg) so ordinary movement is excluded by magnitude. | Level-shift interpretation: Meikle & Holst (2015). Floor grounding: the WTG_HSCHL foraging non-event peaks at +2.7 kg (below the 3 kg floor); the smallest confirmed harvest is −4.0% (6LR:R, 2026-07-07). Validation: `validate_events.py` against `ground_truth/events.json` (precision/recall/F1 = 1.000). |
 | Sister corroboration *as a confidence signal* (`_tag_corroboration`, `CORROBORATION_WINDOW_HOURS`) | Apiary management actions are apiary-level: a beekeeper working one hive usually works its neighbour in the same visit. Each colony is detected **independently** with the hard floors; an event is then tagged `corroborated` when the sister also has a floor-clearing event within the window — **direction-agnostic** (joint management or equalisation: harvest one side, feed/super the other). Corroboration never lowers the detection bar and never invents an event, so it adds **zero** false positives; it labels apiary-level support and is itself validatable (corroborated vs isolated precision). | Biological prior: Meikle & Holst (2015) (apiary-scale management). Evidence in this dataset: all 6 ground-truth events are corroborated L/R pairs (incl. the PRT_1 2026-06-23 equalisation: L +11 kg / R −15 kg, same day); isolated anomalies (e.g. DR_WLKS:L −25 kg) are correctly untagged. |
-| Peer-relative z-score ranking (`scoring.py`) | Relative anomaly scoring within a geographic peer group. Self-inclusion bounds any single z at `√(n−1)` (Samuelson's inequality) — stated as an explicit limitation motivating `MIN_REGION_SITE_COUNT` and the per-metric confidence labels. | Samuelson, P.A. (1968), *How Deviant Can You Be?*, **JASA** 63:1522–1525. Degenerate-case handling: `PROJECT_HANDOFF.md` §16, §19; `tests/test_metric_confidence.py`. |
+| Peer-relative z-score ranking (`scoring.py`) | Relative anomaly scoring within a geographic peer group. Self-inclusion bounds any single z at `√(n−1)` (Samuelson's inequality) — stated as an explicit limitation motivating `min_region_site_count` and the per-metric confidence labels. | Samuelson, P.A. (1968), *How Deviant Can You Be?*, **JASA** 63:1522–1525. Degenerate-case handling: `PROJECT_HANDOFF.md` §16, §19; `tests/test_metric_confidence.py`. |
 | Weighted-sum aggregation of the 5 weight metrics (`metrics.py`) | Multi-criteria decision analysis with expert-elicited weights. Defensibility comes not from optimality but from a **sensitivity analysis** showing the output is robust to the weights. | MCDA / global sensitivity analysis: Saltelli, A. et al. (2008), *Global Sensitivity Analysis: The Primer*, Wiley *(verify)*. Evidence: `spike_weight_sensitivity.py` — status 100% invariant to ±20% weight perturbation; ranking Kendall τ ≥ 0.93 over a 60-day window. |
-| Region assignment (`data_loader.py`) | Connected components of a distance graph (`REGION_RADIUS_MILES`) with a minimum-peer-count merge to avoid degenerate small pools. | Haversine distance; project design (`PROJECT_HANDOFF.md` §13, §16). |
+| Region assignment (`data_loader.py`) | Connected components of a distance graph (`region_radius_miles`) with a minimum-peer-count merge to avoid degenerate small pools. | Haversine distance; project design (`PROJECT_HANDOFF.md` §13, §16). |
 | Data-quality jump thresholds (`quality.py`) | Each threshold justified against an observed percentile of real inter-reading movement (all ≥ p99.9), with events exempt from the filter; physical bounds justified as impossible, not statistical. | Empirical: `spike_quality_thresholds.py` (`PROJECT_HANDOFF.md` §22). |
-| Data-quality **duration** gate on status (`scoring._quality_issue_days_material`, `QUALITY_ISSUE_DAY_SHARE_THRESHOLD`) | Quality problems only move a colony to `watch` when they span more than 30% of the scoring window (> 2 days of 7). Isolated bad readings are ubiquitous and carry no colony-level information; a fault recurring over a large share of the window both signals failing hardware and thins the evidence base the colony's metrics are computed from. Reporting is unaffected — the gate applies to status only. | Design decision (2026-08-19), recorded in `PROJECT_HANDOFF.md` §25. Effect on this dataset: over a 90-day window it demotes two colonies whose issues covered ≤ 10 of 90 days from `watch` to `normal`; no 7-day-window colony is affected. |
+| Data-quality **duration** gate on status (`scoring._quality_issue_days_material`, `status.quality_issue_day_share_threshold`) | Quality problems only move a colony to `watch` when they span more than 30% of the scoring window (> 2 days of 7). Isolated bad readings are ubiquitous and carry no colony-level information; a fault recurring over a large share of the window both signals failing hardware and thins the evidence base the colony's metrics are computed from. Reporting is unaffected — the gate applies to status only. | Design decision (2026-08-19), recorded in `PROJECT_HANDOFF.md` §25. Effect on this dataset: over a 90-day window it demotes two colonies whose issues covered ≤ 10 of 90 days from `watch` to `normal`; no 7-day-window colony is affected. |
+
+
+---
+
+## 2b. Where the numbers live
+
+Every threshold named in this document is declared in **`thresholds.toml`** at
+the repo root, with its grounding in a comment beside it; `beemon_scoring/`
+modules read it at import and keep no fallback defaults, so the file is both the
+single place to change a value and the complete list of values to audit. A
+reviewer can diff one file to see every tuning decision, and
+`tests/test_thresholds.py` asserts that each module's constant matches the key it
+claims to read. Sweeps and alternate deployments use `BEEMON_THRESHOLDS` (a
+whole replacement file) rather than edits scattered through the code, so any
+reported result can be tied to one recorded configuration.
 
 ---
 
@@ -81,7 +96,7 @@ will expect it, and it may pre-empt a novelty challenge.
   by the sensitivity analysis.
 - **Sensor silence is detected relatively, not absolutely.** A colony is "not
   reporting" when its last reading trails the newest reading in the cache by more
-  than `MAX_REPORTING_GAP_DAYS`; the system clock is never read, so an
+  than `status.max_reporting_gap_days`; the system clock is never read, so an
   apiary-wide outage leaves every colony equally stale and none of them flagged.
   It surfaces as a stale window end in the report header instead. A colony
   flagged this way is reported but not scored — it has no metrics for the window,
